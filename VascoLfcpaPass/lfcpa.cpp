@@ -69,6 +69,9 @@ public:
 	pair<F, B> CallInflowFunction(int, Function *, BasicBlock *, const F &, const B &);
 	pair<F, B> CallOutflowFunction(int, Function *, BasicBlock *, const F &, const B &, const F &, const B &);
 	B getLocalComponentB(const B &);
+	void printCurrPinPout(F);
+	void printCurrLinLout(B);
+	F getPurelyLocalComponentForward(const F& dfv) const;
 };
 
 IPLFCPA::IPLFCPA() : Analysis<F, B>(true, true){ };
@@ -76,6 +79,47 @@ IPLFCPA lfcpaObj;
 bool vFlag = true;
 bool flgBitcast = true;
 std::set<int> insBitcastSet;
+
+
+F IPLFCPA::getPurelyLocalComponentForward(const F& dfv) const {
+ errs() << "\n Inside getPurelyLocalComponentForward.............";
+ F fwdLocalVal;
+ for (auto d : dfv) {
+    std::pair<Token*, std::string> pointer = d.first;
+    std::set<std::pair<Token*, std::string>> pointee = d.second;
+    
+    if (!pointer.first->isGlobalVar()) {
+	for (auto p : pointee) {
+	   if (!p.first->isGlobalVar())
+	     fwdLocalVal[pointer].insert(p);
+	}
+    }//end if
+ }//end for
+ return fwdLocalVal;
+}
+void IPLFCPA::printCurrLinLout(B currB) {
+//  #if defined(TRACE) || defined(PRINT)
+  errs() << "\n Inside printCurrLinLout............";
+ // #endif
+  for (auto inIt : currB)  {
+          errs() << "(" << inIt.first->getName() <<", "<< inIt.second <<") ";
+  }//end for		
+}
+
+
+void IPLFCPA::printCurrPinPout(F currF) {
+//  #if defined(TRACE) || defined(PRINT)
+  errs() << "\n Inside printCurrPinPout............";
+ // #endif
+  for (auto inIt : currF)  {
+        errs() <<"{ ";
+        errs() << "(" << inIt.first.first->getName() <<", "<< inIt.first.second << ")->(";
+        for (auto it : inIt.second)
+        	errs() << "(" << it.first->getName() << ", " << it.second <<")" << " , ";
+        errs() <<") }";
+  }//end for		
+}
+
 
 B IPLFCPA::getLocalComponentB(const B & dfv) {
 	errs() << "\n Inside getLocalComponentB.............";
@@ -89,6 +133,16 @@ B IPLFCPA::getLocalComponentB(const B & dfv) {
 
 pair<F, B> IPLFCPA::CallOutflowFunction(int current_context_label, Function * target_Function, BasicBlock *bb, const F & a3, const B & d3, const F & a1, const B & d1) {
 	errs() << "\n Inside CallOutflowFunction..............";
+	errs() << "\n Printing values of a1";
+        printCurrPinPout(a1);
+	errs() << "\n Printing values of d1";
+	printCurrLinLout(d1);
+	errs() << "\n Printing values of a3";
+        printCurrPinPout(a3);
+	errs() << "\n Printing values of d3";
+	printCurrLinLout(d3);
+
+	
 	pair<F, B> retOUTflow;
 	B callnodeLin = d3;
  	B LocalComponent = getLocalComponentB(d1);
@@ -107,19 +161,27 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
 	B calleeLOUT;
 	F calleePIN;
 
+        printCurrPinPout(a1);
+	printCurrLinLout(d1);
+
+	errs() << "\n Checking backward values first........";
+
 	//set the backward value 
-	for (auto d : d1) {
-		if (d.first->isGlobalVar()) 
-			calleeLOUT.insert(d);	
+	for (auto d : d1) {  errs() << "\n For loop 1";
+		if (d.first->isGlobalVar()) {  
+			errs() << "\n Bck val is global = "<< d.first->getName();
+			calleeLOUT.insert(d);
+		}	
 	}
 
+	errs() << "\n Checking forward values now......";
 	//set the forward value
-	for (auto a : a1) {
-		if (a.first.first->isGlobalVar()) {
+	for (auto a : a1) { errs() << "\n FOR loop F 1";
+		if (a.first.first->isGlobalVar()) { errs() << "\n Ptr is global: : "<<a.first.first->getName();
 		//ptr is global now check pointees
-		   for (auto p : a.second){
-			if (p.first->isGlobalVar())
-			    calleePIN[a.first].insert(p);
+		   for (auto p : a.second){ errs() << "\n Checking Pointeess....";
+			if (p.first->isGlobalVar()) {	errs() << "\n Pointee is global: "<<p.first->getName();
+			    calleePIN[a.first].insert(p); }
 			else 
 			    calleePIN[a.first].insert(std::make_pair(dangling,"-1"));
 		   }//end inner for
@@ -788,9 +850,9 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	 /* First get points-to pairs from Rhs */
  	 /* case 1: x=&u */
 	 if (rhsIndir == 0) {	
-		#ifdef PRINT
+		//#ifdef PRINT
 		errs() << "\n Rhs indir = 0 ";
-		#endif
+		//#endif
 		foundPointee = true;
 		notPINEmpty = true;
 		 if (I.getGOPRhs()) { 
@@ -798,9 +860,9 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			//rhsSet.insert(std::make_pair(rhsValue, objStruct.getStructFieldIndxRhs(instrCount))); *working on it*
 		 }
 		 else if (I.getGEP()) {
-			#ifdef PRINT
+			//#ifdef PRINT
 			errs() << "\n Inst is a GEP. ";
-			#endif
+			//#endif
 			rhsSet.insert(std::make_pair(rhsValue, rhsValue->getFieldIndex()));
 		 }
 		 else {
@@ -1598,3 +1660,4 @@ static RegisterPass<transIR> X(
 	false,
 	false					
 );
+
