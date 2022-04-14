@@ -167,8 +167,29 @@ public:
 	std::string demangle(const char*);
 	std::string getOriginalName(Function*);
 	fetchLR getArgStore(Value* LHS, Value* RHS);
+	std::vector<Token*> getRetStore(Function *);
 	void printOperands(fetchLR);
+	bool operator == (fetchLR &);
 };
+
+bool fetchLR::operator == (fetchLR & O1) {
+  bool flag = true;
+  if (this->getLHS().first == O1.getLHS().first) {
+	std::vector<std::pair<Token*, int >> oRhs = this->getRHS();
+	std::vector<std::pair<Token*, int >> o1Rhs = O1.getRHS();
+
+	for (int i = 0; i < oRhs.size(); i++) {
+		if (oRhs[i].first != o1Rhs[i].first) {
+			flag = false;	
+			break;
+		}
+	}//end for
+  }
+  else
+	flag = false;
+  return flag;
+}
+
 
 void fetchLR::printOperands(fetchLR Ob) {
   errs() << "\n Inside printOperands..........";
@@ -727,16 +748,83 @@ fetchLR fetchLR::metaDataReturnIns(Instruction* I) {
 }// end RETURN
 
 fetchLR fetchLR::getArgStore(Value* LHS, Value* RHS) {
-#if defined(TRACE) || defined(PRINT) 
+//#if defined(TRACE) || defined(PRINT) 
   errs() << "\n Inside getArgStore....";
-#endif
+//#endif
   fetchLR Ob;
   spatial::Token* RHSTok = TW.getToken(new Token(RHS));
   Ob.RHS.push_back(std::make_pair(RHSTok, 1));
-  Ob.LHS = std::make_pair(TW.getToken(new Token(LHS)), 1);	   	  
+  Function* F = cast<Instruction>(RHS)->getParent()->getParent();
+  Function* CalledFunction = dyn_cast<Argument>(LHS)->getParent();
+  std::string CalledFunctionName = " ";
+  if(CalledFunction && CalledFunction->hasName())
+ 	   CalledFunctionName = "_" + CalledFunction->getName().str();
+  spatial::Token* LHSTok = TW.getToken(new Token(LHS->getName().str() + CalledFunctionName, F));
+  LHSTok->setIsGlobal();
+  errs() << "\n Check if LHS is global: "<<LHSTok->isGlobalVar();
+  Ob.LHS = std::make_pair(LHSTok, 1);	   	  
   return Ob;
 }
 
+std::vector<Token*> fetchLR::getRetStore(Function *F) {
+ errs() << "\n Inside getRetStore.......";
+
+ std::vector<Token*> vecRetToken;
+ Instruction* Ins, *I;
+ bool skipFlag = false;
+ for (Function::iterator bb=F->begin(), e=F->end(); e!=bb; ++bb)  {
+     BasicBlock* B = &(*bb);
+     for (BasicBlock::iterator i=B->begin(), e1=B->end(); i!=e1; ++i) 	{
+       	Instruction* ins = &(*i);
+	if (isa<ReturnInst>(ins)) {
+            errs() << "\n Return instr in callee";
+	    ReturnInst *RI = dyn_cast<ReturnInst>(ins);
+	    Value *RetVal = RI->getReturnValue();
+	    if (RetVal->getType()->isPointerTy()) {
+	         errs() << "\n Return Value is Pointer Type. ";
+		 spatial::Token* RHSTok = TW.getToken(new Token(RetVal));
+   	    	 vecRetToken.push_back(RHSTok);     
+            }
+            else if (RetVal && !llvm::isa<llvm::ConstantInt>(RetVal)) {
+		errs() << "\n Return value is not a pointer type. ";
+                Ins = dyn_cast<Instruction>(RI);
+                while(!skipFlag) {  
+	         for (Use &U : Ins->operands()) { 
+	              Value* v = U.get();  
+	              I = dyn_cast<Instruction>(v); 
+                      if (I != nullptr) { 
+	               if (isa<LoadInst>(I))	    { 
+			if (isa<GlobalVariable>(I->getOperand(0)))	{
+		           if (I->getOperand(0)->getType()->getContainedType(0)->isPointerTy())  {
+		   	      LoadInst *loadI = dyn_cast<LoadInst>(I);
+		   	      Value *OpVal = loadI->getOperand(0);
+		   	      spatial::Token* RHSTok = TW.getToken(new Token(RetVal));
+   	    	              vecRetToken.push_back(RHSTok);
+		   	      skipFlag = true;
+		            }//end if
+		            else  { 
+			      skipFlag = true;
+			      break;
+		            }//end else 
+		       }//end if global
+ 	              }//end if load
+	              else {
+		         errs() << "\n NOT A LOAD INSTR"<<*I;
+		         skipFlag = true;
+	              }	
+	           }//end if null ptr
+	           else {  
+		       skipFlag = true;
+		       break;
+	           }//end else break
+	         }//end for
+              }//end while	
+             }//end if
+         }//end if
+     }//end BB for
+ }//end F for
+  return vecRetToken;
+}
 
 ///Computes the RHS Tokens for Printf/Scanf Call Instructions in LLVM IR
 fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
@@ -792,8 +880,32 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
                
 	        std::vector<Token*> vecCall = IM->extractToken(CI);
 		if (!vecCall.empty()) {
-			if (vecCall[0]->getName() != "NULL")
+			if (vecCall[0]->getName() != "NULL") {
+			   if (vecCall[0]->isValPointerType()) {
+			  //Lhs of call instr is a pointer
+			  //Fetch the return value now
+				
+			     errs() << "\n LHS of the return instrutcion is a pointer.";
+			     Token* lhsTemp = vecCall[0]; 
+			     std::vector<Token*> vecRhsTokens = getRetStore(FunType);
+			     if (vecRhsTokens.size() >= 1) {
+				for (int i = 1; i < vecRhsTokens.size(); i++) {
+					Token* rhsTemp = vecRhsTokens[i];
+					// if (lhsTemp->getTy() == rhsTemp->getTy()) 
+					// 	errs() << "\n Types match"<<lhsTemp->getTy()<<"==";
+					// else
+					// 	errs() << "\n Type mismatch";
+					
+
+				} 	
+	
+			      }
+				  
+			   }//end inner if
 		        	Ob.LHS = std::make_pair(vecCall[0], 1);
+				errs() << "\n Call instr Lhs: "<<vecCall[0]->getName();
+				
+			}//end outer if
 		        Token* opRhs = TW.getToken(new spatial::Token(FunType));
 			Ob.RHS.push_back(std::make_pair(opRhs, 1));
 			Ob.setCall();
@@ -827,6 +939,7 @@ protected:
 	std::map<Instruction*, fetchLR> tempInstLR;
 	std::map<std::pair<Function*, BasicBlock*>, std::list<Instruction*>> mapSkippedIns;
 	std::map<std::pair<Function*, BasicBlock*>, std::list<Instruction*>> mapModeledIns;
+	
 public:	
 	Transform() {
 		 IM = new spatial::LFCPAInstModel(&TW);
@@ -843,10 +956,29 @@ public:
 	void checkCompareIns(Function*, BasicBlock*);
 	void simplifyIR(Function*, BasicBlock*);
 	bool isBBInsLstEmpty(Function*, BasicBlock*);
-	Instruction* getInstforIndx(long int);
+	Instruction* getInstforIndx(long int);	
+	BasicBlock* getBBfromFetchLR(fetchLR);
 };
 
+BasicBlock* Transform::getBBfromFetchLR(fetchLR Ob) {
+	long int INDEX;
+	for (auto g : globalInstrIndexList) {
+		long int indx = g.first;
+		fetchLR objLR = g.second;
+		if (objLR == Ob) 
+			INDEX = indx;		
+	}
 
+        for (auto map : funcBBInsMap) {
+		std::pair<Function*, BasicBlock*> FB = map.first;
+		std::list<long int> LIST = map.second;
+		std::list<long int>::iterator itr;
+		itr = std::find(LIST.begin(), LIST.end(), INDEX);
+		if(itr != LIST.end())
+		   return FB.second;
+        }
+}
+ 
 //Returns the corresponding instruction for the global index
 Instruction* Transform::getInstforIndx(long int Index) {
 	return mapInstWithIndx[Index];
@@ -1049,12 +1181,13 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	    }
 	}
 	else if (isa<CallInst>(ins)) {
+		fetchLR insPrintf;
 	    if (tempInstLR.find(ins) != tempInstLR.end()) { 
 		#ifdef PRINT
 		errs() << "\n CallInst flag: "<<instrCounter;
 		errs() << "\n Function name: "<<F<< "\t BB: "<<B;
 		#endif
-		fetchLR insPrintf = tempInstLR[ins];
+		insPrintf = tempInstLR[ins];
 		if(flagArgs) {
 		   for (std::list<fetchLR>::iterator i=ArgStore.begin(), e=ArgStore.end(); i!=e; ++i)  {
 		   globalInstrIndexList[instrCounter] =  *i;  
@@ -1066,7 +1199,7 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 		funcBBInsMap[std::make_pair(F, B)].push_back(instrCounter);
 		mapInstWithIndx[instrCounter] = ins;
 		instrCounter++;
-		mapModeledIns[std::make_pair(F, B)].push_back(ins);		
+		mapModeledIns[std::make_pair(F, B)].push_back(ins);			
 	    }//only if call instr is considered
 	    else {
 		//Call instr not considered

@@ -1630,7 +1630,8 @@ public:
 	}
 	lfcpaObj.printGlobalInstrList();
 	errs() << "\n Executing VASCO........";
-	lfcpaObj.doAnalysis(M);	
+	lfcpaObj.doAnalysis(M);
+	lfcpaObj.printContext();
         return false;
   }
 };

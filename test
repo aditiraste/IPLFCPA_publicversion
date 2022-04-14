@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #set -x
-export LLVM_HOME=usr/lib/llvm-11
+export LLVM_HOME=usr/lib/llvm-12
 
 ARGS=`python3 ./HandleArgs.py $@`
 
@@ -34,11 +34,12 @@ export FOO_VAR
 #opt-11 -S -instnamer test.ll -o test.ll
 mkdir -p _build
 pushd _build
+make clean
 cmake ..
 make 
 popd
-clang++-11 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -c call_test.cpp -o test.ll
-opt-11 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*VascoLfcpa*  -lfcpa test.ll -o test.ll
+clang-12 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -c call_test.c -o test.ll
+opt-12 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*VascoLfcpa*  -lfcpa test.ll -o test.ll
 #clang++-11 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -c All_Testcases/7.cpp -o test.ll
 #opt-11 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*TransformIR*  -lfcpa test.ll -o test.ll #> /dev/null
 #opt-11 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*TransformIR*  -lfcpa /home/aditi/rebenchmarktesting/Aditi/gcc.ll -o test.ll
