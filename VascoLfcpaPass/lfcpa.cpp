@@ -1586,6 +1586,11 @@ F IPLFCPA::getBoundaryInformationForward() {
 F IPLFCPA::getInitialisationValueForward() {
     llvm::outs() << "\n Inside getInitialisationValueForward ";
     std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> F_TOP;
+    Token* INIT = IM->extractDummy("INIT");
+    std::pair<Token*, std::string> TMP1; 
+    std::set<std::pair<Token*, std::string>> TMP2; 
+    TMP1.first = INIT;
+    F_TOP[TMP1] = TMP2;
     return F_TOP;
 }
 
@@ -1652,4 +1657,5 @@ static RegisterPass<transIR> X(
 	false,
 	false					
 );
+
 
