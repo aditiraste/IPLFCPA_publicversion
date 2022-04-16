@@ -1,178 +1,472 @@
+
+ Splitting the BB...............
+ Printing Global Instruction List.....#
+
+ Executing VASCO........
+ Applying SLIM modeling..............#
+
+
+
+
+ Instr is a call instruction.........
+ callFLag= 1
+
+
+
+
+
+
 Time taken in Splitting Basic Block : 0 seconds
-Inside else case 
+
+ Inside getBoundaryInformationForward 
+ Inside getBoundaryInformationBackward INITIALIZING CONTEXT:-
+LABEL: 0
+FUNCTION: main
+Inflow Value: Forward:- Backward:- {  }
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getBoundaryInformationForward 
+ Inside getBoundaryInformationBackward 
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+ Backwards Index: 4
+ Backwards Index: 5
+ Backwards Index: 6
+===================================[BACKWARD-0 ]===========================================
+OUT: {  }
+ Inside computeInFromOut...................
+ Rhs in loop: <y, 1>
+ Inside fetchLhsIndex............. 
+ Instr is a USE. 
+ Instr is a return stmt. IN: { y,  }
+===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
+OUT: { y,  }
+ Inside computeInFromOut...................
+ Fetched LHS: y lhs indir: 1
+ Rhs in loop: <i1, 1>
+ Inside fetchLhsIndex............. 
+ Inside compareToken....IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
+OUT: { i1,  }
+ Inside computeInFromOut...................
+ Fetched LHS: i1 lhs indir: 1
+ Rhs in loop: <x, 1>
+ Inside fetchLhsIndex............. 
+ Inside compareToken....
+ Inside compareToken....IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
-Inside else case 
+ Inside EqualDataFlowValuesBackward.................
+-------------------------------------------
+Retrive BB from backward worklist
 
+-------------------------------------------
+
+ Inside getInitialisationValueBackward 
+ Inside performMeetBackward...................After setting backward out: { x,  }
+ Backwards Index: 3
+ Inside CallInflowFunction...............
+ Inside printCurrPinPout............
+ Inside printCurrLinLout............(x, ) 
+ Checking backward values first........
+ For loop 1
+ Bck val is global = x
+ Checking forward values now......INITIALIZING CONTEXT:-
+LABEL: 1
+FUNCTION: fun
+Inflow Value: Forward:- Backward:- { x,  }
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueBackward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+ Inside getInitialisationValueForward 
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+ Backwards Index: 1
 ===================================[BACKWARD-1 ]===========================================
-OUT: IN: 
+OUT: { x,  }
+ Inside computeInFromOut...................
+ Fetched LHS: x lhs indir: 1
+ Rhs in loop: <u, 0>
+ Inside fetchLhsIndex............. 
+ Inside compareToken....IN: {  }
 ===================================[BACKWARD-1 ]===========================================
 
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
+ Inside EqualDataFlowValuesBackward.................
+ Inside getPurelyGlobalComponentBackward...............
+-------------------------------------------
+Retrive BB from backward worklist
 
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
+-------------------------------------------
 
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
-======================================================================================
+ Inside getInitialisationValueBackward 
+ Inside performMeetBackward...................After setting backward out: { x,  }
+ Backwards Index: 3
+ Inside CallInflowFunction...............
+ Inside printCurrPinPout............
+ Inside printCurrLinLout............(x, ) 
+ Checking backward values first........
+ For loop 1
+ Bck val is global = x
+ Checking forward values now......
+ Inside EqualDataFlowValuesForward...............................
+ Inside EqualDataFlowValuesBackward.................
+ Inside compareToken....======================================================================================
 Context found!!!!!
 LABEL: 1
 ======================================================================================
-
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
+Forward Inflow Value:- Backward Inflow Value:- { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
+ Inside printOperands..........
+ Rhs: <fun, 1>OUT: { x,  }
+ Inside CallOutflowFunction..............
+ Printing values of a1
+ Inside printCurrPinPout............
+ Printing values of d1
+ Inside printCurrLinLout............(x, ) 
+ Printing values of a3
+ Inside printCurrPinPout............
+ Printing values of d3
+ Inside printCurrLinLout............
+ Inside getLocalComponentB.............
+ Inside performMeetBackward...................IN: {  }
 ===================================[BACKWARD-0 ]===========================================
 
+ Inside EqualDataFlowValuesBackward.................
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+ Inside getInitialisationValueBackward 
+ Inside performMeetBackward...................After setting backward out: {  }
+ Backwards Index: 2
+===================================[BACKWARD-0 ]===========================================
+OUT: {  }
+ Inside computeInFromOut...................
+ Fetched LHS: x lhs indir: 1
+ Rhs in loop: <v, 0>
+ Inside fetchLhsIndex............. IN: {  }
+===================================[BACKWARD-0 ]===========================================
+
+ Inside EqualDataFlowValuesBackward.................
+ Inside getPurelyGlobalComponentBackward...............
 ===================================[FORWARD-1 ]===========================================
 TESTING
-INFLOW VALUES: 
+INFLOW VALUES: Forward:-Backward:-{ x,  }
 ===================================[FORWARD-1 ]===========================================
 
+ Forward Index: 1
+ Index = 1
 ===================================[FORWARD-1 ]===========================================
-IN: OUT: 
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = x indir= 1
+ Rhs in loop: <u, 0>
+ Normal instruction. 
+ Rhs indir = 0 
+ Inside restrictByLivness().......
+ Inside compareToken....
+ Inside forwardMerge.................
+ Printing forward values: { (x, )->((u, ) , ) }
+ ----------------------------------OUT: { (x, )->((u, ) , ) }
 ===================================[FORWARD-1 ]===========================================
 
+ Index = 1
 ===================================[FORWARD-1 ]===========================================
-IN: OUT: 
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = x indir= 1
+ Rhs in loop: <u, 0>
+ Normal instruction. 
+ Rhs indir = 0 
+ Inside restrictByLivness().......
+ Inside compareToken....
+ Inside forwardMerge.................
+ Printing forward values: { (x, )->((u, ) , ) }
+ ----------------------------------OUT: { (x, )->((u, ) , ) }
 ===================================[FORWARD-1 ]===========================================
-
+{ (x, )->((u, ) , ) }
+ Inside EqualDataFlowValuesForward...............................
+ Inside getPurelyGlobalComponentForward...........
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: 
+INFLOW VALUES: Forward:-Backward:-{  }
 ===================================[FORWARD-0 ]===========================================
 
+ Forward Index: 2
+ Index = 2
 ===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
-Inside else case 
-
-===================================[FORWARD-2 ]===========================================
-TESTING
-INFLOW VALUES: 
-===================================[FORWARD-2 ]===========================================
-
-===================================[FORWARD-2 ]===========================================
-IN: OUT: 
-===================================[FORWARD-2 ]===========================================
-
-===================================[FORWARD-2 ]===========================================
-IN: OUT: 
-===================================[FORWARD-2 ]===========================================
-
-===================================[FORWARD-0 ]===========================================
-TESTING
-INFLOW VALUES: 
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = x indir= 1
+ Rhs in loop: <v, 0>
+ Normal instruction. 
+ Rhs indir = 0 
+ Inside restrictByLivness().......
+ Inside forwardMerge.................
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-0 ]===========================================
 
+ Index = 2
 ===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
-======================================================================================
-Context found!!!!!
-LABEL: 2
-======================================================================================
-
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
-
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = x indir= 1
+ Rhs in loop: <v, 0>
+ Normal instruction. 
+ Rhs indir = 0 
+ Inside restrictByLivness().......
+ Inside forwardMerge.................
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-0 ]===========================================
 
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
-
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
-
+ Inside EqualDataFlowValuesForward...............................
+ Inside getInitialisationValueForward 
+ Inside performMeetForward..............
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: 
+INFLOW VALUES: Forward:-Backward:-{ x,  }
 ===================================[FORWARD-0 ]===========================================
 
-===================================[FORWARD-0 ]===========================================
-TESTING
-INFLOW VALUES: 
-===================================[FORWARD-0 ]===========================================
-
-===================================[BACKWARD-2 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-2 ]===========================================
-
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
-
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
-
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
-======================================================================================
+ Forward Index: 3
+ Inside CallInflowFunction...............
+ Inside printCurrPinPout............
+ Inside printCurrLinLout............(x, ) 
+ Checking backward values first........
+ For loop 1
+ Bck val is global = x
+ Checking forward values now......This is call Instruction in forward direction: 
+{ x,  }
+ Inside EqualDataFlowValuesForward...............................
+ Inside EqualDataFlowValuesBackward.................
+ Inside compareToken....======================================================================================
 Context found!!!!!
 LABEL: 1
 ======================================================================================
+Forward Inflow Value:- Backward Inflow Value:- { x,  }
+===================================[FORWARD-0 ]===========================================
+IN: 
+ Inside CallOutflowFunction..............
+ Printing values of a1
+ Inside printCurrPinPout............
+ Printing values of d1
+ Inside printCurrLinLout............(x, ) 
+ Printing values of a3
+ Inside printCurrPinPout............{ (x, )->((u, ) , ) }
+ Printing values of d3
+ Inside printCurrLinLout............
+ Inside getLocalComponentB.............
+ Inside getPurelyLocalComponentForward.............
+ Inside performMeetForward..............
+ Inside performMeetForward..............OUT: 
+===================================[FORWARD-0 ]===========================================
 
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
-
-===================================[BACKWARD-0 ]===========================================
-OUT: IN: 
-===================================[BACKWARD-0 ]===========================================
-
+ Inside EqualDataFlowValuesForward...............................
+ Inside getInitialisationValueForward 
+ Inside performMeetForward..............
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: 
+INFLOW VALUES: Forward:-Backward:-{  }
 ===================================[FORWARD-0 ]===========================================
 
+ Forward Index: 4
+ Forward Index: 5
+ Forward Index: 6
+ Index = 4
 ===================================[FORWARD-0 ]===========================================
-IN: OUT: 
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = i1 indir= 1
+ Rhs in loop: <x, 1>
+ Normal instruction. 
+ case 2: x=t1 or t1=x or *t2=t1 
+ Fetch pointees of t1 from Pin. 
+ Inside restrictByLivness().......
+ Inside forwardMerge.................
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-0 ]===========================================
-======================================================================================
+
+ Index = 5
+===================================[FORWARD-0 ]===========================================
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = y indir= 1
+ Rhs in loop: <i1, 1>
+ Normal instruction. 
+ case 2: x=t1 or t1=x or *t2=t1 
+ Fetch pointees of t1 from Pin. 
+ Inside restrictByLivness().......
+ Inside forwardMerge.................
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-0 ]===========================================
+
+ Index = 6
+===================================[FORWARD-0 ]===========================================
+IN: 
+ Inside computeOutFromIn......................
+ Rhs in loop: <y, 1>
+ Instr is a USE. 
+ Inside restrictByLivness().......
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-0 ]===========================================
+
+ Index = 4
+===================================[FORWARD-0 ]===========================================
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = i1 indir= 1
+ Rhs in loop: <x, 1>
+ Normal instruction. 
+ case 2: x=t1 or t1=x or *t2=t1 
+ Fetch pointees of t1 from Pin. 
+ Inside restrictByLivness().......
+ Inside forwardMerge.................
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-0 ]===========================================
+
+ Index = 5
+===================================[FORWARD-0 ]===========================================
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = y indir= 1
+ Rhs in loop: <i1, 1>
+ Normal instruction. 
+ case 2: x=t1 or t1=x or *t2=t1 
+ Fetch pointees of t1 from Pin. 
+ Inside restrictByLivness().......
+ Inside forwardMerge.................
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-0 ]===========================================
+
+ Index = 6
+===================================[FORWARD-0 ]===========================================
+IN: 
+ Inside computeOutFromIn......................
+ Rhs in loop: <y, 1>
+ Instr is a USE. 
+ Inside restrictByLivness().......
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-0 ]===========================================
+
+ Inside EqualDataFlowValuesForward...............................
+ Inside getPurelyGlobalComponentForward...........
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+ Inside getInitialisationValueBackward 
+ Inside performMeetBackward...................After setting backward out: { x,  }
+ Backwards Index: 3
+ Inside CallInflowFunction...............
+ Inside printCurrPinPout............
+ Inside printCurrLinLout............(x, ) 
+ Checking backward values first........
+ For loop 1
+ Bck val is global = x
+ Checking forward values now......
+ Inside EqualDataFlowValuesForward...............................
+ Inside EqualDataFlowValuesBackward.................
+ Inside compareToken....======================================================================================
 Context found!!!!!
-LABEL: 2
+LABEL: 1
 ======================================================================================
+Forward Inflow Value:- Backward Inflow Value:- { x,  }
+===================================[BACKWARD-0 ]===========================================
 
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
+ Inside printOperands..........
+ Rhs: <fun, 1>OUT: { x,  }
+ Inside CallOutflowFunction..............
+ Printing values of a1
+ Inside printCurrPinPout............
+ Printing values of d1
+ Inside printCurrLinLout............(x, ) 
+ Printing values of a3
+ 0.000000 MB
+Inside printCurrPinPout............{ (x, )->((u, ) , ) }
+ Printing values of d3
+ Inside printCurrLinLout............
+ Inside getLocalComponentB.............
+ Inside performMeetBackward...................IN: {  }
+===================================[BACKWARD-0 ]===========================================
 
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
+ Inside EqualDataFlowValuesBackward.................Time taken by analysis: 0 seconds
 
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
-
-===================================[FORWARD-0 ]===========================================
-IN: OUT: 
-===================================[FORWARD-0 ]===========================================
-Time taken by0.000000 MB
- analysis: 0 seconds
+==================================================================================================
+LABEL: 1
+FUNCTION NAME: fun
+INFLOW VALUE: Forward:-Backward:-{ x,  }OUTFLOW VALUE: Forward:-{ (x, )->((u, ) , ) }Backward:-{  }
+==================================================================================================
+==================================================================================================
+LABEL: 0
+FUNCTION NAME: main
+INFLOW VALUE: Forward:-Backward:-{  }OUTFLOW VALUE: Forward:-Backward:-{  }
+==================================================================================================
 Memory consume: 

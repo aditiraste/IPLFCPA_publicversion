@@ -22,10 +22,7 @@ CMAKE_AR:FILEPATH=/usr/bin/ar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=
-
-//Enable/Disable color output during build.
-CMAKE_COLOR_MAKEFILE:BOOL=ON
+CMAKE_BUILD_TYPE:STRING=Debug
 
 //CXX compiler
 CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
@@ -98,7 +95,7 @@ CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Enable/Disable output of compile commands during generation.
-CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
+CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=
 
 //Install path prefix, prepended onto install directories.
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
@@ -106,8 +103,8 @@ CMAKE_INSTALL_PREFIX:PATH=/usr/local
 //Path to a program.
 CMAKE_LINKER:FILEPATH=/usr/bin/ld
 
-//Path to a program.
-CMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/make
+//No help, variable specified on the command line.
+CMAKE_MAKE_PROGRAM:UNINITIALIZED=/snap/clion/189/bin/ninja/linux/ninja
 
 //Flags used by the linker during the creation of modules during
 // all build types.
@@ -221,11 +218,17 @@ LIBXML2_XMLLINT_EXECUTABLE:FILEPATH=LIBXML2_XMLLINT_EXECUTABLE-NOTFOUND
 //The directory containing a CMake configuration file for LLVM.
 LLVM_DIR:PATH=/usr/lib/llvm-12/cmake
 
+//Arguments to supply to pkg-config
+PKG_CONFIG_ARGN:STRING=
+
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
 //Value Computed by CMake
 Project_BINARY_DIR:STATIC=/home/ayush/Desktop/MTP/IPLFCPA/_build
+
+//Value Computed by CMake
+Project_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 Project_SOURCE_DIR:STATIC=/home/ayush/Desktop/MTP/IPLFCPA
@@ -259,8 +262,6 @@ CMAKE_CACHE_MAJOR_VERSION:INTERNAL=3
 CMAKE_CACHE_MINOR_VERSION:INTERNAL=16
 //Patch version of cmake used to create the current loaded cache
 CMAKE_CACHE_PATCH_VERSION:INTERNAL=3
-//ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
-CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
 CMAKE_COMMAND:INTERNAL=/usr/bin/cmake
 //Path to cpack program executable.
@@ -301,6 +302,8 @@ CMAKE_C_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_C_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_DLLTOOL
 CMAKE_DLLTOOL-ADVANCED:INTERNAL=1
+//Path to cache edit program executable.
+CMAKE_EDIT_COMMAND:INTERNAL=/snap/clion/189/bin/cmake/linux/bin/ccmake
 //Executable file format
 CMAKE_EXECUTABLE_FORMAT:INTERNAL=ELF
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS
@@ -318,7 +321,7 @@ CMAKE_EXPORT_COMPILE_COMMANDS-ADVANCED:INTERNAL=1
 //Name of external makefile project generator.
 CMAKE_EXTRA_GENERATOR:INTERNAL=
 //Name of generator.
-CMAKE_GENERATOR:INTERNAL=Unix Makefiles
+CMAKE_GENERATOR:INTERNAL=Ninja
 //Generator instance identifier.
 CMAKE_GENERATOR_INSTANCE:INTERNAL=
 //Name of generator platform.
@@ -332,8 +335,6 @@ CMAKE_HOME_DIRECTORY:INTERNAL=/home/ayush/Desktop/MTP/IPLFCPA
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=1
 //ADVANCED property for variable: CMAKE_LINKER
 CMAKE_LINKER-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_MAKE_PROGRAM
-CMAKE_MAKE_PROGRAM-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS
 CMAKE_MODULE_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_DEBUG
@@ -406,11 +407,11 @@ PC_LIBXML_CFLAGS_OTHER:INTERNAL=
 PC_LIBXML_FOUND:INTERNAL=1
 PC_LIBXML_INCLUDEDIR:INTERNAL=/usr/include
 PC_LIBXML_INCLUDE_DIRS:INTERNAL=/usr/include/libxml2
-PC_LIBXML_LDFLAGS:INTERNAL=-lxml2
+PC_LIBXML_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lxml2
 PC_LIBXML_LDFLAGS_OTHER:INTERNAL=
 PC_LIBXML_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
 PC_LIBXML_LIBRARIES:INTERNAL=xml2
-PC_LIBXML_LIBRARY_DIRS:INTERNAL=
+PC_LIBXML_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
 PC_LIBXML_LIBS:INTERNAL=
 PC_LIBXML_LIBS_L:INTERNAL=
 PC_LIBXML_LIBS_OTHER:INTERNAL=
@@ -421,11 +422,11 @@ PC_LIBXML_STATIC_CFLAGS:INTERNAL=-I/usr/include/libxml2
 PC_LIBXML_STATIC_CFLAGS_I:INTERNAL=
 PC_LIBXML_STATIC_CFLAGS_OTHER:INTERNAL=
 PC_LIBXML_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include/libxml2
-PC_LIBXML_STATIC_LDFLAGS:INTERNAL=-lxml2;-licui18n;-licuuc;-licudata;-lz;-llzma;-lm
+PC_LIBXML_STATIC_LDFLAGS:INTERNAL=-L/usr/lib/x86_64-linux-gnu;-lxml2;-licui18n;-licuuc;-licudata;-lz;-llzma;-lm
 PC_LIBXML_STATIC_LDFLAGS_OTHER:INTERNAL=
 PC_LIBXML_STATIC_LIBDIR:INTERNAL=
 PC_LIBXML_STATIC_LIBRARIES:INTERNAL=xml2;icui18n;icuuc;icudata;z;lzma;m
-PC_LIBXML_STATIC_LIBRARY_DIRS:INTERNAL=
+PC_LIBXML_STATIC_LIBRARY_DIRS:INTERNAL=/usr/lib/x86_64-linux-gnu
 PC_LIBXML_STATIC_LIBS:INTERNAL=
 PC_LIBXML_STATIC_LIBS_L:INTERNAL=
 PC_LIBXML_STATIC_LIBS_OTHER:INTERNAL=
@@ -435,6 +436,8 @@ PC_LIBXML_libxml-2.0_INCLUDEDIR:INTERNAL=
 PC_LIBXML_libxml-2.0_LIBDIR:INTERNAL=
 PC_LIBXML_libxml-2.0_PREFIX:INTERNAL=
 PC_LIBXML_libxml-2.0_VERSION:INTERNAL=
+//ADVANCED property for variable: PKG_CONFIG_ARGN
+PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ZLIB_INCLUDE_DIR

@@ -53,7 +53,7 @@ public:
 ///Prints whether the Token is an Array
 void Array::printInfoArrayMap() {
 #if defined(TRACE) || defined(PRINT) 
-	errs() << "\n Printing InfoArrayMap";
+	llvm::outs() << "\n Printing InfoArrayMap";
 #endif
 	for ( auto m : infoArrayMap) 
 		std::pair<Token*, std::string> Op = m.first;
@@ -192,7 +192,7 @@ bool fetchLR::operator == (fetchLR & O1) {
 
 
 void fetchLR::printOperands(fetchLR Ob) {
-  errs() << "\n Inside printOperands..........";
+  llvm::outs() << "\n Inside printOperands..........";
   std::pair<Token*, int> tempLHS;
   Token* lhsVal;
   int indirLhs;
@@ -204,11 +204,11 @@ void fetchLR::printOperands(fetchLR Ob) {
   lhsVal = tempLHS.first;  
   indirLhs = tempLHS.second;
   if (lhsVal != NULL)
-	errs() << "\n Lhs: <"<<lhsVal->getName()<<", "<<indirLhs<<">";
+	llvm::outs() << "\n Lhs: <"<<lhsVal->getName()<<", "<<indirLhs<<">";
   rhsVector = Ob.getRHS();
   for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {					
 	std::pair<Token*, int > rhsVal = *r;
-	errs() << "\n Rhs: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
+	llvm::outs() << "\n Rhs: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
    }
 }
 
@@ -275,7 +275,7 @@ std::vector<std::pair<Token*, int>> fetchLR::getRHS() {	return (this->RHS); }
 ///Computes the Tokens for LHS and RHS for an LLVM IR Instruction
 fetchLR fetchLR::metaDataSetter(Instruction* I) {
 #if defined(TRACE) || defined(PRINT) 
-	errs() << "\n Inside function metaDataSetter";
+	llvm::outs() << "\n Inside function metaDataSetter";
 #endif
 	insFlag = false;
 	RHS.clear();
@@ -283,13 +283,13 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 
 	if (StoreInst *SI = dyn_cast<StoreInst>(I)) {
 	#if defined(TRACE) || defined(PRINT) 
-	   errs() << "\n Instr is a STORE ";
+	   llvm::outs() << "\n Instr is a STORE ";
 	#endif
      	   std::vector<Token*> vecStoreIns = IM->extractToken(SI);
 
 	   if (!vecStoreIns.empty()) {
 		#ifdef PRINT
-			errs() << "\n Store not empty";
+			llvm::outs() << "\n Store not empty";
 		#endif
 		insFlag = true; //Instr is considered and not skipped
 		Token* opLhs = vecStoreIns[0];
@@ -330,7 +330,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		}
 		if (isa<GEPOperator>(SI->getOperand(0))) { /* First check if Lhs or Rhs is GEP Operator */
 		#ifdef PRINT
-		    errs() << "\n Rhs is GEP Operator ";
+		    llvm::outs() << "\n Rhs is GEP Operator ";
 		#endif
 		    this->setGOPRhs();
 		    GEPOperator *GOP = dyn_cast<GEPOperator>(SI->getOperand(0));
@@ -342,14 +342,14 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 			else    
 				indirRhs = 1;
 			#ifdef PRINT
-			    	errs() <<"\n Name : "<< opRhs->getName() <<"  Field Index: "<< opRhs->getFieldIndex();
+			    	llvm::outs() <<"\n Name : "<< opRhs->getName() <<"  Field Index: "<< opRhs->getFieldIndex();
 			#endif
 		    	objStruct.setStructFieldIndxRhs(opRhs->getFieldIndex());
 		    }
 		}
 		if (isa<GEPOperator>(SI->getOperand(1)) and opLhs->isGlobalVar()/*Addedin bchmk testing as indices were printed*/) {  
 		#ifdef PRINT
-		    errs() << " \n Lhs is GEP operator";
+		    llvm::outs() << " \n Lhs is GEP operator";
 		#endif
 		    this->setGOPLhs();
 		    GEPOperator *GOP = dyn_cast<GEPOperator>(SI->getOperand(1));
@@ -357,7 +357,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		    /* SetArray if operand is Global and an array*/
 		    if (IM->isArrayType(GOP) and  opLhs->isGlobalVar()) {
 			#ifdef PRINT
-				errs() << "\n Store to an array";	
+				llvm::outs() << "\n Store to an array";	
 			#endif
 			opLhs->setIsArray();
 			objArray.setArray(opLhs, opLhs->getFieldIndex());
@@ -382,7 +382,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 	}//end STORE
 	else if (LoadInst *LI = dyn_cast<LoadInst>(I))	{
 	#if defined(TRACE) || defined(PRINT) 
-	    errs() << "\n Instr is a LOAD ";
+	    llvm::outs() << "\n Instr is a LOAD ";
 	#endif
      	    std::vector<Token*> vecLoadIns = IM->extractToken(LI);
 		
@@ -420,7 +420,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		if (isa<GEPOperator>(LI->getPointerOperand()) and opRhs->isGlobalVar()/*Added due to case in benchmarks*/) {
 		/* First check if Rhs is GEP Operator */
 		#ifdef PRINT
-		    errs() << "\n Rhs is GEP Operator ";
+		    llvm::outs() << "\n Rhs is GEP Operator ";
 		#endif
 		    this->setGOPRhs();
 		    GEPOperator *GOP = dyn_cast<GEPOperator>(LI->getPointerOperand());
@@ -429,7 +429,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		    if (true || isa<GlobalVariable>(GOP->getOperand(0))) {
 		      if (BitCastOperator* BO = dyn_cast<BitCastOperator>(GOP->getOperand(0))) {
 			#ifdef PRINT
-				errs() << "\n GEP operand is a Bitcast";
+				llvm::outs() << "\n GEP operand is a Bitcast";
 			#endif
 			std::string gopIndx = TK->getIndex(GOP); //store GEP operator index
 			Token* DestTy = new Token(BO->getDestTy());
@@ -445,7 +445,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		   /* SetArray if operand is Global and an array*/
 		    if (IM->isArrayType(GOP) and  opRhs->isGlobalVar()) {
 			#ifdef PRINT
-				errs() << "\n Load from an array";
+				llvm::outs() << "\n Load from an array";
 			#endif	
 			opRhs->setIsArray();
 			objArray.setArray(opRhs, opRhs->getFieldIndex());
@@ -462,7 +462,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 	}//end LOAD
 	else if (GetElementPtrInst *GEP = dyn_cast<GetElementPtrInst>(I)) {
 		#if defined(TRACE) || defined(PRINT) 
-			errs() << "\n Instr is a GEP  ";
+			llvm::outs() << "\n Instr is a GEP  ";
 		#endif
 		this->setFieldRhs();
 		std::vector<Token*> vecGEPIns = IM->extractToken(GEP);
@@ -481,20 +481,20 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		        if (!isa<Instruction>(Op)) {  
                 		if (BitCastOperator* BCO = dyn_cast<BitCastOperator>(Op)){
 				  #if defined(TRACE) || defined(PRINT) 
-				  errs() << "\n Bitcast instr in a GEP.";
+				  llvm::outs() << "\n Bitcast instr in a GEP.";
 				  #endif
                		          Op = BCO->getOperand(0);
 				          	        
                 	        if (Op->getType()->getContainedType(0)->isArrayTy()){
 				  #if defined(TRACE) || defined(PRINT) 
-			          errs() << "\n Bitcast in a GEP is an array type. ";
+			          llvm::outs() << "\n Bitcast in a GEP is an array type. ";
 		                  #endif
                 	          opRhs = TW.getToken(new spatial::Token(Op));
 				  opRhs->setIndex(opRhs);
                 	        }
 				else {
 				  #if defined(TRACE) || defined(PRINT) 
-			          errs() << "\n Bitcast in a GEP is not an array type. ";
+			          llvm::outs() << "\n Bitcast in a GEP is not an array type. ";
 		                  #endif
 				  opRhs = TW.getToken(new spatial::Token(Op));
 				  opRhs->setIndex(opRhs);
@@ -507,7 +507,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 			}	
 			if (GEP->getNumOperands() == 2) {
 				  #if defined(TRACE) || defined(PRINT) 
-			          errs() << "\n GEP instruction operand has only one index. ";
+			          llvm::outs() << "\n GEP instruction operand has only one index. ";
 		                  #endif
 				 opRhs->setIsOneGEPIndx();
 			}		       
@@ -516,7 +516,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 	}//end GEP
 	else if (BitCastInst *BI = dyn_cast<BitCastInst>(I)) {
 		#if defined(TRACE) || defined(PRINT) 
-			errs() << "\n Instr is Bitcast Instruction ";
+			llvm::outs() << "\n Instr is Bitcast Instruction ";
 		#endif
         // x = bitcast y
         // x = y[0]
@@ -539,13 +539,13 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 	}
 	else if (AllocaInst *AI = dyn_cast<AllocaInst>(I)) {
  		#if defined(TRACE) || defined(PRINT) 
-			errs() << "\n Inst is an ALLOCA Inst. ";
+			llvm::outs() << "\n Inst is an ALLOCA Inst. ";
 		#endif
 		std::vector<Token*> vecAIIns = IM->extractToken(AI);
         }//end alloca
 	else if (PHINode *PHI = dyn_cast<PHINode>(I)) {
 		#if defined(TRACE) || defined(PRINT) 
-			errs() << "\n Inst is Phi Instruction";
+			llvm::outs() << "\n Inst is Phi Instruction";
 		#endif
 		std::vector<Token*> vecPHIIns = IM->extractToken(PHI);
 		
@@ -565,13 +565,13 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 			// operands of phi could be GEP or BITCAST operators
 		           if (isa<BitCastOperator>(I->getOperand(i-1))){   //Phi operand is bitcast operator
 				#if defined(TRACE) || defined(PRINT) 
-			          errs() << "\n Bitcast in a PHI Instr. ";
+			          llvm::outs() << "\n Bitcast in a PHI Instr. ";
 		                #endif
 				BitCastOperator* BCO = dyn_cast<BitCastOperator>(I->getOperand(i-1));
 			
 				if (isa<GEPOperator>(BCO->getOperand(0)))  {
 				  #if defined(TRACE) || defined(PRINT) 
-				    errs() << "\n GEP within a Bitcast in a PHI Instr. ";
+				    llvm::outs() << "\n GEP within a Bitcast in a PHI Instr. ";
 		                  #endif
 				   GEPOperator *GEPOp = dyn_cast<GEPOperator>(BCO->getOperand(0));
 				   std::string opIndx = TK->getIndex(GEPOp);	
@@ -583,7 +583,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 				}  
 				else {
 				   #if defined(TRACE) || defined(PRINT) 
-				    errs() << "\n Normal Bitcast in a PHI Instr. ";
+				    llvm::outs() << "\n Normal Bitcast in a PHI Instr. ";
 		                   #endif
 				    opRhs = TW.getToken(new spatial::Token(BCO->getOperand(0)));
 				    opRhs->setIndex(opRhs, "[0]");
@@ -594,7 +594,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 			}
 			else if (isa<GEPOperator>(I->getOperand(i-1))) { //Phi operand is GEP operator
 				  #if defined(TRACE) || defined(PRINT) 
-					errs() << "\n PHI operand_"<<i<<" is a GEP Operator";
+					llvm::outs() << "\n PHI operand_"<<i<<" is a GEP Operator";
 		                  #endif
 	
 				if (!isa<Instruction>(I->getOperand(i-1))) {
@@ -612,7 +612,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 			}
 			else {
 				#if defined(TRACE) || defined(PRINT) 
-					errs() << "\n PHI Operand is an formal/input parameter. ";
+					llvm::outs() << "\n PHI Operand is an formal/input parameter. ";
 		                #endif
 				if (opRhs->isGlobalVar())
 					indirRhs = 0;
@@ -624,7 +624,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		     }//end if instr
 		     else {
 				#if defined(TRACE) || defined(PRINT) 
-					errs() << "\n Normal PHI Instruction. ";
+					llvm::outs() << "\n Normal PHI Instruction. ";
 		                #endif
 
 				if (opRhs->isGlobalVar())
@@ -664,14 +664,14 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 ///Computes the RHS Tokens for Compare Instruction in LLVM IR
 fetchLR fetchLR::metaDataCmpIns(Instruction* I) {
 #if defined(TRACE) || defined(PRINT) 
-  errs() << "\n Inside metaDataCmpIns....";
+  llvm::outs() << "\n Inside metaDataCmpIns....";
 #endif
   int indirLhs, indirRhs;
   fetchLR Ob;
   
   if (CmpInst *CM = dyn_cast<CmpInst>(I)) {
    #ifdef PRINT
-    errs() << "\n Instr is a compare";
+    llvm::outs() << "\n Instr is a compare";
    #endif
 
     std::vector<Token*> vecCmpIns = IM->extractToken(CM); 
@@ -687,7 +687,7 @@ fetchLR fetchLR::metaDataCmpIns(Instruction* I) {
 	  if (!isa<Instruction>(I->getOperand(i))) {
 		if (isa<GEPOperator>(I->getOperand(i))) {
 			#if defined(TRACE) || defined(PRINT) 
-			errs() << "\n Compare Operand is a GEP. ";
+			llvm::outs() << "\n Compare Operand is a GEP. ";
 		        #endif
 			GEPOperator *GEPOp = dyn_cast<GEPOperator>(I->getOperand(i));
 			std::string opIndx = TK->getIndex(GEPOp);	
@@ -700,7 +700,7 @@ fetchLR fetchLR::metaDataCmpIns(Instruction* I) {
 		}
 		else {
 			#if defined(TRACE) || defined(PRINT) 
-			errs() << "\n Non-GEP Compare Operand. ";
+			llvm::outs() << "\n Non-GEP Compare Operand. ";
 	                #endif
 			objStruct.setInsIcmpRhsOpd(I,i,opRhs, opRhs->getFieldIndex(),indirRhs);
 			Ob.RHS.push_back(std::make_pair(opRhs, indirRhs));
@@ -708,7 +708,7 @@ fetchLR fetchLR::metaDataCmpIns(Instruction* I) {
 	  }
 	  else {
 		#if defined(TRACE) || defined(PRINT) 
-		errs() << "\n Normal Compare OPerand. ";
+		llvm::outs() << "\n Normal Compare OPerand. ";
                 #endif
 		objStruct.setInsIcmpRhsOpd(I,i,opRhs, opRhs->getFieldIndex(),indirRhs);
 		Ob.RHS.push_back(std::make_pair(opRhs, indirRhs));
@@ -723,13 +723,13 @@ fetchLR fetchLR::metaDataCmpIns(Instruction* I) {
 ///Computes the RHS Tokens for Return Instruction in LLVM IR
 fetchLR fetchLR::metaDataReturnIns(Instruction* I) {
 #if defined(TRACE) || defined(PRINT) 
-  errs() << "\n Inside metaDataReturnIns....";
+  llvm::outs() << "\n Inside metaDataReturnIns....";
 #endif
   int indirLhs, indirRhs;
   fetchLR Ob;
   if (ReturnInst *RI = dyn_cast<ReturnInst>(I))   {
 	#ifdef PRINT
-	errs() << "\n Instr is a RETURN ";
+	llvm::outs() << "\n Instr is a RETURN ";
 	#endif
 	std::vector<Token*> vecRetIns = IM->extractToken(RI); 
 	Token* opLhs, *opRhs;
@@ -749,7 +749,7 @@ fetchLR fetchLR::metaDataReturnIns(Instruction* I) {
 
 fetchLR fetchLR::getArgStore(Value* LHS, Value* RHS) {
 //#if defined(TRACE) || defined(PRINT) 
-  errs() << "\n Inside getArgStore....";
+  llvm::outs() << "\n Inside getArgStore....";
 //#endif
   fetchLR Ob;
   spatial::Token* RHSTok = TW.getToken(new Token(RHS));
@@ -761,13 +761,13 @@ fetchLR fetchLR::getArgStore(Value* LHS, Value* RHS) {
  	   CalledFunctionName = "_" + CalledFunction->getName().str();
   spatial::Token* LHSTok = TW.getToken(new Token(LHS->getName().str() + CalledFunctionName, F));
   LHSTok->setIsGlobal();
-  errs() << "\n Check if LHS is global: "<<LHSTok->isGlobalVar();
+  llvm::outs() << "\n Check if LHS is global: "<<LHSTok->isGlobalVar();
   Ob.LHS = std::make_pair(LHSTok, 1);	   	  
   return Ob;
 }
 
 std::vector<Token*> fetchLR::getRetStore(Function *F) {
- errs() << "\n Inside getRetStore.......";
+ llvm::outs() << "\n Inside getRetStore.......";
 
  std::vector<Token*> vecRetToken;
  Instruction* Ins, *I;
@@ -777,16 +777,16 @@ std::vector<Token*> fetchLR::getRetStore(Function *F) {
      for (BasicBlock::iterator i=B->begin(), e1=B->end(); i!=e1; ++i) 	{
        	Instruction* ins = &(*i);
 	if (isa<ReturnInst>(ins)) {
-            errs() << "\n Return instr in callee";
+            llvm::outs() << "\n Return instr in callee";
 	    ReturnInst *RI = dyn_cast<ReturnInst>(ins);
 	    Value *RetVal = RI->getReturnValue();
 	    if (RetVal->getType()->isPointerTy()) {
-	         errs() << "\n Return Value is Pointer Type. ";
+	         llvm::outs() << "\n Return Value is Pointer Type. ";
 		 spatial::Token* RHSTok = TW.getToken(new Token(RetVal));
    	    	 vecRetToken.push_back(RHSTok);     
             }
             else if (RetVal && !llvm::isa<llvm::ConstantInt>(RetVal)) {
-		errs() << "\n Return value is not a pointer type. ";
+		llvm::outs() << "\n Return value is not a pointer type. ";
                 Ins = dyn_cast<Instruction>(RI);
                 while(!skipFlag) {  
 	         for (Use &U : Ins->operands()) { 
@@ -809,7 +809,7 @@ std::vector<Token*> fetchLR::getRetStore(Function *F) {
 		       }//end if global
  	              }//end if load
 	              else {
-		         errs() << "\n NOT A LOAD INSTR"<<*I;
+		         llvm::outs() << "\n NOT A LOAD INSTR"<<*I;
 		         skipFlag = true;
 	              }	
 	           }//end if null ptr
@@ -829,7 +829,7 @@ std::vector<Token*> fetchLR::getRetStore(Function *F) {
 ///Computes the RHS Tokens for Printf/Scanf Call Instructions in LLVM IR
 fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 #if defined(TRACE) || defined(PRINT) 
-  errs() << "\n Inside metaDataPrintfIns....";
+  llvm::outs() << "\n Inside metaDataPrintfIns....";
 #endif
   int indirLhs, indirRhs;
   fetchLR Ob;
@@ -840,7 +840,7 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
         std::string originalName = getOriginalName(calledFunction);
 	if (originalName == "printf") {  
 		#if defined(TRACE) || defined(PRINT) 
-		errs() << "\n Call to printf";
+		llvm::outs() << "\n Call to printf";
 		#endif
 		Ob.setUse();
 		indirLhs = 999; indirRhs = 1;
@@ -856,7 +856,7 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
    	}//end outer if
         else if (originalName == "scanf") {  
 		#if defined(TRACE) || defined(PRINT) 
-		errs() << "\n Call to scanf";
+		llvm::outs() << "\n Call to scanf";
 		#endif
 		Ob.setKill();
 		indirLhs = 999; indirRhs = 1;
@@ -873,7 +873,7 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 	else {  
 		fetchLR objFetchLR;
 		//#if defined(TRACE) || defined(PRINT) 
-		errs() << "\n Instr is a call instruction.........";
+		llvm::outs() << "\n Instr is a call instruction.........";
 		//#endif
 		Function* FunType = CI->getCalledFunction();
 		insFlag = true; //Instr is considered and not skipped
@@ -885,16 +885,16 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 			  //Lhs of call instr is a pointer
 			  //Fetch the return value now
 				
-			     errs() << "\n LHS of the return instrutcion is a pointer.";
+			     llvm::outs() << "\n LHS of the return instrutcion is a pointer.";
 			     Token* lhsTemp = vecCall[0]; 
 			     std::vector<Token*> vecRhsTokens = getRetStore(FunType);
 			     if (vecRhsTokens.size() >= 1) {
 				for (int i = 1; i < vecRhsTokens.size(); i++) {
 					Token* rhsTemp = vecRhsTokens[i];
 					// if (lhsTemp->getTy() == rhsTemp->getTy()) 
-					// 	errs() << "\n Types match"<<lhsTemp->getTy()<<"==";
+					// 	llvm::outs() << "\n Types match"<<lhsTemp->getTy()<<"==";
 					// else
-					// 	errs() << "\n Type mismatch";
+					// 	llvm::outs() << "\n Type mismatch";
 					
 
 				} 	
@@ -903,7 +903,7 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 				  
 			   }//end inner if
 		        	Ob.LHS = std::make_pair(vecCall[0], 1);
-				errs() << "\n Call instr Lhs: "<<vecCall[0]->getName();
+				llvm::outs() << "\n Call instr Lhs: "<<vecCall[0]->getName();
 				
 			}//end outer if
 		        Token* opRhs = TW.getToken(new spatial::Token(FunType));
@@ -919,10 +919,10 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 			    ArgStore.push_back(tempfetchLR);
 		    	    flagArgs = true;
 		         }
-/*		    errs() << "\n Printing the arguments of function call....................";
-		    errs() << "\n Argstore lhs= "<<(ArgStore.getLHS()).first->getName();
-		    errs() << "\n Argstore lhs= "<<((ArgStore.getRHS())[0]).first->getName();
-		    errs() << "\n Instruction counter = "<< instrCounter;	*/
+/*		    llvm::outs() << "\n Printing the arguments of function call....................";
+		    llvm::outs() << "\n Argstore lhs= "<<(ArgStore.getLHS()).first->getName();
+		    llvm::outs() << "\n Argstore lhs= "<<((ArgStore.getRHS())[0]).first->getName();
+		    llvm::outs() << "\n Instruction counter = "<< instrCounter;	*/
 		 }//end if
 	   }//end else call
    }
@@ -985,44 +985,44 @@ Instruction* Transform::getInstforIndx(long int Index) {
 }
 ///Prints the instructions skipped by the abstraction
 void Transform::printmapSkippedIns() {
-	errs() << "\n Printing Skipped LLVM IR instructions......\n\n";
+	llvm::outs() << "\n Printing Skipped LLVM IR instructions......\n\n";
         for (auto itr : mapSkippedIns)	{
 		Function * function;
 		BasicBlock* basicBlock;
 		std::tie(function, basicBlock) = itr.first;
 		std::list<Instruction*> ins = itr.second;
 		for (auto i : ins) {
-			i->print(errs()); errs()<<"\n";
+			i->print(llvm::outs()); llvm::outs()<<"\n";
 		}		
 	}	
 }
 
 ///Prints the instructions that are modeled by the abstraction
 void Transform::printmapModeledIns() {
-	errs() << "\n Printing Modeled LLVM IR instructions...........#\n";
+	llvm::outs() << "\n Printing Modeled LLVM IR instructions...........#\n";
         for (auto itr : mapModeledIns)	{
 		Function * function;
 		BasicBlock* basicBlock;
 		std::tie(function, basicBlock) = itr.first;
 		std::list<Instruction*> ins = itr.second;
 		for (auto i : ins) {
-			i->print(errs()); errs()<<"\n";
+			i->print(llvm::outs()); llvm::outs()<<"\n";
 		}
 	}	
 }
 
 void Transform::printfuncBBInsMap() {
 #if defined(TRACE) || defined(PRINT) 
-	errs() << "\n Printing funcBBInsMap......\n";
+	llvm::outs() << "\n Printing funcBBInsMap......\n";
         for (auto itr : funcBBInsMap)	{
 		Function * function;
 		BasicBlock* basicBlock;
 		std::tie(function, basicBlock) = itr.first;
 		std::list<long int> ins = itr.second;
-		errs()<<" \n Function: "<<function<<" BB: "<<basicBlock;
-		errs()<< "\n Instr list: ";
+		llvm::outs()<<" \n Function: "<<function<<" BB: "<<basicBlock;
+		llvm::outs()<< "\n Instr list: ";
 		for (auto i : ins) {
-			errs()<<i<<", ";
+			llvm::outs()<<i<<", ";
 		}
 	}		
 #endif	
@@ -1031,7 +1031,7 @@ void Transform::printfuncBBInsMap() {
 ///Returns true if the basic block instruction list is empty
 bool Transform::isBBInsLstEmpty(Function* F, BasicBlock* B)   {
     #if defined(TRACE) || defined(PRINT) 
-    errs() << "\n Inside isBBInsLstEmpty....."; 
+    llvm::outs() << "\n Inside isBBInsLstEmpty....."; 
     #endif
     for (auto itr : funcBBInsMap)	{ 
 	Function * function;
@@ -1049,7 +1049,7 @@ bool Transform::isBBInsLstEmpty(Function* F, BasicBlock* B)   {
 ///Returns the first instruction ID in the basic block
 long int Transform::getFirstIns(Function* F, BasicBlock* B)   {
     #if defined(TRACE) || defined(PRINT) 
-    errs() << "\n Inside getfirstIns...............";
+    llvm::outs() << "\n Inside getfirstIns...............";
     #endif
     for (auto itr : funcBBInsMap)	{ 
 	Function * function;
@@ -1065,7 +1065,7 @@ long int Transform::getFirstIns(Function* F, BasicBlock* B)   {
 ///Returns the last instruction ID in the basic block
 long int Transform::getLastIns(Function* F, BasicBlock* B)  {
   #if defined(TRACE) || defined(PRINT) 
-  errs() << "\n Inside getLastIns.............";
+  llvm::outs() << "\n Inside getLastIns.............";
   #endif
   for (auto itr : funcBBInsMap)  {
 	Function * function;
@@ -1085,9 +1085,9 @@ std::list<long int> Transform::getReverseList(std::list<long int> inList)  {
 	for (auto i : inList)
 		revList.push_front(i);
        #ifdef PRINT
-	errs()<<"\n Reverse List: ";
+	llvm::outs()<<"\n Reverse List: ";
 	for (auto r : revList)
-		errs()<<r<<", ";
+		llvm::outs()<<r<<", ";
        #endif
 	return revList;
 }
@@ -1095,22 +1095,22 @@ std::list<long int> Transform::getReverseList(std::list<long int> inList)  {
 ///Simplifies the LLVM IR by abstracting the return, compare and call instructions
 void Transform::simplifyIR(Function* F, BasicBlock* B) {
      #if defined(TRACE) || defined(PRINT) 
-     errs() << "\n Inside SimplifyIR function ";
+     llvm::outs() << "\n Inside SimplifyIR function ";
      #endif
      fetchLR objFetchLR;
      for (BasicBlock::iterator i=B->begin(), e=B->end(); i!=e; ++i)  {
         Instruction* ins = &(*i);
 	if (isa<ReturnInst>(ins)) 	{
 		#ifdef PRINT
-  		errs() << "\n Instr is a RETURN.";
-		ins->print(errs());
+  		llvm::outs() << "\n Instr is a RETURN.";
+		ins->print(llvm::outs());
 		#endif
 		insReturn = objFetchLR.metaDataReturnIns(ins);
 	   }//end return
 	   else if (isa<ICmpInst>(ins)) 	{
 		#ifdef PRINT
-		errs() << "\n Instr is a Compare.";
-		ins->print(errs());
+		llvm::outs() << "\n Instr is a Compare.";
+		ins->print(llvm::outs());
 		#endif
 		insCompare = objFetchLR.metaDataCmpIns(ins);
 		if (cmpFlag) { 
@@ -1120,12 +1120,12 @@ void Transform::simplifyIR(Function* F, BasicBlock* B) {
 	   }//end compare	
 	   else if (isa<CallInst>(ins)) {
 		#if defined(TRACE) || defined(PRINT) 
-		errs() << "\n Instr is a Call.";
-		ins->print(errs());
+		llvm::outs() << "\n Instr is a Call.";
+		ins->print(llvm::outs());
 		#endif
 		
 		insPrintf = objFetchLR.metaDataPrintfIns(ins);
-		errs()<<"\n callFLag= "<<callFlag;
+		llvm::outs()<<"\n callFLag= "<<callFlag;
 		if (callFlag) {
 			tempInstLR[ins] = insPrintf; 
 			callFlag = false; //reset flag to handle other call instructions
@@ -1137,27 +1137,27 @@ void Transform::simplifyIR(Function* F, BasicBlock* B) {
 ///Abstracts all relevant instructions in LLVM IR
 void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
   #if defined(TRACE) || defined(PRINT) 
-  errs() << "\n Inside setLhsRhsMap.....";
+  llvm::outs() << "\n Inside setLhsRhsMap.....";
   #endif
   fetchLR objFetchLR;
   #ifdef PRINT
-  errs() << "\n Function name: "<<F<< "\t BB: "<<B;
+  llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
   #endif
   for (BasicBlock::iterator i=B->begin(), e=B->end(); i!=e; ++i) 	{
        	Instruction* ins = &(*i);
 	#ifdef PRINT
-	errs() << "\n Instruction: ";
-	ins->print(errs());
+	llvm::outs() << "\n Instruction: ";
+	ins->print(llvm::outs());
 	#endif
-	errs()<<"\n";
+	llvm::outs()<<"\n";
 	fetchLR objFetchLR;
 	funcBBInsMap[std::make_pair(F, B)];
 	
 	if (isa<ReturnInst>(ins)) {
 	    if (retFlag) {
 		#ifdef PRINT
-		errs() << "\n Return flag: "<<instrCounter;
-	        errs() << "\n Function name: "<<F<< "\t BB: "<<B;
+		llvm::outs() << "\n Return flag: "<<instrCounter;
+	        llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
 		#endif
 	    	globalInstrIndexList[instrCounter] =  insReturn;  
  	    	funcBBInsMap[std::make_pair(F, B)].push_back(instrCounter);
@@ -1169,8 +1169,8 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	else if (isa<CmpInst>(ins)) {
 	    if (tempInstLR.find(ins) != tempInstLR.end()) {
 		#ifdef PRINT
-		errs() << "\n CmpInst flag: "<<instrCounter;
-		errs() << "\n Function name: "<<F<< "\t BB: "<<B;
+		llvm::outs() << "\n CmpInst flag: "<<instrCounter;
+		llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
 		#endif
 	    	fetchLR insCompare = tempInstLR[ins];
 	    	globalInstrIndexList[instrCounter] =  insCompare;
@@ -1184,8 +1184,8 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 		fetchLR insPrintf;
 	    if (tempInstLR.find(ins) != tempInstLR.end()) { 
 		#ifdef PRINT
-		errs() << "\n CallInst flag: "<<instrCounter;
-		errs() << "\n Function name: "<<F<< "\t BB: "<<B;
+		llvm::outs() << "\n CallInst flag: "<<instrCounter;
+		llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
 		#endif
 		insPrintf = tempInstLR[ins];
 		if(flagArgs) {
@@ -1208,14 +1208,14 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	}
 	else if (!IM->isInstSkip(ins)) { 	// If Instruction is not skipped
 	     #ifdef PRINT
-	     errs() << "\n Instruction is not skipped.";
+	     llvm::outs() << "\n Instruction is not skipped.";
 	     #endif
 	     fetchLR tempInstOb = objFetchLR.metaDataSetter(ins);
 	     
 	     if (insFlag) {
 		 #ifdef PRINT
-		 errs() << "\n Not skipped flag: "<<instrCounter;
-		 errs() << "\n Function name: "<<F<< "\t BB: "<<B;
+		 llvm::outs() << "\n Not skipped flag: "<<instrCounter;
+		 llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
 		 #endif
 	         globalInstrIndexList[instrCounter] =  tempInstOb;
  	         funcBBInsMap[std::make_pair(F, B)].push_back(instrCounter);
@@ -1225,16 +1225,16 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	     } 
 	     else {
 		 #ifdef PRINT
-		 errs() <<"\n Instruction is skipped. ";
-	 	 errs() << "\n Function name: "<<F<< "\t BB: "<<B;
+		 llvm::outs() <<"\n Instruction is skipped. ";
+	 	 llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
 		 #endif
 		 mapSkippedIns[std::make_pair(F,B)].push_back(ins);
 	     }
 	}// end if
 	else {
 	     #ifdef PRINT
-	     errs() <<"\n Instruction is not supported hence it is skipped. ";
- 	     errs() << "\n Function name: "<<F<< "\t BB: "<<B;
+	     llvm::outs() <<"\n Instruction is not supported hence it is skipped. ";
+ 	     llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
 	     #endif
 	     mapSkippedIns[std::make_pair(F,B)].push_back(ins);
 	}
@@ -1244,20 +1244,20 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 
 ///Prints instruction ID and corresponding instruction modeling
 void Transform::printGlobalInstrList() {
-  errs() << "\n Printing Global Instruction List.....#";
+  llvm::outs() << "\n Printing Global Instruction List.....#";
   for (auto i : globalInstrIndexList)	{
-     errs() << "\n Index: " << i.first;
+     llvm::outs() << "\n Index: " << i.first;
      fetchLR Obj = i.second;
      std::pair<Token*, int> Lhs = Obj.getLHS();
      std::vector<std::pair<Token*, int>> Rhs = Obj.getRHS();
 		
      if (Lhs.first != NULL and !Obj.getUse() and !Obj.getKill()) {   
 	  if (Obj.getFieldLhs() and Lhs.first->isValPointerType()) 
-	        errs() << "\t Lhs: <" <<Lhs.first->getName() <<"->"<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t" ;
+	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"->"<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t" ;
 	  else if (Obj.getFieldLhs() and !Lhs.first->isValPointerType())
-		errs() << "\t Lhs: <" <<Lhs.first->getName() <<"."<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t";
+		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"."<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t";
 	  else	
-	        errs() << "\t Lhs: <" <<Lhs.first->getName() <<", "<<Lhs.second<<" > \t\t";		
+	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<", "<<Lhs.second<<" > \t\t";		
      }
 
       for (std::vector<std::pair<Token*, int>>::iterator r = Rhs.begin(); r!=Rhs.end(); r++) { 
@@ -1268,12 +1268,12 @@ void Transform::printGlobalInstrList() {
 	    std::tuple<int, Token*, std::string, int> phiRhs = vecPhiRhsOpd[p];
 	    if (std::get<2>(phiRhs) != "") {
                if (std::get<1>(phiRhs)->isValPointerType())
-    	 	errs() <<" Rhs: <"<< std::get<1>(phiRhs)->getName() <<"->"<<std::get<2>(phiRhs) <<", "<<std::get<3>(phiRhs)<<">";
+    	 	llvm::outs() <<" Rhs: <"<< std::get<1>(phiRhs)->getName() <<"->"<<std::get<2>(phiRhs) <<", "<<std::get<3>(phiRhs)<<">";
                else 
-    	 	errs() <<" Rhs: <"<< std::get<1>(phiRhs)->getName() <<"."<<std::get<2>(phiRhs) <<","<<std::get<3>(phiRhs)<<">";
+    	 	llvm::outs() <<" Rhs: <"<< std::get<1>(phiRhs)->getName() <<"."<<std::get<2>(phiRhs) <<","<<std::get<3>(phiRhs)<<">";
 	    }
 	    else
-		errs() <<" Rhs: <"<< std::get<1>(phiRhs)->getName()<<","<<std::get<3>(phiRhs)<<">";
+		llvm::outs() <<" Rhs: <"<< std::get<1>(phiRhs)->getName()<<","<<std::get<3>(phiRhs)<<">";
 	 }//end for
 	 break;	
         }
@@ -1284,28 +1284,28 @@ void Transform::printGlobalInstrList() {
 	    std::tuple<int, Token*, std::string, int> icmpRhs = vecIcmpRhsOpd[p];
 	    if (std::get<2>(icmpRhs) != "") {
             if (std::get<1>(icmpRhs)->isValPointerType())
-    	 	errs() <<" Rhs: <"<< std::get<1>(icmpRhs)->getName() <<"->"<<std::get<2>(icmpRhs) <<", "<<std::get<3>(icmpRhs)<<">";
+    	 	llvm::outs() <<" Rhs: <"<< std::get<1>(icmpRhs)->getName() <<"->"<<std::get<2>(icmpRhs) <<", "<<std::get<3>(icmpRhs)<<">";
             else 
-    	 	errs() <<" Rhs: <"<< std::get<1>(icmpRhs)->getName() <<"."<<std::get<2>(icmpRhs) <<","<<std::get<3>(icmpRhs)<<">";
+    	 	llvm::outs() <<" Rhs: <"<< std::get<1>(icmpRhs)->getName() <<"."<<std::get<2>(icmpRhs) <<","<<std::get<3>(icmpRhs)<<">";
 	    }
 	    else
-		errs() <<" Rhs: <"<< std::get<1>(icmpRhs)->getName()<<","<<std::get<3>(icmpRhs)<<">";
+		llvm::outs() <<" Rhs: <"<< std::get<1>(icmpRhs)->getName()<<","<<std::get<3>(icmpRhs)<<">";
 	  }
 	  break;	
 	}//end if 999
 
         if (Obj.getFieldRhs() and rhsVal.first->isValPointerType()) 
-	   errs() <<" Rhs: <"<< rhsVal.first->getName() <<"->"<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"->"<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
         else if (Obj.getFieldRhs() and !rhsVal.first->isValPointerType()) 
-	   errs() <<" Rhs: <"<< rhsVal.first->getName() <<"."<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"."<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
         else if (Obj.getBitcast() and !rhsVal.first->isValPointerType()) 
-	   errs() <<" Rhs: <"<< rhsVal.first->getName() <<"."<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"."<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
         else if (Obj.getBitcast() and rhsVal.first->isValPointerType()) 
-	   errs() <<" Rhs: <"<< rhsVal.first->getName() <<"->"<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"->"<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
         else
-	   errs() <<" Rhs: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">"; 	 
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">"; 	 
      }//end inner for
    }//end outer for
-   errs() << "\n";			
+   llvm::outs() << "\n";			
 }
 

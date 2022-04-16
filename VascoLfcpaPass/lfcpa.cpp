@@ -74,7 +74,7 @@ public:
 	F getPurelyLocalComponentForward(const F& dfv) const;
 };
 
-IPLFCPA::IPLFCPA() : Analysis<F, B>(true, true){ };
+IPLFCPA::IPLFCPA() : Analysis<F, B>(true, "Log.txt",true){ };
 IPLFCPA lfcpaObj;
 bool vFlag = true;
 bool flgBitcast = true;
@@ -82,7 +82,7 @@ std::set<int> insBitcastSet;
 
 
 F IPLFCPA::getPurelyLocalComponentForward(const F& dfv) const {
- errs() << "\n Inside getPurelyLocalComponentForward.............";
+ llvm::outs() << "\n Inside getPurelyLocalComponentForward.............";
  F fwdLocalVal;
  for (auto d : dfv) {
     std::pair<Token*, std::string> pointer = d.first;
@@ -99,30 +99,30 @@ F IPLFCPA::getPurelyLocalComponentForward(const F& dfv) const {
 }
 void IPLFCPA::printCurrLinLout(B currB) {
 //  #if defined(TRACE) || defined(PRINT)
-  errs() << "\n Inside printCurrLinLout............";
+  llvm::outs() << "\n Inside printCurrLinLout............";
  // #endif
   for (auto inIt : currB)  {
-          errs() << "(" << inIt.first->getName() <<", "<< inIt.second <<") ";
+          llvm::outs() << "(" << inIt.first->getName() <<", "<< inIt.second <<") ";
   }//end for		
 }
 
 
 void IPLFCPA::printCurrPinPout(F currF) {
 //  #if defined(TRACE) || defined(PRINT)
-  errs() << "\n Inside printCurrPinPout............";
+  llvm::outs() << "\n Inside printCurrPinPout............";
  // #endif
   for (auto inIt : currF)  {
-        errs() <<"{ ";
-        errs() << "(" << inIt.first.first->getName() <<", "<< inIt.first.second << ")->(";
+        llvm::outs() <<"{ ";
+        llvm::outs() << "(" << inIt.first.first->getName() <<", "<< inIt.first.second << ")->(";
         for (auto it : inIt.second)
-        	errs() << "(" << it.first->getName() << ", " << it.second <<")" << " , ";
-        errs() <<") }";
+        	llvm::outs() << "(" << it.first->getName() << ", " << it.second <<")" << " , ";
+        llvm::outs() <<") }";
   }//end for		
 }
 
 
 B IPLFCPA::getLocalComponentB(const B & dfv) {
-	errs() << "\n Inside getLocalComponentB.............";
+	llvm::outs() << "\n Inside getLocalComponentB.............";
 	B LocalValues;	
 	for (auto d : dfv) {
  	if (!d.first->isGlobalVar()) 
@@ -132,14 +132,14 @@ B IPLFCPA::getLocalComponentB(const B & dfv) {
 }
 
 pair<F, B> IPLFCPA::CallOutflowFunction(int current_context_label, Function * target_Function, BasicBlock *bb, const F & a3, const B & d3, const F & a1, const B & d1) {
-	errs() << "\n Inside CallOutflowFunction..............";
-	errs() << "\n Printing values of a1";
+	llvm::outs() << "\n Inside CallOutflowFunction..............";
+	llvm::outs() << "\n Printing values of a1";
         printCurrPinPout(a1);
-	errs() << "\n Printing values of d1";
+	llvm::outs() << "\n Printing values of d1";
 	printCurrLinLout(d1);
-	errs() << "\n Printing values of a3";
+	llvm::outs() << "\n Printing values of a3";
         printCurrPinPout(a3);
-	errs() << "\n Printing values of d3";
+	llvm::outs() << "\n Printing values of d3";
 	printCurrLinLout(d3);
 
 	
@@ -156,7 +156,7 @@ pair<F, B> IPLFCPA::CallOutflowFunction(int current_context_label, Function * ta
 }
 
 pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * target_Function, BasicBlock *bb, const F &a1, const B &d1) {
-	errs() << "\n Inside CallInflowFunction...............";
+	llvm::outs() << "\n Inside CallInflowFunction...............";
 	pair<F, B> calleeInflowPair;
 	B calleeLOUT;
 	F calleePIN;
@@ -164,23 +164,23 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
         printCurrPinPout(a1);
 	printCurrLinLout(d1);
 
-	errs() << "\n Checking backward values first........";
+	llvm::outs() << "\n Checking backward values first........";
 
 	//set the backward value 
-	for (auto d : d1) {  errs() << "\n For loop 1";
+	for (auto d : d1) {  llvm::outs() << "\n For loop 1";
 		if (d.first->isGlobalVar()) {  
-			errs() << "\n Bck val is global = "<< d.first->getName();
+			llvm::outs() << "\n Bck val is global = "<< d.first->getName();
 			calleeLOUT.insert(d);
 		}	
 	}
 
-	errs() << "\n Checking forward values now......";
+	llvm::outs() << "\n Checking forward values now......";
 	//set the forward value
-	for (auto a : a1) { errs() << "\n FOR loop F 1";
-		if (a.first.first->isGlobalVar()) { errs() << "\n Ptr is global: : "<<a.first.first->getName();
+	for (auto a : a1) { llvm::outs() << "\n FOR loop F 1";
+		if (a.first.first->isGlobalVar()) { llvm::outs() << "\n Ptr is global: : "<<a.first.first->getName();
 		//ptr is global now check pointees
-		   for (auto p : a.second){ errs() << "\n Checking Pointeess....";
-			if (p.first->isGlobalVar()) {	errs() << "\n Pointee is global: "<<p.first->getName();
+		   for (auto p : a.second){ llvm::outs() << "\n Checking Pointeess....";
+			if (p.first->isGlobalVar()) {	llvm::outs() << "\n Pointee is global: "<<p.first->getName();
 			    calleePIN[a.first].insert(p); }
 			else 
 			    calleePIN[a.first].insert(std::make_pair(dangling,"-1"));
@@ -193,17 +193,17 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
 
 void IPLFCPA::printDataFlowValuesForward(const F &dfv) const {
  for (auto inIt : dfv)  {
-        errs() <<"{ ";
-        errs() << "(" << inIt.first.first->getName() <<", "<< inIt.first.second << ")->(";
+        llvm::outs() <<"{ ";
+        llvm::outs() << "(" << inIt.first.first->getName() <<", "<< inIt.first.second << ")->(";
         for (auto it : inIt.second)
-        	errs() << "(" << it.first->getName() << ", " << it.second <<")" << " , ";
-        errs() <<") }";
+        	llvm::outs() << "(" << it.first->getName() << ", " << it.second <<")" << " , ";
+        llvm::outs() <<") }";
   }//end for
 }
 
 //test test
 F IPLFCPA::getPurelyGlobalComponentForward(const F& dfv) const {
-  errs() << "\n Inside getPurelyGlobalComponentForward...........";
+  llvm::outs() << "\n Inside getPurelyGlobalComponentForward...........";
   F globalComponent;
   for (auto d : dfv) {
      std::pair<Token*, std::string> key = d.first;
@@ -223,7 +223,7 @@ F IPLFCPA::getPurelyGlobalComponentForward(const F& dfv) const {
 
 /* Testing the below function*****/
 F IPLFCPA::performMeetForward(const F& d1, const F& d2) const {
-   errs() << "\n Inside performMeetForward..............";
+   llvm::outs() << "\n Inside performMeetForward..............";
    F retMeetINF = d1;
   for (auto it : d2) {
         std::pair<Token*, std::string> key = it.first;
@@ -243,7 +243,7 @@ F IPLFCPA::performMeetForward(const F& d1, const F& d2) const {
 	} 
 	else {
 	    #ifdef PRINT
-	    errs()<< "\n Key not in prevPOUT";
+	    llvm::outs()<< "\n Key not in prevPOUT";
 	    #endif
             flag = true;        
 	}
@@ -259,7 +259,7 @@ F IPLFCPA::performMeetForward(const F& d1, const F& d2) const {
 }
 
 bool IPLFCPA::EqualDataFlowValuesForward(const F &d1, const F &d2) const {
- errs() << "\n Inside EqualDataFlowValuesForward...............................";
+ llvm::outs() << "\n Inside EqualDataFlowValuesForward...............................";
 
 if (d1.empty() and d2.empty())
 	return true;
@@ -287,7 +287,7 @@ if (d1.empty() and d2.empty())
 		   for (auto pp : prevPointee) {  
 			if (compareToken(np.first, pp.first) and np.second == pp.second) { 
 			#ifdef PRINT
-			errs() << "\n Set change to false. ";	
+			llvm::outs() << "\n Set change to false. ";	
 			#endif
 			vdiff = false;
 		        }
@@ -303,14 +303,14 @@ if (d1.empty() and d2.empty())
       }//end outer for
     }//end else
     #ifdef PRINT
-    errs() << "\n NO CHANGE. ";
+    llvm::outs() << "\n NO CHANGE. ";
     #endif
     return true;
 }
 
 ///Merges the liveness information
 B IPLFCPA::backwardMerge(B prevOUT, B succIN) {
-   errs() << "\n Inside backwardMerge................";
+   llvm::outs() << "\n Inside backwardMerge................";
    for (auto valueInSuccIN : succIN)         // prevOUT merge succIN
            prevOUT.insert(valueInSuccIN);
    return prevOUT;
@@ -318,7 +318,7 @@ B IPLFCPA::backwardMerge(B prevOUT, B succIN) {
 
 ///Merges points-to information
 F IPLFCPA::forwardMerge(F a1, F a2) {
- errs() << "\n Inside forwardMerge.................";
+ llvm::outs() << "\n Inside forwardMerge.................";
      
      for (auto it : a2) {
         std::pair<Token*, std::string> key = it.first;
@@ -338,7 +338,7 @@ F IPLFCPA::forwardMerge(F a1, F a2) {
 	} 
 	else {
 	    #ifdef PRINT
-	    errs()<< "\n Key not in prevPOUT";
+	    llvm::outs()<< "\n Key not in prevPOUT";
 	    #endif
             flag = true;        
 	}
@@ -353,7 +353,7 @@ F IPLFCPA::forwardMerge(F a1, F a2) {
 
 ///Restricts points-to information at a program point by the corresponding liveness information
 F IPLFCPA::restrictByLivness(F valPointsTo, B valLiveness) {
-   errs() << "\n Inside restrictByLivness().......";
+   llvm::outs() << "\n Inside restrictByLivness().......";
 
 	F resPointsTo;		
 	for (auto lv : valLiveness) {
@@ -376,7 +376,7 @@ F IPLFCPA::restrictByLivness(F valPointsTo, B valLiveness) {
 ///Returns index of RHS 
 std::string IPLFCPA::fetchRhsIndxfrmPin(F Pin, Token* RHS) {
 	#if defined(TRACE) || defined(PRINT)
-	errs() << "\n Inside fetchRhsIndxfrmPin............... ";
+	llvm::outs() << "\n Inside fetchRhsIndxfrmPin............... ";
 	#endif
 	std::string emptystring;
 	for (auto i : Pin) {
@@ -388,7 +388,7 @@ std::string IPLFCPA::fetchRhsIndxfrmPin(F Pin, Token* RHS) {
 
 
 F IPLFCPA::computeOutFromIn(fetchLR &I) {
-  errs() << "\n Inside computeOutFromIn......................";
+  llvm::outs() << "\n Inside computeOutFromIn......................";
   std::pair<Token*, int> tempLHS;
   Token* lhsVal; int indirLhs;
   std::vector<std::pair<Token*, int>> rhsVector;
@@ -403,7 +403,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
    indirLhs = tempLHS.second;
    if (lhsVal != NULL and !I.getUse() and !I.getKill()) {
 //	#ifdef PRINT
-	errs() << "\n LHS in loop = "<<lhsVal->getName()<<" indir= "<<indirLhs;
+	llvm::outs() << "\n LHS in loop = "<<lhsVal->getName()<<" indir= "<<indirLhs;
 //	#endif
    }
    rhsVector = I.getRHS();
@@ -412,7 +412,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	rhsVal = *r;
 	rhsIndir = rhsVal.second;
 //	#ifdef PRINT
-	errs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";		
+	llvm::outs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";		
 //      #endif
    }
 
@@ -432,7 +432,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
   
   if (I.getPhi()) {
    #ifdef PRINT
-   errs() << "\n Instr is PHI. ";
+   llvm::outs() << "\n Instr is PHI. ";
    #endif
    B rhsSet;
    std::string tempIndx;
@@ -441,23 +441,23 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
         rhsVal = *r;
 	if (rhsVal.second == 0 and rhsVal.first->getName() != "NULL") { //..=&u
 	   #ifdef PRINT
-	   errs() << "\n Rhs indir is 0. ";
+	   llvm::outs() << "\n Rhs indir is 0. ";
 	   #endif			
 	   if (rhsVal.first->getIsPhiGEPOpd()) {
 	      #ifdef PRINT
-	      errs() << "\n Rhs is a PHI GEP Operand. ";
+	      llvm::outs() << "\n Rhs is a PHI GEP Operand. ";
 	      #endif
 	      if ((rhsVal.first->getIsArray() and rhsVal.first->isGlobalVar()) or
 	           rhsVal.first->getIsAlloca() or !rhsVal.first->isValPointerType())  {
 		   #ifdef PRINT
-		   errs() << "\n PHI GEP operand is an array or alloca. ";
+		   llvm::outs() << "\n PHI GEP operand is an array or alloca. ";
 		   #endif
 		   rhsSet.insert(std::make_pair(rhsVal.first,rhsVal.first->getFieldIndex()));
 		   notPINEmpty = true; foundPointee = true;
 	      }
 	      else { 
 		 #ifdef PRINT
-		 errs() << "\n PHI GEP operand is not an array. ";
+		 llvm::outs() << "\n PHI GEP operand is not an array. ";
 		 #endif
 		 bool isArrFlg = false; //set if pointee in Pin is array then newToken after transfer should be an array
 	         for (auto p : INofInst) { 
@@ -477,12 +477,12 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			 }//endif
 			 else {
 			    #ifdef PRINT
-			    errs() << "\n Nested structures in source code. ";
+			    llvm::outs() << "\n Nested structures in source code. ";
 			    #endif
 			    /*Check if pointee in Pin is an array*/
 			    if (objArray.checkArray(s.first,s.second)) {
 			      #ifdef PRINT
-			      errs() << "\n Pointee in Pin is an array. "; //new token should be included in the array map
+			      llvm::outs() << "\n Pointee in Pin is an array. "; //new token should be included in the array map
 			      #endif
 			      isArrFlg = true;
 			    }
@@ -503,7 +503,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	       }//end if phiGEPOpd
 	       else {
 		    #ifdef PRINT
-		    errs() << "\n Non-GEP PHI operand. ";
+		    llvm::outs() << "\n Non-GEP PHI operand. ";
 		    #endif
 		    rhsSet.insert(std::make_pair(rhsVal.first, ""));
 		    notPINEmpty = true; foundPointee = true;
@@ -515,7 +515,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
         }//end if rhsindir=0
 	else if (rhsVal.second == 1) { // ..=y. Find pointees from Pin
 	    #ifdef PRINT
-	    errs() << "\n Rhs Indir is 1. ";
+	    llvm::outs() << "\n Rhs Indir is 1. ";
 	    #endif
 	    std::queue<Token*> q;
 	    std::queue<std::string> q1;
@@ -526,14 +526,14 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
         	q.pop();			    	
 		tempIndx = fetchRhsIndxfrmPin(INofInst, rhsTemp);
 		#ifdef PRINT
-		errs()<<"\n Fetch pointees of t1 from Pin. ";
+		llvm::outs()<<"\n Fetch pointees of t1 from Pin. ";
 		#endif
 
 		for (auto IN : INofInst) {
 			notPINEmpty = true; 
 			if (compareToken(rhsTemp, IN.first.first) and tempIndx == IN.first.second) {
 			    #ifdef PRINT
-			    errs() << "\n Pointees of Rhs found in Pin. ";
+			    llvm::outs() << "\n Pointees of Rhs found in Pin. ";
 			    #endif
 			    std::set<std::pair<Token*, std::string>> pointeeSet = IN.second;
 		  	    for (auto pointee : pointeeSet) {
@@ -561,7 +561,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
       }//end if phi
       else if (I.getUse())	{
 //	#ifdef PRINT
-	errs() <<"\n Instr is a USE. ";
+	llvm::outs() <<"\n Instr is a USE. ";
 //	#endif
 	std::set<std::pair<Token*, std::string>> rhsSet;
 	std::string tempIndx;
@@ -571,20 +571,20 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	  rhsVal = *r; 
 	  if (rhsVal.first->getIsIcmpGEPOpd()) {
 	    #ifdef PRINT
-	    errs() <<"\n USE operand is a GEP. ";
+	    llvm::outs() <<"\n USE operand is a GEP. ";
 	    #endif
 
 	   if ((rhsVal.first->getIsArray() and rhsVal.first->isGlobalVar()) or
 		rhsVal.first->getIsAlloca() or !rhsVal.first->isValPointerType())  {
 		#ifdef PRINT
-		errs() << "\n USE Inst: GEP operand is an array or alloca";
+		llvm::outs() << "\n USE Inst: GEP operand is an array or alloca";
  		#endif
 		rhsSet.insert(std::make_pair(rhsVal.first,rhsVal.first->getFieldIndex()));
 	   	notPINEmpty = true; foundPointee = true;
 	   }//end if
 	   else { 
 		#ifdef PRINT
-		errs() << "\n USE Inst: GEP operand is not an array. ";
+		llvm::outs() << "\n USE Inst: GEP operand is not an array. ";
  		#endif
 	        bool isArrFlg = false; 
 	        for (auto p : INofInst) { 
@@ -603,12 +603,12 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			    }
 			    else {
 				#ifdef PRINT
-				errs() << "\n Nested structures in source code. ";
+				llvm::outs() << "\n Nested structures in source code. ";
 				#endif
 				/*Check if pointee in Pin is an array*/
 				if (objArray.checkArray(s.first,s.second)) {
 			  	   #ifdef PRINT
-				   errs() << "\n Pointee in Pin is an array."; 
+				   llvm::outs() << "\n Pointee in Pin is an array."; 
 			   	   #endif
 				   isArrFlg = true;
 				}
@@ -636,26 +636,26 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
         }//end outermost if
         else {
  	  #ifdef PRINT
-	  errs() << "\n USE Inst: Normal operand. ";
+	  llvm::outs() << "\n USE Inst: Normal operand. ";
  	  #endif
 	  /* Just restrict Pout by Lout */
 	  //#####OUTPTA[std::make_tuple(contextId,B,instrCount)] = OUTofInst; 
 	  newOutofInst = restrictByLivness(OUTofInst, backwardOUT);
 	}
       }//end for
-      errs() << "\n Printing forward values: ";
+      llvm::outs() << "\n Printing forward values: ";
       printDataFlowValuesForward(newOutofInst);
-      errs() << "\n ----------------------------------";
+      llvm::outs() << "\n ----------------------------------";
       return newOutofInst;		
       }//end if USE
       else if (I.getKill()) {
 	#ifdef PRINT
-	errs() << "\n Instr is a Kill. ";
+	llvm::outs() << "\n Instr is a Kill. ";
 	#endif
       }
       else if (I.getBitcast()) {
          //#ifdef PRINT
-	 errs() << "\n Instr is a Bitcast. ";
+	 llvm::outs() << "\n Instr is a Bitcast. ";
 	 //#endif
 	 flgBitcast = true;
 	 std::set<std::pair<Token*, std::string>> rhsSet; 
@@ -665,7 +665,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	
  	 if (rhsIndir == 1)  {
 	   #ifdef PRINT
-	   errs() << "\n Rhs Indir is 1. ";
+	   llvm::outs() << "\n Rhs Indir is 1. ";
 	   #endif
 	   std::queue<Token*> q;
 	   std::queue<std::string> q1;
@@ -683,14 +683,14 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		else if (rhsTemp->isValPointerType()) {  
         	   tempIndx = fetchRhsIndxfrmPin(INofInst, rhsTemp);
 		   #ifdef PRINT
-		   errs() << "\n Fetch pointees of t1 from Pin. ";
+		   llvm::outs() << "\n Fetch pointees of t1 from Pin. ";
 		   #endif
 		   for (auto IN : INofInst) {
 		     notPINEmpty = true;
 		     if (compareToken(rhsTemp, IN.first.first) and tempIndx == IN.first.second) {
 		        foundPointee = true;
 			#ifdef PRINT
-			errs() << "\n Pointees of Rhs found in Pin. ";
+			llvm::outs() << "\n Pointees of Rhs found in Pin. ";
 			#endif
 			std::set<std::pair<Token*, std::string>> pointeeSet = IN.second;
 			for (auto pointees : pointeeSet) {
@@ -702,7 +702,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			    }
 			    else { 
 				#ifdef PRINT
-				errs()<< "\n Nested Union in source program. ";
+				llvm::outs()<< "\n Nested Union in source program. ";
 				#endif
 				Token *newToken = new Token(pointees.first);
 				newToken->resetIndexToZero(newToken->getFieldIndex());
@@ -716,7 +716,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
                }//end if 
 	       else {
 		#ifdef PRINT
-		errs() << "\n *****Reached the third condition "; //check if this condition is ever satisfied
+		llvm::outs() << "\n *****Reached the third condition "; //check if this condition is ever satisfied
 		#endif
 	       }					
 	       rhsInTmp--;
@@ -735,7 +735,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
       }//end if Bitcast
       else if (I.getGEP()) {
 	//#ifdef PRINT
-	errs() << "\n Instr is a GEP x = gep y[indx]. ";
+	llvm::outs() << "\n Instr is a GEP x = gep y[indx]. ";
 	//#endif
 	std::set<std::pair<Token*, std::string>> rhsSet;   
 	std::string tempIndx; 
@@ -746,7 +746,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	if (rhsVal.first->getName() != "NULL") {
 	  if (rhsVal.first->getIsOneGEPIndx()) {
 	    #ifdef PRINT
-	    errs() << "\n GEP has single index. No transfer of links required.";
+	    llvm::outs() << "\n GEP has single index. No transfer of links required.";
 	    #endif		
 	    for (auto p : INofInst) { 
 	        notPINEmpty = true; //Pin is non-empty
@@ -761,14 +761,14 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
   	    }//end if OneGepIndx
   	    else if ((rhsVal.first->getIsArray() and rhsVal.first->isGlobalVar()) or rhsVal.first->getIsAlloca()) {
 		#ifdef PRINT
-		errs() << "\n GEP operand is an global array/alloca. Instr is normal x=&y. ";
+		llvm::outs() << "\n GEP operand is an global array/alloca. Instr is normal x=&y. ";
 		#endif
 		rhsSet.insert(std::make_pair(rhsVal.first,rhsVal.first->getFieldIndex()));
 		notPINEmpty = true; foundPointee = true;
 	    }
 	    else if (rhsVal.first->isValPointerType())  { 
 	      #ifdef PRINT
-	      errs() << "\n GEP operand is a pointer. ";
+	      llvm::outs() << "\n GEP operand is a pointer. ";
 	      #endif
 	      bool isArrFlg = false; //set if pointee in Pin is an array then the newToken after transfer should also be an array
 
@@ -782,7 +782,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		    /* If Pointee is an array then no transfer of links and ignore indices*/
 		    if (s.first->getIsArray()) {
 		       #ifdef PRINT
-	   	       errs()<<"\n GEP operand pointee is an array. Ignore indices.";
+	   	       llvm::outs()<<"\n GEP operand pointee is an array. Ignore indices.";
 	               #endif		
 		       rhsSet.insert(s);
 		       objArray.setArray(s.first, s.second);
@@ -796,12 +796,12 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		    }
 		    else {
 			#ifdef PRINT
-			errs() << "\n Nested structures in source code. ";
+			llvm::outs() << "\n Nested structures in source code. ";
 			#endif
 			/*Check if pointee in Pin is an array*/
 			if (objArray.checkArray(s.first,s.second)) {
 			   #ifdef PRINT
-			   errs() << "\n Pointee in Pin is an array. "; //new token should also be included in the array map
+			   llvm::outs() << "\n Pointee in Pin is an array. "; //new token should also be included in the array map
 			   #endif
 			   isArrFlg = true;
 			}
@@ -822,7 +822,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
         }//end if pointer
 	else {
 	   #ifdef PRINT
-	   errs() << "\n GEP operand is not a pointer";
+	   llvm::outs() << "\n GEP operand is not a pointer";
 	   #endif
 	   rhsSet.insert(std::make_pair(rhsVal.first,rhsVal.first->getFieldIndex()));		  
 	}//not a pointer
@@ -834,12 +834,12 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
       }//end if not null		
    }//end gep
    else if (I.getCall()) {
-	errs() << "\n Instructioon is a call....";	
+	llvm::outs() << "\n Instructioon is a call....";	
 
    }
    else	{
 	 //#ifdef PRINT
-	 errs() << "\n Normal instruction. ";	
+	 llvm::outs() << "\n Normal instruction. ";	
 	 //#endif
 	 long long int counter = 0;
 	 std::set<std::pair<Token*, std::string>> rhsSet; 
@@ -851,23 +851,23 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
  	 /* case 1: x=&u */
 	 if (rhsIndir == 0) {	
 		//#ifdef PRINT
-		errs() << "\n Rhs indir = 0 ";
+		llvm::outs() << "\n Rhs indir = 0 ";
 		//#endif
 		foundPointee = true;
 		notPINEmpty = true;
 		 if (I.getGOPRhs()) { 
-			errs() << "\n Instr is GOPRhs.............";
+			llvm::outs() << "\n Instr is GOPRhs.............";
 			//rhsSet.insert(std::make_pair(rhsValue, objStruct.getStructFieldIndxRhs(instrCount))); *working on it*
 		 }
 		 else if (I.getGEP()) {
 			//#ifdef PRINT
-			errs() << "\n Inst is a GEP. ";
+			llvm::outs() << "\n Inst is a GEP. ";
 			//#endif
 			rhsSet.insert(std::make_pair(rhsValue, rhsValue->getFieldIndex()));
 		 }
 		 else {
 		  	#ifdef PRINT
-			errs() << "\n Normal instruction. ";
+			llvm::outs() << "\n Normal instruction. ";
 		  	#endif
 		        if (I.getBitcastRhs()) 
 			   rhsSet.insert(std::make_pair(rhsValue, rhsValue->getFieldIndex()));
@@ -877,7 +877,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	 }//end if
 	 else if (rhsIndir == 1) /* case 2: x=t1 or t1=x or *t2=t1 */ {
 		//#ifdef PRINT
-		errs() << "\n case 2: x=t1 or t1=x or *t2=t1 ";
+		llvm::outs() << "\n case 2: x=t1 or t1=x or *t2=t1 ";
 		//#endif
 		std::queue<Token*> q;
 		std::queue<std::string> q1;
@@ -890,14 +890,14 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		    if (rhsTemp->isValPointerType()) {  
                    	tempIndx = fetchRhsIndxfrmPin(INofInst, rhsTemp);
 			//#ifdef PRINT
-			errs()<<"\n Fetch pointees of t1 from Pin. ";
+			llvm::outs()<<"\n Fetch pointees of t1 from Pin. ";
 			//#endif
 			if (objArray.checkArray(rhsTemp, tempIndx)) {
 				for (auto IN : INofInst) {
 					notPINEmpty = true;
 			    		if (compareToken(rhsTemp, IN.first.first)) {
 						//#ifdef PRINT
-						errs() << "\n Pointees of Rhs found in Pin. ";	
+						llvm::outs() << "\n Pointees of Rhs found in Pin. ";	
 						//#endif
 						std::set<std::pair<Token*, std::string>> pointeeSet = IN.second;
 					  	for (auto pointee : pointeeSet) {
@@ -912,7 +912,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 				 notPINEmpty = true;
 			    	 if (compareToken(rhsTemp, IN.first.first) and tempIndx == IN.first.second) {
 					//#ifdef PRINT
-					errs() << "\n Pointees of Rhs found in Pin. ";
+					llvm::outs() << "\n Pointees of Rhs found in Pin. ";
 					//#endif
 					std::set<std::pair<Token*, std::string>> pointeeSet = IN.second;
 			  		for (auto pointee : pointeeSet) {
@@ -936,7 +936,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	}//end else if=1
 	else if (rhsIndir == 2) { /* case 3: x=*t or t1=*t2 */
 		//#ifdef PRINT
-		errs() << "\n Case 3: x=*t1 or t1=*t2 ";
+		llvm::outs() << "\n Case 3: x=*t1 or t1=*t2 ";
 		//#endif
 		Token* marker = IM->extractDummy("mark");
 		std::string empty = "";
@@ -958,11 +958,11 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			notPINEmpty = true;
 			  if (rhsTemp->getIsArray()) {
 			     #ifdef PRINT
-			     errs()<<"\n Rhs is an array so ignoring the indices. ";
+			     llvm::outs()<<"\n Rhs is an array so ignoring the indices. ";
 			     #endif 
 			     if (compareToken(rhsTemp, IN.first.first)) {
 				#ifdef PRINT
-				errs() << "\n Array: Pointees of Rhs found in Pin. ";
+				llvm::outs() << "\n Array: Pointees of Rhs found in Pin. ";
 				#endif
 			        std::set<std::pair<Token*, std::string>> pointeeSet = IN.second;
 			  	for (auto pointee : pointeeSet) {
@@ -975,7 +975,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			else { 
 				if (compareToken(rhsTemp, IN.first.first) and tempIndx == IN.first.second) {
 				#ifdef PRINT
-				errs() << "\n Pointees of Rhs found in Pin. ";
+				llvm::outs() << "\n Pointees of Rhs found in Pin. ";
 				#endif
 			        std::set<std::pair<Token*, std::string>> pointeeSet = IN.second;
 			        for (auto pointee : pointeeSet) { 
@@ -994,7 +994,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	   /* Loop to fetch pointees of RHS */
   		while (!q.empty() and !q1.empty()) {
 		    #ifdef PRINT
-	       	    errs() << "\n Fetching pointees of RHS. ";
+	       	    llvm::outs() << "\n Fetching pointees of RHS. ";
 		    #endif
         	    Token* rhsValue = q.front();
 		    std::string rhsIndx = q1.front();	
@@ -1013,7 +1013,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	/* Check if Lhs is an Array Type */
 	if (indirLhs == 1 and tempLHS.first->getIsArray()) {		
 	 //#ifdef PRINT
-	 errs() << "\n Lhs is an array. No kill.";
+	 llvm::outs() << "\n Lhs is an array. No kill.";
 	 //#endif
 	 Token* lhsTemp = q1.front();
        	 q1.pop();
@@ -1024,7 +1024,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	     std::set<std::pair<Token*, std::string>> Pointee = p.second;			
 	     if (compareToken(Pointer.first, lhsTemp) and Pointer.second == ind) {
 	     #ifdef PRINT
-	     errs() << "\n Pointer found in Pin. ";
+	     llvm::outs() << "\n Pointer found in Pin. ";
 	     #endif				
 	     for (auto s : Pointee){
 		if (s.first->getName() != "?") { 
@@ -1053,7 +1053,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			
 			if (compareToken(Pointer.first, lhsTemp) and Pointer.second == ind) {
 				#ifdef PRINT
-				errs() << "\n Pointer found in Pin. ";
+				llvm::outs() << "\n Pointer found in Pin. ";
 				#endif
 				for (auto s : Pointee){
 					s.first->setIndex(s.first);						
@@ -1075,7 +1075,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		      if (pointeeValue->getIsArray()) {
 				std::set<std::pair<Token*, std::string>> prevRhsSet;
 				#ifdef PRINT
-				errs() << "\n Lhs Pointee is an array. ";
+				llvm::outs() << "\n Lhs Pointee is an array. ";
 				#endif
 				prevRhsSet = INofInst[std::make_pair(pointeeValue, pointeeValue->getFieldIndex())]; 
 				rhsSet = backwardMerge(rhsSet,prevRhsSet);					
@@ -1087,7 +1087,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 
 	if (counter == 1) {
 	   #ifdef PRINT
-	   errs() <<"\n Must points-to relation. Delete points-to pairs from OutofInst \n";
+	   llvm::outs() <<"\n Must points-to relation. Delete points-to pairs from OutofInst \n";
 	   #endif
 	   pFlag = true;
 	}
@@ -1102,22 +1102,22 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
      std::set<Token*> emptyset;
      tempMergeOutofInst = forwardMerge(prevNewOutofInst, newOutofInst); /* merge new and previous POUT values */
      newOutofInst = tempMergeOutofInst;  /* set the value of variable newOutofInst */
-     errs() << "\n Printing forward values: ";
+     llvm::outs() << "\n Printing forward values: ";
      printDataFlowValuesForward(newOutofInst);
-     errs() << "\n ----------------------------------";
+     llvm::outs() << "\n ----------------------------------";
      return newOutofInst;     
 }
 
 void IPLFCPA::printDataFlowValuesBackward(const B& dfv) const {
   
-	errs() << "{ ";
+	llvm::outs() << "{ ";
 	for (auto val : dfv) 
-		errs() << val.first->getName() << ", " ;
-	errs() << " }";
+		llvm::outs() << val.first->getName() << ", " ;
+	llvm::outs() << " }";
 }
 
 B IPLFCPA::getPurelyGlobalComponentBackward(const B& dfv) const {
-   errs() << "\n Inside getPurelyGlobalComponentBackward...............";
+   llvm::outs() << "\n Inside getPurelyGlobalComponentBackward...............";
    B global_component;
    if (!dfv.empty()) {
 	for (auto v : dfv) {
@@ -1129,7 +1129,7 @@ B IPLFCPA::getPurelyGlobalComponentBackward(const B& dfv) const {
 }
 ///Returns index of LHS 
 std::string IPLFCPA::fetchLhsIndex(fetchLR* ins, Token* LHS) {
-    errs() << "\n Inside fetchLhsIndex............. ";
+    llvm::outs() << "\n Inside fetchLhsIndex............. ";
     std::string lhsIndx;
     if (ins->getGOPLhs() and LHS->isGlobalVar())
 	return LHS->getFieldIndex();
@@ -1137,7 +1137,7 @@ std::string IPLFCPA::fetchLhsIndex(fetchLR* ins, Token* LHS) {
 }
 
 B IPLFCPA::computeInFromOut(fetchLR &I) {
-  errs() << "\n Inside computeInFromOut...................";
+  llvm::outs() << "\n Inside computeInFromOut...................";
   bool flagLhsLive = false;
   std::pair<Token*, int> tempLHS;
   Token* lhsVal; int indirLhs;
@@ -1160,25 +1160,25 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
    lhsVal = tempLHS.first;  
    indirLhs = tempLHS.second;
    if (lhsVal != NULL and !I.getUse() and !I.getKill()) 
-	   errs() << "\n Fetched LHS: "<<lhsVal->getName()<< " lhs indir: "<<indirLhs;
+	   llvm::outs() << "\n Fetched LHS: "<<lhsVal->getName()<< " lhs indir: "<<indirLhs;
    rhsVector = I.getRHS();
    for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {					
 	std::pair<Token*, int > rhsVal = *r;
-	errs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
+	llvm::outs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
    }
 
    indxLHS = fetchLhsIndex(&I,lhsVal);
    	
    if (I.getUse())   {
-	errs() << "\n Instr is a USE. ";	
+	llvm::outs() << "\n Instr is a USE. ";	
 	if (indirLhs == 99) {
-	 errs() << "\n Instr is a return stmt. ";
+	 llvm::outs() << "\n Instr is a return stmt. ";
 	 std::pair<Token*, int> rhsVal = rhsVector[0];
 	 INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
 	 return INofInst;
 	}//end if return
 	else  {
-	  errs() << "\n Instr is a comparison stmt. ";
+	  llvm::outs() << "\n Instr is a comparison stmt. ";
 	  for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {	 			
  	 	 std::pair<Token*, int > rhsVal = *r;
 		if (rhsVal.first->getIsArray())
@@ -1190,7 +1190,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	}//end else compare	
    }//end if use
    else if (I.getKill()) {
-	errs() << "\n Instr is a Kill. ";
+	llvm::outs() << "\n Instr is a Kill. ";
 	std::pair<Token*, std::string> lhsValueMatched;
 	for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {	 			
  	 	 std::pair<Token*, int > rhsVal = *r;
@@ -1199,7 +1199,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 		    if (compareToken(out.first, rhsVal.first) and out.second == indxLHS) {
 			lhsValueMatched = std::make_pair(out.first, out.second);
 			#ifdef PRINT
-	 	        errs() << "\n LHS is live on exit. ";
+	 	        llvm::outs() << "\n LHS is live on exit. ";
 			#endif
 	                INofInst.erase(INofInst.find(lhsValueMatched));	/* Erase LHS from LIN since it is defined here */
 		    }//end if
@@ -1209,7 +1209,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
    }//end if kill
    else if (I.getPhi()) {
 	#ifdef PRINT
-	errs() << "\n Instr is a PHI instr. ";
+	llvm::outs() << "\n Instr is a PHI instr. ";
 	#endif
         std::pair<Token*, std::string> lhsValueMatched;
 	/* Lhs of Phi may have indices in Lout. These indices should not be used for comparison.
@@ -1226,7 +1226,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 		lhsValueMatched = std::make_pair(out.first, indxLHS);
 		lvFlag = true;
 		#ifdef PRINT
-	 	errs() << "\n LHS is live on exit. ";
+	 	llvm::outs() << "\n LHS is live on exit. ";
 		#endif
 		
 		auto pos = INofInst.find(lhsValueMatched); 
@@ -1244,7 +1244,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	
 	if (lvFlag) { 
 		#ifdef PRINT
-		errs() << "\n Lhs is live. Hence generate liveness of Rhs. ";
+		llvm::outs() << "\n Lhs is live. Hence generate liveness of Rhs. ";
 		#endif
 
 		for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++)	 			{					
@@ -1263,19 +1263,19 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
    }//end phi
    else    {
     #ifdef PRINT
-    errs() << "\n Computing LIN for a normal instruction. ";
+    llvm::outs() << "\n Computing LIN for a normal instruction. ";
     #endif
 	
     bool cmpFlg = false;
     std::pair<Token*, std::string> lhsValueMatched;
     if (indirLhs == 1) { /* lhs: x=... or tmp=... */
 	#ifdef PRINT	
-	errs() << "\n LHS indir is 1. ";
+	llvm::outs() << "\n LHS indir is 1. ";
 	#endif
         //if lhs is an array then dont consider the field index. 
         if (tempLHS.first->getIsArray()) {
 	   #ifdef PRINT
-	   errs() << "\n LHS is an array or Inst is a GEP. Ignore field index. ";
+	   llvm::outs() << "\n LHS is an array or Inst is a GEP. Ignore field index. ";
 	   #endif
 	   for (auto out : OUTofInst) { 
 	    if (compareToken(out.first, tempLHS.first)) { 
@@ -1287,12 +1287,12 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
         }//end if array
         else if (!tempLHS.first->isGlobalVar()) {//if lhs is a temporary probably gep with indices then ignore indices
 	   #ifdef PRINT
-	   errs() << "\n LHS is a temporary probably GEP with indices. Ignore field index but kill liveness of lhs. ";
+	   llvm::outs() << "\n LHS is a temporary probably GEP with indices. Ignore field index but kill liveness of lhs. ";
 	   #endif
 	   for (auto out : OUTofInst) { 
 	    if (compareToken(out.first, tempLHS.first)) { 
 		#ifdef PRINT
-		errs() << "\n Lhs is found in LOUT. ";
+		llvm::outs() << "\n Lhs is found in LOUT. ";
 		#endif
 		lhsValueMatched = std::make_pair(out.first, out.second);
 		cmpFlg = true;  ///set the flag
@@ -1301,7 +1301,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	   }
           if (cmpFlg) {       /* Erase LHS from LIN since it is defined here */
 	      #ifdef PRINT
-	      errs() << "\n LHS is live on exit. Erasing Lhs from Lin. ";
+	      llvm::outs() << "\n LHS is live on exit. Erasing Lhs from Lin. ";
 	      #endif
 	      INofInst = eraseFromLin(lhsValueMatched.first, lhsValueMatched.second,INofInst);
    	      flagLhsLive = true;  ///set the flag
@@ -1309,13 +1309,13 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
         }
         else {	//Lhs is not an array. Or Global with indices from GEP instr then consider the indices.
 	   #ifdef PRINT
-	   errs() << "\n LHS not an array. ";
+	   llvm::outs() << "\n LHS not an array. ";
 	   #endif
 	   for (auto out : OUTofInst) {
 	      indxLHS = tempLHS.first->getFieldIndex(); 
 	      if (compareToken(out.first, tempLHS.first) and out.second == indxLHS) {  
 		#ifdef PRINT
-		errs() << "\n Lhs is found in LOUT. ";
+		llvm::outs() << "\n Lhs is found in LOUT. ";
 		#endif
 		lhsValueMatched = std::make_pair(out.first, out.second);
 		cmpFlg = true;
@@ -1325,12 +1325,12 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
            /* Erase LHS from LIN since it is defined here */
           if (cmpFlg) {
 	      #ifdef PRINT
-	      errs() << "\n LHS is live on exit. ";
+	      llvm::outs() << "\n LHS is live on exit. ";
 	      #endif
              //Lhs is an array but temporary or Lhs is not an array should be erased from lin
       	     if (!lhsValueMatched.first->getIsArray() or !lhsValueMatched.first->isGlobalVar() ) {
 		#ifdef PRINT
-		errs() << "\n LHS not an array hence erase from Lin. ";
+		llvm::outs() << "\n LHS not an array hence erase from Lin. ";
 		#endif
    		INofInst.erase(INofInst.find(lhsValueMatched));
    		flagLhsLive = true;  ///set the flag
@@ -1340,7 +1340,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
    }//end if inlhs=1
    else if (indirLhs == 2) { /* lhs: *tmp=... */
 	#ifdef PRINT
-	errs() << "\n LHS is (temp, 2) ";
+	llvm::outs() << "\n LHS is (temp, 2) ";
 	#endif
 	/* Insert LHS into Lin and RHS in Lin if pointee of LHS is in Lout */
 	std::queue<Token*> q;
@@ -1353,7 +1353,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	    for (auto fIN : forwardIN) { 
 		if (compareToken(fIN.first.first, lhsTemp)) {
 			#ifdef PRINT
-			errs() << "\n Pointees of LHS present in PIN. ";
+			llvm::outs() << "\n Pointees of LHS present in PIN. ";
 			#endif
 			INofInst.insert(std::make_pair(lhsTemp,indxLHS));
 			std::set<std::pair<Token*, std::string>> pointees = fIN.second;
@@ -1367,7 +1367,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
            indirLhs--;
 	   if (!chkFlag)   {
 		#ifdef PRINT
-		errs() << "\n No pointees of LHS found in PIN. ";
+		llvm::outs() << "\n No pointees of LHS found in PIN. ";
 		#endif
 		std::set<std::pair<Token*, std::string>>  INofInst; //Block propagation of liveness info
 	        INofInst.insert(std::make_pair(lhsTemp,indxLHS));
@@ -1382,7 +1382,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	  q.pop();
           //live and must pointer
 	  #ifdef PRINT
-	  errs() << "\n Check live and must pointer. ";
+	  llvm::outs() << "\n Check live and must pointer. ";
 	  #endif
 	  std::string indxPointee = q1.front();
 	  q1.pop();
@@ -1390,12 +1390,12 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	  /*Check if lhsPointee is an array first*/
 	  if (objArray.checkArray(lhsPointee,indxPointee)) {
 		#ifdef PRINT
-		errs()<< "\n Lhs Pointee is an array. ";
+		llvm::outs()<< "\n Lhs Pointee is an array. ";
 		#endif
   		for (auto bOUT : OUTofInst) {
 		     if (compareToken(bOUT.first, lhsPointee))/*ignore indices for array*/ { 
 			  #ifdef PRINT
-			  errs() << "\n Pointee live at LOUT.............\n";
+			  llvm::outs() << "\n Pointee live at LOUT.............\n";
 			  #endif
 			  flagLhsLive = true;  //set the flag
 			  flgFound = true;  
@@ -1404,12 +1404,12 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	  }
 	  else {
 		#ifdef PRINT
-		errs()<<"\n Lhs Pointee not an array. ";
+		llvm::outs()<<"\n Lhs Pointee not an array. ";
 		#endif 
 	  	for (auto bOUT : OUTofInst) {
 			if (compareToken(bOUT.first, lhsPointee) and bOUT.second == indxPointee) { 
 			  #ifdef PRINT
-			  errs() << "\n Pointee live at LOUT.............\n";
+			  llvm::outs() << "\n Pointee live at LOUT.............\n";
 			  #endif
 			  INofInst = eraseFromLin(lhsPointee, indxPointee, INofInst);
 			  flagLhsLive = true;  //set the flag
@@ -1426,7 +1426,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 
    if (flagLhsLive) { /* Insert Rhs into Lin */
 	#ifdef PRINT
-	errs() << "\n LHS is Live so insert RHS into LIN.  ";
+	llvm::outs() << "\n LHS is Live so insert RHS into LIN.  ";
 	#endif
 	INofInst = insertRhsLin(INofInst, rhsVector, forwardIN, I);
    }//end if flag   
@@ -1438,7 +1438,7 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 ///Erases liveness information from IN
 B IPLFCPA::eraseFromLin(Token* pointee, std::string index, B INofInst) {
   #if defined(TRACE) || defined(PRINT)
-  errs() << "\n Inside function eraseFromLin..........";
+  llvm::outs() << "\n Inside function eraseFromLin..........";
   #endif 
   B newINofInst;
 
@@ -1455,7 +1455,7 @@ B IPLFCPA::eraseFromLin(Token* pointee, std::string index, B INofInst) {
 	}
 	else if ((compareToken(in.first,pointee)) and in.second != index) {  /* ob.[0] is different from ob.[1] */
 		#ifdef PRINT
-		errs() << "\n Token name same but field index not matching. ";
+		llvm::outs() << "\n Token name same but field index not matching. ";
 		#endif
 		newINofInst.insert(std::make_pair(in.first, in.second));
 	}
@@ -1467,7 +1467,7 @@ B IPLFCPA::eraseFromLin(Token* pointee, std::string index, B INofInst) {
 ///Inserts the liveness information of the RHS into the IN 
 B IPLFCPA:: insertRhsLin(B currentIN, std::vector<std::pair<Token*, int >> list, F forwardIN, fetchLR& ins)  {
    #if defined(TRACE) || defined(PRINT)
-   errs() << "\n Inside function inInserter......";
+   llvm::outs() << "\n Inside function inInserter......";
    #endif
    B INofInst = currentIN;
 
@@ -1476,13 +1476,13 @@ B IPLFCPA:: insertRhsLin(B currentIN, std::vector<std::pair<Token*, int >> list,
        if (listValuesIndir == 0) { /* Rhs: ...=&u */
 	    if (!ins.getGEP()) {
 		#ifdef PRINT
-		errs() << "\n Rhs is ...= &y ";		
+		llvm::outs() << "\n Rhs is ...= &y ";		
 		#endif
 		return INofInst;
 	    }
 	    else {
 		#ifdef PRINT
-		errs() << "\n Rhs = &GEP. Instr is GEP so generate liveness of Rhs. ";
+		llvm::outs() << "\n Rhs = &GEP. Instr is GEP so generate liveness of Rhs. ";
 		#endif
 		if (listValues.first->isValPointerType())
 			INofInst.insert(std::make_pair(listValues.first,"")); 
@@ -1491,7 +1491,7 @@ B IPLFCPA:: insertRhsLin(B currentIN, std::vector<std::pair<Token*, int >> list,
        }//end if indir=0
        else if (listValuesIndir == 1) { /* Rhs: ...=y */
 	    #ifdef PRINT
-	    errs() << "\n Rhs is ...=y ";
+	    llvm::outs() << "\n Rhs is ...=y ";
 	    #endif
 	    if (ins.getBitcast()) /* Remove the field index*/
 		    INofInst.insert(std::make_pair(listValues.first, ""));	
@@ -1501,7 +1501,7 @@ B IPLFCPA:: insertRhsLin(B currentIN, std::vector<std::pair<Token*, int >> list,
        }
        else if (listValuesIndir == 2) { /* Rhs: ...=*y */
 	    #ifdef PRINT
-            errs() << "\n Rhs is ...=*y ";
+            llvm::outs() << "\n Rhs is ...=*y ";
 	    #endif
             std::queue<Token*> q;
 	    std::queue<std::string> q1;
@@ -1538,7 +1538,7 @@ B IPLFCPA:: insertRhsLin(B currentIN, std::vector<std::pair<Token*, int >> list,
 
 
 B IPLFCPA::performMeetBackward(const B& d1_currOUT, const  B& d2_succIN) const  {
-  errs() << "\n Inside performMeetBackward...................";
+  llvm::outs() << "\n Inside performMeetBackward...................";
   std::set<std::pair<Token*, std::string>> retMeetOUTB = d1_currOUT;
   for (auto valueInSuccIN : d2_succIN)         // prevOUT merge succIN
            retMeetOUTB.insert(valueInSuccIN);
@@ -1547,14 +1547,14 @@ B IPLFCPA::performMeetBackward(const B& d1_currOUT, const  B& d2_succIN) const  
 
 ///Compares two TOKEN values
 bool IPLFCPA::compareToken(Token* T1, Token* T2) const{
- errs() << "\n Inside compareToken....";
+ llvm::outs() << "\n Inside compareToken....";
  if (T1->getName() == T2->getName() and T1->getMemTypeName() == T2->getMemTypeName()) 
 	return true;
  return false;
 }
 
 bool IPLFCPA::EqualDataFlowValuesBackward(const B& d1, const B& d2) const{
-   errs() << "\n Inside EqualDataFlowValuesBackward.................";
+   llvm::outs() << "\n Inside EqualDataFlowValuesBackward.................";
    if (d1.empty() and d2.empty())
 	return true;
    else if ( (d1.empty() and !d2.empty()) or (!d1.empty() and d2.empty()))
@@ -1578,25 +1578,25 @@ bool IPLFCPA::EqualDataFlowValuesBackward(const B& d1, const B& d2) const{
 }
 
 F IPLFCPA::getBoundaryInformationForward() {
-    errs() << "\n Inside getBoundaryInformationForward ";
+    llvm::outs() << "\n Inside getBoundaryInformationForward ";
     std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> F_TOP;
     return F_TOP;
 }
 
 F IPLFCPA::getInitialisationValueForward() {
-    errs() << "\n Inside getInitialisationValueForward ";
+    llvm::outs() << "\n Inside getInitialisationValueForward ";
     std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> F_TOP;
     return F_TOP;
 }
 
 B IPLFCPA::getBoundaryInformationBackward() {
-    errs() << "\n Inside getBoundaryInformationBackward ";
+    llvm::outs() << "\n Inside getBoundaryInformationBackward ";
     std::set<std::pair<Token*, std::string>> B_TOP;
     return B_TOP;
 }
 
 B IPLFCPA::getInitialisationValueBackward() {
-    errs() << "\n Inside getInitialisationValueBackward ";
+    llvm::outs() << "\n Inside getInitialisationValueBackward ";
     std::set<std::pair<Token*, std::string>> B_TOP;
     return B_TOP;
 }
@@ -1616,20 +1616,11 @@ public:
 	
 	//Module *M = F.getParent();
 	lfcpaObj.setCurrentModule(&M);
- 	errs() << "\n Splitting the BB..............."; 
-	//lfcpaObj.startSplitting();	
+ 	llvm::outs() << "\n Splitting the BB..............."; 
+//	lfcpaObj.startSplitting();
 
-	errs() << "\n Applying SLIM modeling..............#";
-	for (Module::iterator ff=M.begin(), ef=M.end(); ef!=ff; ++ff) {
-	    Function *F = &(*ff);
-	    for (Function::iterator bb=F->begin(), e=F->end(); e!=bb; ++bb)  {
-		BasicBlock* BB = &(*bb);
-		lfcpaObj.simplifyIR(F,BB);
-		lfcpaObj.setLhsRhsMap(F, BB);				    
-	    }
-	}
 	lfcpaObj.printGlobalInstrList();
-	errs() << "\n Executing VASCO........";
+	llvm::outs() << "\n Executing VASCO........";
 	lfcpaObj.doAnalysis(M);
 	lfcpaObj.printContext();
         return false;
@@ -1644,10 +1635,10 @@ public:
 	
 	Module *M = F.getParent();
 	lfcpaObj.setCurrentModule(M);
- 	errs() << "\n Splitting the BB..............."; 
+ 	llvm::outs() << "\n Splitting the BB..............."; 
 	lfcpaObj.startSplitting();	
          if (F.getName() == "main") { 
-	    errs()  << "\n Interprocedural LFCPA.....";
+	    llvm::outs()  << "\n Interprocedural LFCPA.....";
 	    lfcpaObj.test();	   		
 	}		
 return false;
