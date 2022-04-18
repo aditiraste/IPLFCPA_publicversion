@@ -1441,6 +1441,7 @@ void Analysis<F,B>::doAnalysisForward() {
         if (changed)//step 24
         {
             //not yet converged
+            backward_worklist.workInsert({current_context_label,bb});
             for (auto succ_bb:successors(bb))//step 25
             {
                 //step 26
@@ -1609,17 +1610,30 @@ int Analysis<F,B>::check_if_context_already_exists(llvm::Function *function, con
                             << "\n";
                     llvm::outs() << "Context found!!!!!" << "\n";
                     llvm::outs() << "LABEL: " << set_itr << "\n";
-                    llvm::outs()
-                            << "======================================================================================"
-                            << "\n";
                     llvm::outs() << "Forward Inflow Value:- ";
                     printDataFlowValuesForward(current_object->getInflowValue().first);
                     llvm::outs() << "Backward Inflow Value:- ";
                     printDataFlowValuesBackward(current_object->getInflowValue().second);
+                    llvm::outs()
+                            << "======================================================================================"
+                            << "\n";
                 }
                 return set_itr;
             }
         }
+    }
+    if(debug) {
+        llvm::outs()
+                << "\n======================================================================================"
+                << "\n";
+        llvm::outs() << "Context NOT found!!!!!" << "\n";
+        llvm::outs() << "Forward Inflow Value:- ";
+        printDataFlowValuesForward(Inflow.first);
+        llvm::outs() << "Backward Inflow Value:- ";
+        printDataFlowValuesBackward(Inflow.second);
+        llvm::outs()
+                << "\n======================================================================================"
+                << "\n";
     }
     return 0;
 }
@@ -1964,9 +1978,12 @@ void Analysis<F,B>::doAnalysisBackward() {
         }
         if (changed)//step 24
         {
+
             //not yet converged
+            forward_worklist.workInsert({current_context_label,bb});
             for (auto pred_bb:predecessors(bb))//step 25
             {
+                llvm::outs() << "\nPushing predecessors in WL\n";
                 //step 26
                 if (direction == "bidirectional") {
                     forward_worklist.workInsert(make_pair(current_context_label, pred_bb));

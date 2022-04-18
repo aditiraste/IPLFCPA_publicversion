@@ -173,6 +173,8 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
 			calleeLOUT.insert(d);
 		}	
 	}
+    llvm::outs() << "\nBefore setting call inflow:- Forward values are: ";
+    printDataFlowValuesForward(a1);
 
 	llvm::outs() << "\n Checking forward values now......";
 	//set the forward value
@@ -187,6 +189,8 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
 		   }//end inner for
 		}//end if	
 	}//end for
+    llvm::outs() << "\nAfter setting call inflow:- Forward values are: ";
+    printDataFlowValuesForward(calleePIN);
 	calleeInflowPair = std::make_pair(calleePIN,calleeLOUT);
 	return calleeInflowPair;
 }
@@ -428,7 +432,9 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
   bool notPINEmpty = false; //check if PIN is empty 
   bool foundPointee = false; //check if pointee of Rhs is found in PIN
  
-  B backwardOUT = getBackwardComponentAtOutOfThisInstruction(I);;
+    B backwardOUT = getBackwardComponentAtOutOfThisInstruction(I);
+    llvm::outs() << "Backward component for liveness at the OUT is:- ";
+    printDataFlowValuesBackward(backwardOUT);
   
   if (I.getPhi()) {
    #ifdef PRINT
@@ -1586,11 +1592,11 @@ F IPLFCPA::getBoundaryInformationForward() {
 F IPLFCPA::getInitialisationValueForward() {
     llvm::outs() << "\n Inside getInitialisationValueForward ";
     std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> F_TOP;
-    Token* INIT = IM->extractDummy("INIT");
-    std::pair<Token*, std::string> TMP1; 
-    std::set<std::pair<Token*, std::string>> TMP2; 
-    TMP1.first = INIT;
-    F_TOP[TMP1] = TMP2;
+//    Token* INIT = IM->extractDummy("INIT");
+//    std::pair<Token*, std::string> TMP1;
+//    std::set<std::pair<Token*, std::string>> TMP2;
+//    TMP1.first = INIT;
+//    F_TOP[TMP1] = TMP2;
     return F_TOP;
 }
 
@@ -1621,8 +1627,6 @@ public:
 	
 	//Module *M = F.getParent();
 	lfcpaObj.setCurrentModule(&M);
- 	llvm::outs() << "\n Splitting the BB..............."; 
-//	lfcpaObj.startSplitting();
 
 	lfcpaObj.printGlobalInstrList();
 	llvm::outs() << "\n Executing VASCO........";

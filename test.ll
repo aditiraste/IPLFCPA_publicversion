@@ -1,24 +1,26 @@
 ; ModuleID = 'test.ll'
-source_filename = "call_test.c"
+source_filename = "call_test1.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
-@u = dso_local global i32 0, align 4
+@z = dso_local global i32* null, align 8
 @x = dso_local global i32* null, align 8
 @v = dso_local global i32 0, align 4
 @y = dso_local global i32* null, align 8
+@u = dso_local global i32 0, align 4
 
 ; Function Attrs: noinline nounwind uwtable
 define dso_local void @fun() #0 {
 bb:
-  store i32* @u, i32** @x, align 8
+  %i = load i32*, i32** @z, align 8
+  store i32* %i, i32** @x, align 8
   ret void
 }
 
 ; Function Attrs: noinline nounwind uwtable
 define dso_local i32 @main() #0 {
 bb:
-  store i32* @v, i32** @x, align 8
+  store i32* @v, i32** @z, align 8
   br label %0
 
 0:                                                ; preds = %bb
