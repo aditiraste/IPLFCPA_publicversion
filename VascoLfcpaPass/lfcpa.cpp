@@ -69,8 +69,8 @@ public:
 	pair<F, B> CallInflowFunction(int, Function *, BasicBlock *, const F &, const B &);
 	pair<F, B> CallOutflowFunction(int, Function *, BasicBlock *, const F &, const B &, const F &, const B &);
 	B getLocalComponentB(const B &);
-	void printCurrPinPout(F);
-	void printCurrLinLout(B);
+	void printCurrPinPout(const F) const;
+	void printCurrLinLout(const B) const;
 	F getPurelyLocalComponentForward(const F& dfv) const;
 };
 
@@ -97,7 +97,7 @@ F IPLFCPA::getPurelyLocalComponentForward(const F& dfv) const {
  }//end for
  return fwdLocalVal;
 }
-void IPLFCPA::printCurrLinLout(B currB) {
+void IPLFCPA::printCurrLinLout(const B currB) const {
 //  #if defined(TRACE) || defined(PRINT)
   llvm::outs() << "\n Inside printCurrLinLout............";
  // #endif
@@ -107,7 +107,7 @@ void IPLFCPA::printCurrLinLout(B currB) {
 }
 
 
-void IPLFCPA::printCurrPinPout(F currF) {
+void IPLFCPA::printCurrPinPout(const F currF) const {
 //  #if defined(TRACE) || defined(PRINT)
   llvm::outs() << "\n Inside printCurrPinPout............";
  // #endif
@@ -150,7 +150,7 @@ pair<F, B> IPLFCPA::CallOutflowFunction(int current_context_label, Function * ta
 	for (auto i : LocalComponent) 
 		callnodeLin.insert(i);
 
-	retOUTflow.first = a1;  //check once!!
+	retOUTflow.first = a3;  //check once!!
 	retOUTflow.second = callnodeLin; 
 	return retOUTflow;
 }
@@ -173,8 +173,6 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
 			calleeLOUT.insert(d);
 		}	
 	}
-    llvm::outs() << "\nBefore setting call inflow:- Forward values are: ";
-    printDataFlowValuesForward(a1);
 
 	llvm::outs() << "\n Checking forward values now......";
 	//set the forward value
@@ -189,8 +187,6 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
 		   }//end inner for
 		}//end if	
 	}//end for
-    llvm::outs() << "\nAfter setting call inflow:- Forward values are: ";
-    printDataFlowValuesForward(calleePIN);
 	calleeInflowPair = std::make_pair(calleePIN,calleeLOUT);
 	return calleeInflowPair;
 }
@@ -264,6 +260,11 @@ F IPLFCPA::performMeetForward(const F& d1, const F& d2) const {
 
 bool IPLFCPA::EqualDataFlowValuesForward(const F &d1, const F &d2) const {
  llvm::outs() << "\n Inside EqualDataFlowValuesForward...............................";
+ llvm::outs() <<"\n Value d1..........";
+ printCurrPinPout(d1);
+ llvm::outs() <<"\n Value d2..........";
+ printCurrPinPout(d2);
+
 
 if (d1.empty() and d2.empty())
 	return true;
@@ -432,9 +433,14 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
   bool notPINEmpty = false; //check if PIN is empty 
   bool foundPointee = false; //check if pointee of Rhs is found in PIN
  
-    B backwardOUT = getBackwardComponentAtOutOfThisInstruction(I);
-    llvm::outs() << "Backward component for liveness at the OUT is:- ";
-    printDataFlowValuesBackward(backwardOUT);
+  B backwardOUT = getBackwardComponentAtOutOfThisInstruction(I);;
+  
+  llvm::outs() << "\n Checking backwardOUT values........";
+  if (backwardOUT.empty())
+	llvm::outs()<< "\n BackwardOUT is empty.............";
+  for (auto a : backwardOUT)
+	llvm::outs() << "\n Value: "<<a.first->getName();
+  llvm::outs() << "\n ----------------------";
   
   if (I.getPhi()) {
    #ifdef PRINT
@@ -852,6 +858,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	 Token* rhsValue = rhsVal.first;
 	 int rhsInTmp = rhsIndir;
 	 std::string tempIndx; 
+	llvm::outs()<< "\n Rhs Value: "<<rhsValue->getName()<< " indir= "<<rhsInTmp;
 
 	 /* First get points-to pairs from Rhs */
  	 /* case 1: x=&u */
@@ -890,10 +897,10 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		foundPointee = false;
 	        q.push(rhsValue); 	
 			
-                while (rhsInTmp == 1 and !q.empty())     {
+                while (rhsInTmp == 1 and !q.empty())     { llvm::outs()<< "\n While loop rhsIndir is 1";
                     Token* rhsTemp = q.front();
                     q.pop();
-		    if (rhsTemp->isValPointerType()) {  
+		    if (rhsTemp->isValPointerType()) {  llvm::outs()<< "Rhs value is a pointer";
                    	tempIndx = fetchRhsIndxfrmPin(INofInst, rhsTemp);
 			//#ifdef PRINT
 			llvm::outs()<<"\n Fetch pointees of t1 from Pin. ";
@@ -913,8 +920,8 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 			    		}//end if
 		        	}//end outer for
 			}
-			else {
-				for (auto IN : INofInst) {
+			else { llvm::outs()<< "\n RhsValue is not an array";
+				for (auto IN : INofInst) { llvm::outs() << "\n PIN is not empty";
 				 notPINEmpty = true;
 			    	 if (compareToken(rhsTemp, IN.first.first) and tempIndx == IN.first.second) {
 					//#ifdef PRINT
@@ -932,10 +939,10 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		    rhsInTmp--;
         	}//end while
 		/* Loop to fetch pointees of RHS */
-	        while (!q.empty())      {
+	        while (!q.empty())      { llvm::outs() << "\n Second while loop";
 		    Token* rhsValue = q.front();
 		    std::string IndexRhs = q1.front();
-		    q.pop();    q1.pop();
+		    q.pop();    q1.pop(); llvm::outs()<< "\n Verify pointee of rhs: "<<rhsValue->getName();
 		    rhsSet.insert(std::make_pair(rhsValue, IndexRhs));
 		    foundPointee = true;				    
                 }	
@@ -1012,6 +1019,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
        	         }
  	}//end else if=2
 
+	llvm::outs() << "\n Now fetching the pointees of LHS: "<<lhsVal->getName();
 	/* Fetch the pointees of Lhs */
 	std::queue<Token*> q1;	    
         q1.push(lhsVal); 
@@ -1071,7 +1079,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 		    indirLhs--;
           }//end while
 		
-	  while (!q1.empty())     	{  
+	  while (!q1.empty())     	{  llvm::outs() << "\n Inside while loop for Lhs";
 		counter++; /* checks for must points-to relation */
 		std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> prevPOUT = OUTofInst ;
                	Token* pointeeValue = q1.front();
@@ -1092,18 +1100,22 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	}//end while
 
 	if (counter == 1) {
-	   #ifdef PRINT
+//	   #ifdef PRINT
 	   llvm::outs() <<"\n Must points-to relation. Delete points-to pairs from OutofInst \n";
-	   #endif
+//	   #endif
 	   pFlag = true;
 	}
      }//end if normal
 
      F newOutofInst;
+     printCurrPinPout(OUTofInst);
+     llvm::outs()<< "\n Printing backwardOUT value";
+     for (auto a : backwardOUT)
+	llvm::outs() << "\n Val: "<<a.first->getName();
      //######OUTPTA[std::make_tuple(contextId,B,instrCount)] = OUTofInst; 
      newOutofInst = restrictByLivness(OUTofInst, backwardOUT);
-	
-      //printCurrPinPout(newOutofInst);
+     printCurrPinPout(newOutofInst);
+
      F tempMergeOutofInst;
      std::set<Token*> emptyset;
      tempMergeOutofInst = forwardMerge(prevNewOutofInst, newOutofInst); /* merge new and previous POUT values */
@@ -1278,6 +1290,13 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	#ifdef PRINT	
 	llvm::outs() << "\n LHS indir is 1. ";
 	#endif
+	//if lhs is a function argument then generate liveness of rhs
+        if (tempLHS.first->getIsFunArg()) {	
+	  llvm::outs() << "\n LHS is a function argument. Generate liveness of Rhs unconditionally. ";
+          std::pair<Token*, int> rhsVal = rhsVector[0];
+	  INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
+	  return INofInst;
+	}
         //if lhs is an array then dont consider the field index. 
         if (tempLHS.first->getIsArray()) {
 	   #ifdef PRINT
@@ -1561,6 +1580,12 @@ bool IPLFCPA::compareToken(Token* T1, Token* T2) const{
 
 bool IPLFCPA::EqualDataFlowValuesBackward(const B& d1, const B& d2) const{
    llvm::outs() << "\n Inside EqualDataFlowValuesBackward.................";
+   llvm::outs() <<"\n Value d1..........";
+   printCurrLinLout(d1);
+   llvm::outs() <<"\n Value d2..........";
+   printCurrLinLout(d2);
+
+
    if (d1.empty() and d2.empty())
 	return true;
    else if ( (d1.empty() and !d2.empty()) or (!d1.empty() and d2.empty()))
@@ -1592,11 +1617,11 @@ F IPLFCPA::getBoundaryInformationForward() {
 F IPLFCPA::getInitialisationValueForward() {
     llvm::outs() << "\n Inside getInitialisationValueForward ";
     std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> F_TOP;
-//    Token* INIT = IM->extractDummy("INIT");
-//    std::pair<Token*, std::string> TMP1;
-//    std::set<std::pair<Token*, std::string>> TMP2;
-//    TMP1.first = INIT;
-//    F_TOP[TMP1] = TMP2;
+   /* Token* INIT = IM->extractDummy("INIT");
+    std::pair<Token*, std::string> TMP1; 
+    std::set<std::pair<Token*, std::string>> TMP2; 
+    TMP1.first = INIT;
+    F_TOP[TMP1] = TMP2;*/
     return F_TOP;
 }
 
@@ -1627,6 +1652,8 @@ public:
 	
 	//Module *M = F.getParent();
 	lfcpaObj.setCurrentModule(&M);
+ //	llvm::outs() << "\n Splitting the BB..............."; 
+//	lfcpaObj.startSplitting();
 
 	lfcpaObj.printGlobalInstrList();
 	llvm::outs() << "\n Executing VASCO........";
