@@ -1291,12 +1291,12 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	llvm::outs() << "\n LHS indir is 1. ";
 	#endif
 	//if lhs is a function argument then generate liveness of rhs
-        if (tempLHS.first->getIsFunArg()) {	
-	  llvm::outs() << "\n LHS is a function argument. Generate liveness of Rhs unconditionally. ";
-          std::pair<Token*, int> rhsVal = rhsVector[0];
-	  INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
-	  return INofInst;
-	}
+//        if (tempLHS.first->getIsFunArg()) {
+//	  llvm::outs() << "\n LHS is a function argument. Generate liveness of Rhs unconditionally. ";
+//          std::pair<Token*, int> rhsVal = rhsVector[0];
+//	  INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
+//	  return INofInst;
+//	}
         //if lhs is an array then dont consider the field index. 
         if (tempLHS.first->getIsArray()) {
 	   #ifdef PRINT

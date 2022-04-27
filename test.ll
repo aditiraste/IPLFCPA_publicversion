@@ -1,38 +1,36 @@
 ; ModuleID = 'test.ll'
-source_filename = "call_test1.c"
+source_filename = "call_test2.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
-@z = dso_local global i32* null, align 8
-@x = dso_local global i32* null, align 8
-@v = dso_local global i32 0, align 4
 @y = dso_local global i32* null, align 8
+@v = dso_local global i32 0, align 4
+@x = dso_local global i32* null, align 8
+@z = dso_local global i32* null, align 8
 @u = dso_local global i32 0, align 4
 
 ; Function Attrs: noinline nounwind uwtable
-define dso_local void @fun() #0 {
-bb:
-  %i = load i32*, i32** @z, align 8
-  store i32* %i, i32** @x, align 8
+define dso_local void @fun(i32* %a) #0 {
+entry:
+  store i32* %a, i32** @y, align 8
   ret void
 }
 
 ; Function Attrs: noinline nounwind uwtable
 define dso_local i32 @main() #0 {
-bb:
-  store i32* @v, i32** @z, align 8
+entry:
+  store i32* @v, i32** @x, align 8
+  %i = load i32*, i32** @x, align 8
   br label %0
 
-0:                                                ; preds = %bb
-  call void @fun()
+0:                                                ; preds = %entry
+  call void @fun(i32* %i)
   br label %1
 
 1:                                                ; preds = %0
-  %i1 = load i32*, i32** @x, align 8
-  store i32* %i1, i32** @y, align 8
-  %i2 = load i32*, i32** @y, align 8
-  %i3 = load i32, i32* %i2, align 4
-  ret i32 %i3
+  %i1 = load i32*, i32** @y, align 8
+  %i2 = load i32, i32* %i1, align 4
+  ret i32 %i2
 }
 
 attributes #0 = { noinline nounwind uwtable "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" "unsafe-fp-math"="false" "use-soft-float"="false" }

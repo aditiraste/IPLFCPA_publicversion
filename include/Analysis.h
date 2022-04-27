@@ -1206,7 +1206,7 @@ void Analysis<F,B>::doAnalysisForward() {
                         */
 
                         //step 12
-                        pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, a1, d1);
+                        pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, prev, d1);
                         F a2 = inflow_pair.first;
                         B d2 = inflow_pair.second;
 

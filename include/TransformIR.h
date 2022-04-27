@@ -762,9 +762,9 @@ fetchLR fetchLR::getArgStore(Value* LHS, Value* RHS) {
   
   Function* CalledFunction = dyn_cast<Argument>(LHS)->getParent();
   spatial::Token* LHSTok = TW.getToken(new Token(LHS));
-  LHSTok->setIsFunArg();  
+//  LHSTok->setIsFunArg();
   LHSTok->setIsGlobal();
-  LHSTok->setFunction(CalledFunction);
+//  LHSTok->setFunction(CalledFunction);
   //llvm::outs() << "\n LHSTok function name: "<<LHSTok->getFunction()->getName().str();
   Ob.LHS = std::make_pair(LHSTok, 1);
   return Ob;
@@ -811,7 +811,7 @@ std::vector<Token*> fetchLR::mapReturnArg(Function *F) {
 		 
 		 spatial::Token* newRHSTok = TW.getToken(new Token(RHSTok->getName().str() + fName, F));
   		 newRHSTok->setIsGlobal();
-		 newRHSTok->setTy(RHSTok->getTy());
+//		 newRHSTok->setTy(RHSTok->getTy());
   		 vecRetToken.push_back(newRHSTok);     
             }
             else if (RetVal && !llvm::isa<llvm::ConstantInt>(RetVal)) {
@@ -976,18 +976,18 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 				for (int i = 0; i < vecRhsTokens.size(); i++) { 
 					Token* rhsTemp = vecRhsTokens[i]; 
 					
-					if (lhsTemp->getTy() == rhsTemp->getTy()) {
-						#if defined(TRACE) || defined(PRINT) 
-						llvm::outs() << "\n Types match";
-						#endif
-						tempfetchLR = newObjFetchLR.getRetArgStore(vecCall[0], rhsTemp);
-						ReturnArgStore.push_back(tempfetchLR);
-						flagRetArg = true;
-					}
-					else {
-						llvm::outs() << "\n Type mismatch*************";			
-						exit(-1);
-					}
+//					if (lhsTemp->getTy() == rhsTemp->getTy()) {
+//						#if defined(TRACE) || defined(PRINT)
+//						llvm::outs() << "\n Types match";
+//						#endif
+//						tempfetchLR = newObjFetchLR.getRetArgStore(vecCall[0], rhsTemp);
+//						ReturnArgStore.push_back(tempfetchLR);
+//						flagRetArg = true;
+//					}
+//					else {
+//						llvm::outs() << "\n Type mismatch*************";
+//						exit(-1);
+//					}
 				}//end for	
 			      }//end size>=1				  
 			   }//end inner if
@@ -1354,8 +1354,8 @@ void Transform::printGlobalInstrList() {
 	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"->"<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t" ;
 	  else if (Obj.getFieldLhs() and !Lhs.first->isValPointerType())
 		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"."<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t";
-	  else if (Lhs.first->getIsFunArg()) 
-		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName()+"_"+Lhs.first->getFunction()->getName().str()<<", "<<Lhs.second<<" > \t\t";
+//	  else if (Lhs.first->getIsFunArg())
+//		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName()+"_"+Lhs.first->getFunction()->getName().str()<<", "<<Lhs.second<<" > \t\t";
 	  else	
 	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<", "<<Lhs.second<<" > \t\t";		
      }
