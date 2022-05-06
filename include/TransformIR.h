@@ -119,12 +119,13 @@ std::vector<std::tuple<int, Token*, std::string,int>> Structure::fetchIcmpRhsOpd
 	return insIcmpRhsIndx[I];
 }
 //--------------------------------------------------------------------------------------------------------
-enum InstTy { insUse, insKill, insCall, insPhi, insGEP, gopLhs, gopRhs, fieldLhs, fieldRhs, insBitcast, bitcastRhs, phiRhsIndx/*GEP in Phi*/ };
+enum InstTy { insUse, insKill, insCall, insPhi, insGEP, gopLhs, gopRhs, fieldLhs, fieldRhs, insBitcast, bitcastRhs, phiRhsIndx/*GEP in Phi*/, insFunPtr };
 bool retFlag = false;  /* Set only if return stmt is considered */
 bool insFlag = false;  /* Set only is instr is considered for analysis. Required for Skip instr */
 bool callFlag = false; /* Set only if call instr is considered */
 bool cmpFlag = false;  /* Set only if compare instr is considered */
 std::set<Token*> arrOperand; /* Store array operands. Required to compute Pin_start */
+bool funPtrFlag = false; /* Set only if call is indirect */
 
 
 class fetchLR {
@@ -147,6 +148,7 @@ public:
         void setBitcast();
 	void setBitcastRhs();
 	void setPhiRhsIndx();
+	void setInsFunPtr();
 	bool getUse();
 	bool getKill();
 	bool getPhi();
@@ -159,6 +161,7 @@ public:
 	bool getBitcast();
 	bool getBitcastRhs();
 	bool getPhiRhsIndx();
+	bool getInsFunPtr();
 	fetchLR metaDataSetter(Instruction*);
 	std::pair<Token*, int> getLHS();
 	std::vector<std::pair<Token*, int>> getRHS();
@@ -215,7 +218,7 @@ void fetchLR::printOperands(fetchLR Ob) {
 }
 
 fetchLR::fetchLR() {
-  this->Length = 12;
+  this->Length = 13;
   InstTy = llvm::BitVector(this->Length, false);
 }
 
@@ -248,6 +251,8 @@ void fetchLR::setBitcastRhs() { InstTy.set(bitcastRhs); }
 
 void fetchLR::setPhiRhsIndx() { InstTy.set(phiRhsIndx); }
 
+void fetchLR::setInsFunPtr() { InstTy.set(insFunPtr); }
+
 bool fetchLR::getUse() { return InstTy.test(insUse); }
 
 bool fetchLR::getKill() { return InstTy.test(insKill); }
@@ -272,8 +277,10 @@ bool fetchLR::getBitcastRhs() { return InstTy.test(bitcastRhs); }
 
 bool fetchLR::getPhiRhsIndx() { return InstTy.test(phiRhsIndx); }
 
+bool fetchLR::getInsFunPtr() { return InstTy.test(insFunPtr); }
+
 std::pair<Token*, int> fetchLR::getLHS() { return (this->LHS);}
-	
+
 std::vector<std::pair<Token*, int>> fetchLR::getRHS() {	return (this->RHS); }
 
 ///Computes the Tokens for LHS and RHS for an LLVM IR Instruction
@@ -759,12 +766,16 @@ fetchLR fetchLR::getArgStore(Value* LHS, Value* RHS) {
   fetchLR Ob;
   spatial::Token* RHSTok = TW.getToken(new Token(RHS));
   Ob.RHS.push_back(std::make_pair(RHSTok, 1));
+  llvm::outs() << "\n RHSTok name: "<<RHSTok->getName();
   
   Function* CalledFunction = dyn_cast<Argument>(LHS)->getParent();
+  llvm::outs() << "\n Called Function name check: "<<CalledFunction->getName();
   spatial::Token* LHSTok = TW.getToken(new Token(LHS));
-//  LHSTok->setIsFunArg();
+  llvm::outs() << "\n LHSTok name: "<<LHSTok->getName();
+  LHSTok->setIsFunArg();  
   LHSTok->setIsGlobal();
-//  LHSTok->setFunction(CalledFunction);
+  LHSTok->setFunction(CalledFunction);
+  llvm::outs() << "\n Lhs: <" <<LHSTok->getName()+"_"+LHSTok->getFunction()->getName().str();
   //llvm::outs() << "\n LHSTok function name: "<<LHSTok->getFunction()->getName().str();
   Ob.LHS = std::make_pair(LHSTok, 1);
   return Ob;
@@ -811,7 +822,7 @@ std::vector<Token*> fetchLR::mapReturnArg(Function *F) {
 		 
 		 spatial::Token* newRHSTok = TW.getToken(new Token(RHSTok->getName().str() + fName, F));
   		 newRHSTok->setIsGlobal();
-//		 newRHSTok->setTy(RHSTok->getTy());
+		 newRHSTok->setTy(RHSTok->getTy());
   		 vecRetToken.push_back(newRHSTok);     
             }
             else if (RetVal && !llvm::isa<llvm::ConstantInt>(RetVal)) {
@@ -907,58 +918,35 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 		llvm::outs() << "\n Instr is a call instruction.........";
 		#endif
 		Function* FunType = CI->getCalledFunction();
+if (!FunType->isDeclaration()){
+   
 		insFlag = true; //Instr is considered and not skipped
 		
 		if (FunType == nullptr){
 		  llvm::outs() << "\n Function call is an indirect call....";
-/*		  llvm::outs() << " FP = "<<CI->getCalledOperand()->getName();
-		  llvm::outs() << "\n Arg 0: "<<CI->getArgOperand(0)->getName();
-
-	          fetchLR newObjFetchLR, tempfetchLR;
-		  llvm::outs() << "\n CI->doesnotreturn: "<<CI->doesNotReturn();
-		  if(CI->doesNotReturn() != 0) { 
-			//Perform retrun argument mapping
-			llvm::outs() << "\n Called Function returns a value";
-                        Token *LhsVal =  TW.getToken(new spatial::Token(CI));
-			if (LhsVal->isValPointerType()) {
-				llvm::outs() << "\n Lhs of function call is a pointer....";
-				std::vector<Token*> vecRhsTokens = mapReturnArg(FunType);
-				if (vecRhsTokens.size() >= 1) {
-				for (int i = 0; i < vecRhsTokens.size(); i++) { 
-					Token* rhsTemp = vecRhsTokens[i]; 
-					
-					if (LhsVal->getTy() == rhsTemp->getTy()) {
-						llvm::outs() << "\n Types match";
-						tempfetchLR = newObjFetchLR.getRetArgStore(LhsVal, rhsTemp);
-						ReturnArgStore.push_back(tempfetchLR);
-						flagRetArg = true;
-					}
-					else {
-						llvm::outs() << "\n Type mismatch*************";			
-						exit(-1);
-					}
-				}//end for	
-			      }//end size>=1
-			}//end if pointer
-		    }//end if returns value
-			llvm::outs() << "\n REACHED HERE ADITI";
-                    //Perform paramter mapping
-		    Token* opRhs = TW.getToken(new spatial::Token(CI->getCalledOperand()));  
-		    Ob.RHS.push_back(std::make_pair(opRhs, 1));
-		    Ob.setCall();
-		    callFlag = true;
-			llvm::outs() << "\n REACHED HERE ADITI RASTE";
-		    for(int i=0; i <CI->arg_size();i++) {
- 			fetchLR newObjFetchLR, tempfetchLR;
-         	        if (!isa<Instruction>(CI->getArgOperand(i)))
-                            continue;
-			llvm::outs() << "\n HERE HERE \n";
-//                    	tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledFunction()->getArg(i),CI->getArgOperand(i));
-                    	tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledOperand()->getArg(i),CI->getArgOperand(i));
-			ArgStore.push_back(tempfetchLR);
-		    	flagArgs = true;
-		    }*/
-		  }//end if indirect call		  
+		  funPtrFlag = true;
+		  std::vector<Token*> vecCall = IM->extractToken(CI);
+		  if (!vecCall.empty()) { 
+			if (vecCall[0]->getName() != "NULL") { llvm::outs() << "\n Check 2";
+				//Lhs is available for call instr
+				//if (vecCall[0]->isValPointerType()) { //this seems to be irrelevant now.
+				    //Lhs is a pointer
+				 //    Code later. Cannot perform return value mapping now.
+					//&&&&&&&&&&&&&&&&	
+				//}
+			}
+				llvm::outs() << "\n Check 3";
+				Token* opRhs = vecCall[1];
+			        Ob.RHS.push_back(std::make_pair(opRhs, 1));
+			        Ob.setCall();
+				Ob.setInsFunPtr();
+				callFlag = true;
+				funPtrFlag = true;
+				llvm::outs() << "\n Set the function pointer flag.";
+				/* No argument mapping here since pointee of FP is unknown. */
+			//}					  
+                  }		
+		}//end if indirect call		  
 		else {
 		      llvm::outs() << "\n Direct Function call...........";        
 		fetchLR newObjFetchLR, tempfetchLR;
@@ -976,18 +964,18 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 				for (int i = 0; i < vecRhsTokens.size(); i++) { 
 					Token* rhsTemp = vecRhsTokens[i]; 
 					
-//					if (lhsTemp->getTy() == rhsTemp->getTy()) {
-//						#if defined(TRACE) || defined(PRINT)
-//						llvm::outs() << "\n Types match";
-//						#endif
-//						tempfetchLR = newObjFetchLR.getRetArgStore(vecCall[0], rhsTemp);
-//						ReturnArgStore.push_back(tempfetchLR);
-//						flagRetArg = true;
-//					}
-//					else {
-//						llvm::outs() << "\n Type mismatch*************";
-//						exit(-1);
-//					}
+					if (lhsTemp->getTy() == rhsTemp->getTy()) {
+						#if defined(TRACE) || defined(PRINT) 
+						llvm::outs() << "\n Types match";
+						#endif
+						tempfetchLR = newObjFetchLR.getRetArgStore(vecCall[0], rhsTemp);
+						ReturnArgStore.push_back(tempfetchLR);
+						flagRetArg = true;
+					}
+					else {
+						llvm::outs() << "\n Type mismatch*************";			
+						exit(-1);
+					}
 				}//end for	
 			      }//end size>=1				  
 			   }//end inner if
@@ -999,18 +987,20 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 			Ob.RHS.push_back(std::make_pair(opRhs, 1));
 			Ob.setCall();
 			callFlag = true;
-			
+
+			//ArgStore.clear();
 			for(int i=0; i <CI->arg_size();i++) {
  			   fetchLR newObjFetchLR, tempfetchLR;
          	           if (!isa<Instruction>(CI->getArgOperand(i)))
                         	continue;
-			    
+			    llvm::outs() << "\n CAlled Function name: "<<CI->getCalledFunction()->getName();
 			    tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledFunction()->getArg(i),CI->getArgOperand(i));
 			    ArgStore.push_back(tempfetchLR);
 		    	    flagArgs = true;
 		         }
 		 }//end if
-}//end else direct call
+ }//end else direct call
+}//end if not declaration fun
 	   }//end else call
    }
    return Ob;
@@ -1026,6 +1016,7 @@ protected:
 	std::map<Instruction*, fetchLR> tempInstLR;
 	std::map<std::pair<Function*, BasicBlock*>, std::list<Instruction*>> mapSkippedIns;
 	std::map<std::pair<Function*, BasicBlock*>, std::list<Instruction*>> mapModeledIns;
+	std::map<long int, Instruction*> mapIndirectFunCall;
 	
 public:	
 	Transform() {
@@ -1045,7 +1036,10 @@ public:
 	bool isBBInsLstEmpty(Function*, BasicBlock*);
 	Instruction* getInstforIndx(long int);	
 	BasicBlock* getBBfromFetchLR(fetchLR);
+	Instruction* getIndirectCallIns(long int);	
 };
+
+Instruction* Transform::getIndirectCallIns(long int index) { return mapIndirectFunCall[index]; }
 
 BasicBlock* Transform::getBBfromFetchLR(fetchLR Ob) {
 	long int INDEX;
@@ -1210,9 +1204,10 @@ void Transform::simplifyIR(Function* F, BasicBlock* B) {
 		llvm::outs() << "\n Instr is a Call.";
 		ins->print(llvm::outs());
 		#endif
-		
+
+		ArgStore.clear();
 		insPrintf = objFetchLR.metaDataPrintfIns(ins);
-		llvm::outs()<<"\n callFLag= "<<callFlag;
+				
 		if (callFlag) {
 			tempInstLR[ins] = insPrintf; 
 			callFlag = false; //reset flag to handle other call instructions
@@ -1275,11 +1270,11 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	    if (tempInstLR.find(ins) != tempInstLR.end()) { 
 		#ifdef PRINT
 		llvm::outs() << "\n CallInst flag: "<<instrCounter;
-		llvm::outs() << "\n Function name: "<<F<< "\t BB: "<<B;
+		llvm::outs() << "\n Function name: "<<F->getName()<< "\t BB: "<<B;
 		#endif
 		insPrintf = tempInstLR[ins];
 		if(flagArgs) {  llvm::outs() << "\n Inside flagArgs.....";
-		   for (std::list<fetchLR>::iterator i=ArgStore.begin(), e=ArgStore.end(); i!=e; ++i)  { llvm::outs() << "\n Inside FOR loop";
+		   for (std::list<fetchLR>::iterator i=ArgStore.begin(), e=ArgStore.end(); i!=e; ++i)  { 	
 		   globalInstrIndexList[instrCounter] =  *i;  
                    funcBBInsMap[std::make_pair(F, B)].push_back(instrCounter);
 		   instrCounter++;
@@ -1290,6 +1285,11 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 		mapInstWithIndx[instrCounter] = ins;
 		instrCounter++;
 		mapModeledIns[std::make_pair(F, B)].push_back(ins);	
+		if (funPtrFlag) {
+			llvm::outs() << "\n Flag for function pointer is set. Entryinto the map";
+			mapIndirectFunCall[instrCounter] = ins;
+			funPtrFlag = false;//reset flag
+		}
 
 		if (flagRetArg) { 
 		  for (std::list<fetchLR>::iterator i=ReturnArgStore.begin(), e=ReturnArgStore.end(); i!=e; ++i)  { 
@@ -1354,8 +1354,8 @@ void Transform::printGlobalInstrList() {
 	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"->"<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t" ;
 	  else if (Obj.getFieldLhs() and !Lhs.first->isValPointerType())
 		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"."<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t";
-//	  else if (Lhs.first->getIsFunArg())
-//		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName()+"_"+Lhs.first->getFunction()->getName().str()<<", "<<Lhs.second<<" > \t\t";
+	  else if (Lhs.first->getIsFunArg()) 
+		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName()+"_"+Lhs.first->getFunction()->getName().str()<<", "<<Lhs.second<<" > \t\t";
 	  else	
 	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<", "<<Lhs.second<<" > \t\t";		
      }

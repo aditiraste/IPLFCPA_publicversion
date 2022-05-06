@@ -274,11 +274,25 @@ public:
     virtual B getCombinedValuesAtCallBackward(const B& dfv1, const B& dfv2) const;
 
     virtual void printDataFlowValuesBackward(const B& dfv) const {}
-
+    virtual std::vector<Function*> getIndirectCalleeFromIN(long int, F&);
+    virtual B getFPandArgs(long int, Instruction*);
 
 };
 
 //========================================================================================
+template<class F, class B>
+B Analysis<F,B>::getFPandArgs(long int Index, Instruction* I) {
+    llvm::outs() << "\nThis function getFPandArgs() has not been implemented. EXITING !!\n";
+    exit(-1);
+}
+
+
+template<class F, class B>
+std::vector<Function*> Analysis<F,B>::getIndirectCalleeFromIN(long int Index, F& dfv) {
+    llvm::outs() << "\nThis function getIndirectCalleeFromIN() has not been implemented. EXITING !!\n";
+    exit(-1);
+}
+
 template<class F, class B>
 void Analysis<F,B>::printLine(int label) {
     string Name = "";
@@ -756,7 +770,7 @@ int Analysis<F,B>::getNumberOfContexts() {
 //================================================================================================
 template<class F, class B>
 void Analysis<F,B>::doAnalysis(Module &M) {
-    //llvm::outs() << "\n Inside doAnalysis...............";
+    llvm::outs() << "\n Inside doAnalysis...............";
     setCurrentModule(&M);
     //====================================SPLITTING========================================
 #ifdef Time
@@ -1784,6 +1798,7 @@ void Analysis<F,B>::doAnalysisBackward() {
                         The purely global component is given to the end of callee.
                         */
                         //step 12
+			llvm::outs() << "\n CallInflowFunction .............2";
                         pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, a1, prev);
                         F a2 = inflow_pair.first;
                         B d2 = inflow_pair.second;
@@ -1896,6 +1911,7 @@ void Analysis<F,B>::doAnalysisBackward() {
                         The purely global component is given to the end of callee.
                         */
                         //step 12
+			llvm::outs() << "\n CallInflowFunction .............1";
                         pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, a1, prev);
                         F a2 = inflow_pair.first;
                         B d2 = inflow_pair.second;
@@ -2018,7 +2034,7 @@ void Analysis<F,B>::doAnalysisBackward() {
             for (auto pred_bb:predecessors(bb))//step 25
             {
                 //step 26
-                if (direction == "bidirectional") { llvm::outs() << "\n Bidirectional....";
+                if (direction == "bidirectional") { 
                 //    forward_worklist.workInsert(make_pair(current_context_label, pred_bb));    
                       backward_worklist.workInsert(make_pair(current_context_label, pred_bb));
 		}
@@ -2245,4 +2261,5 @@ void Analysis<F,B>::printContext() {
     }
 }
 #endif
+
 
