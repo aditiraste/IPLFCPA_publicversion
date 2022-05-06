@@ -72,7 +72,13 @@ public:
 	void printCurrPinPout(const F) const;
 	void printCurrLinLout(const B) const;
 	F getPurelyLocalComponentForward(const F& dfv) const;
+	std::vector<Function*> getIndirectCalleeFromIN(long int, F&);
+	B getFPandArgsBackward(long int, Instruction*);
+	fetchLR* getFetchLRObfromIndex(long int);
+	F getPinStartCallee(long int, Instruction*, F&, Function*);
+	F mapIndirectFunArgForward(Value*, Value*, F&);
 };
+
 
 IPLFCPA::IPLFCPA() : Analysis<F, B>(true, "Log.txt",true){ };
 IPLFCPA lfcpaObj;
@@ -80,6 +86,174 @@ bool vFlag = true;
 bool flgBitcast = true;
 std::set<int> insBitcastSet;
 
+F IPLFCPA::mapIndirectFunArgForward(Value* LHS, Value* RHS, F& currPIN) {
+ llvm::outs() << "\n Inside mapIndirectFunArgForward................";
+ F mappedArgPin;
+ 
+ spatial::Token* RHSTok = TW.getToken(new Token(RHS));
+  
+ Function* CalledFunction = dyn_cast<Argument>(LHS)->getParent();
+ spatial::Token* LHSTok = TW.getToken(new Token(LHS));
+ LHSTok->setIsFunArg();  
+ LHSTok->setIsGlobal();
+ LHSTok->setFunction(CalledFunction);
+  
+ std::queue<Token*> q;
+ std::queue<std::string> q1;
+ bool foundPointee = false;
+ bool notPINEmpty = false;
+ q.push(RHSTok); 	
+
+ int rhsInTmp = 1;
+ std::string tempIndx;
+ std::set<std::pair<Token*, std::string>> rhsSet;
+
+ while (rhsInTmp == 1 and !q.empty())     {
+       Token* rhsTemp = q.front();
+       q.pop();
+       if (rhsTemp->isValPointerType()) {  
+       	tempIndx = fetchRhsIndxfrmPin(currPIN, rhsTemp);
+	for (auto IN : currPIN) {
+		notPINEmpty = true;
+    		if (compareToken(rhsTemp, IN.first.first) and (tempIndx == IN.first.second)) {
+			errs() << "\n Pointees of Rhs found in Pin. ";	
+			std::set<std::pair<Token*, std::string>> pointeeSet = IN.second;
+		  	for (auto pointee : pointeeSet) {
+			      q.push(pointee.first);
+			      q1.push(pointee.second);
+ 			}//end for
+    		}//end if
+       	}//end outer for
+      }//end if
+      rhsInTmp--;
+  }//end while
+
+  /* Loop to fetch pointees of RHS */
+  while (!q.empty())      {
+     Token* rhsValue = q.front();
+     std::string IndexRhs = q1.front();
+     q.pop();
+     q1.pop();
+     rhsSet.insert(std::make_pair(rhsValue, IndexRhs));
+     foundPointee = true;				    
+  }	
+
+  if (notPINEmpty) {
+    if (foundPointee)
+     mappedArgPin[std::make_pair(LHSTok, "1")] = rhsSet;
+  }
+  return mappedArgPin;
+}
+
+
+F IPLFCPA::getPinStartCallee(long int Index, Instruction* I, F& currPIN, Function* target_function) {
+ llvm::outs() << "\n Inside getPinStartCallee................";
+ F PIN_Start_Callee;
+
+ CallInst *CI = dyn_cast<CallInst>(I);
+ for(int i=0; i <CI->arg_size();i++) {    
+ //   PIN_Start_Callee.insert(mapIndirectFunArgForward(target_function->getArg(i),CI->getArgOperand(i), currPIN));
+  PIN_Start_Callee = forwardMerge(PIN_Start_Callee,(mapIndirectFunArgForward(target_function->getArg(i),CI->getArgOperand(i), currPIN)));
+ }//end inner for
+
+ return PIN_Start_Callee;
+}
+
+
+fetchLR* IPLFCPA::getFetchLRObfromIndex(long int Index) {
+ llvm::outs() << "\n Inside getFetchLRObfromIndex..............";
+ fetchLR * ins;
+ for (auto g : globalInstrIndexList) {
+  if (g.first == Index)  { 
+   ins = &g.second;
+  }
+ }
+ return ins;
+}
+
+
+B IPLFCPA::getFPandArgsBackward(long int Index, Instruction* I) {
+ llvm::outs() << "\n Inside getFPandArgs..............";
+ std::pair<Token*, int> tempLHS;
+ Token* lhsVal;
+ int indirLhs;
+ std::vector<std::pair<Token*, int>> rhsVector;
+ fetchLR * ins;
+ llvm::outs() << "\n Index =  "<<Index;
+ std::vector<Token*> calleeTokens;
+ std::pair<Token*, int > rhsVal;
+ std::vector<Function*> vecCalleeFunc;
+ B retLivenessInfo;
+
+ /*Fetch the RHS (FP) first*/
+ ins = getFetchLRObfromIndex(Index);
+ tempLHS = ins->getLHS();
+ lhsVal = tempLHS.first;  
+ indirLhs = tempLHS.second;
+ rhsVector = ins->getRHS();
+ for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {					
+   rhsVal = *r;
+   llvm::outs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
+   llvm::outs() << "\n Get Hash name: "<<rhsVal.first->getHash();
+ }
+
+  retLivenessInfo.insert(std::make_pair(rhsVal.first, "1"));
+  CallInst *CI = dyn_cast<CallInst>(I);
+  for(int i=0; i <CI->arg_size();i++) {
+     if (!isa<Instruction>(CI->getArgOperand(i)))
+        continue;
+     retLivenessInfo.insert(std::make_pair(TW.getToken(new Token(CI->getArgOperand(i))), "1"));
+  }	
+  return retLivenessInfo;
+}
+
+
+std::vector<Function*> IPLFCPA::getIndirectCalleeFromIN(long int Index, F& currPIN) {
+ llvm::outs() << "\n Inside getIndirectCalleeFromIN..............";
+ std::pair<Token*, int> tempLHS;
+ Token* lhsVal;
+ int indirLhs;
+ std::vector<std::pair<Token*, int>> rhsVector;
+ fetchLR * ins;
+ llvm::outs() << "\n Index =  "<<Index;
+ std::vector<Token*> calleeTokens;
+ std::pair<Token*, int > rhsVal;
+ std::vector<Function*> vecCalleeFunc;
+ 
+ /*Fetch the RHS (FP) first*/
+ ins = getFetchLRObfromIndex(Index);
+ tempLHS = ins->getLHS();
+ lhsVal = tempLHS.first;  
+ indirLhs = tempLHS.second;
+ rhsVector = ins->getRHS();
+ for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {					
+   rhsVal = *r;
+   llvm::outs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
+   llvm::outs() << "\n Get Hash name: "<<rhsVal.first->getHash();
+ }
+  
+  /*Fetch the pointee of FP from PIN*/
+  if (currPIN.empty())
+	return vecCalleeFunc;
+  else {
+	//PIN not empty
+       for (auto fIN : currPIN) { 
+	 if ((fIN.first.first == rhsVal.first)){// and (fIN.first.second == rhsVal.second)) {  
+ 	   std::set<std::pair<Token*, std::string>> Pointee = fIN.second; 
+	   for (auto p : Pointee) {
+	     if (p.first != dummy) { llvm::outs() << "\n Found Callee Tokens.....";
+	       	calleeTokens.push_back(p.first); 
+	     }//inner if
+	   }//inner for
+	}//end outer if
+      }//end outer for   
+  }
+  /*Fetch the function name from callee tokens*/	
+  for (auto f : calleeTokens) 
+	vecCalleeFunc.push_back(f->getFunction());
+  
+  return vecCalleeFunc;
+}
 
 F IPLFCPA::getPurelyLocalComponentForward(const F& dfv) const {
  llvm::outs() << "\n Inside getPurelyLocalComponentForward.............";
@@ -174,16 +348,24 @@ pair<F, B> IPLFCPA::CallInflowFunction(int current_context_label, Function * tar
 		}	
 	}
 
+	/* *Updated on 27 April 22*
+	   * Pure local component: local->local
+	   * Pure global component: global->global
+	   * Mix component: global->local or local->global
+	   * No need of global->dangling in callee procedure
+	*/
 	llvm::outs() << "\n Checking forward values now......";
 	//set the forward value
-	for (auto a : a1) { llvm::outs() << "\n FOR loop F 1";
-		if (a.first.first->isGlobalVar()) { llvm::outs() << "\n Ptr is global: : "<<a.first.first->getName();
-		//ptr is global now check pointees
-		   for (auto p : a.second){ llvm::outs() << "\n Checking Pointeess....";
-			if (p.first->isGlobalVar()) {	llvm::outs() << "\n Pointee is global: "<<p.first->getName();
-			    calleePIN[a.first].insert(p); }
-			else 
-			    calleePIN[a.first].insert(std::make_pair(dangling,"-1"));
+	for (auto a : a1) { 
+		if (a.first.first->isGlobalVar()) { 
+		   llvm::outs() << "\n Ptr is global: : "<<a.first.first->getName();
+		   //ptr is global now check pointees
+		   for (auto p : a.second){ 
+			llvm::outs() << "\n Checking Pointeess....";
+//			if (p.first->isGlobalVar()) {	llvm::outs() << "\n Pointee is global: "<<p.first->getName();
+			    calleePIN[a.first].insert(p);
+//			else 
+//			    calleePIN[a.first].insert(std::make_pair(dangling,"-1"));
 		   }//end inner for
 		}//end if	
 	}//end for
@@ -846,7 +1028,7 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
       }//end if not null		
    }//end gep
    else if (I.getCall()) {
-	llvm::outs() << "\n Instructioon is a call....";	
+	llvm::outs() << "\n Instruction is a call....";	
 
    }
    else	{
@@ -1110,8 +1292,10 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
      F newOutofInst;
      printCurrPinPout(OUTofInst);
      llvm::outs()<< "\n Printing backwardOUT value";
-     for (auto a : backwardOUT)
-	llvm::outs() << "\n Val: "<<a.first->getName();
+     for (auto a : backwardOUT) {
+	llvm::outs() << " Val: "<<a.first->getName()<<" \t";
+     }
+     llvm::outs() << "\n";
      //######OUTPTA[std::make_tuple(contextId,B,instrCount)] = OUTofInst; 
      newOutofInst = restrictByLivness(OUTofInst, backwardOUT);
      printCurrPinPout(newOutofInst);
@@ -1147,7 +1331,7 @@ B IPLFCPA::getPurelyGlobalComponentBackward(const B& dfv) const {
 }
 ///Returns index of LHS 
 std::string IPLFCPA::fetchLhsIndex(fetchLR* ins, Token* LHS) {
-    llvm::outs() << "\n Inside fetchLhsIndex............. ";
+  //  llvm::outs() << "\n Inside fetchLhsIndex............. ";
     std::string lhsIndx;
     if (ins->getGOPLhs() and LHS->isGlobalVar())
 	return LHS->getFieldIndex();
@@ -1291,12 +1475,12 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	llvm::outs() << "\n LHS indir is 1. ";
 	#endif
 	//if lhs is a function argument then generate liveness of rhs
-//        if (tempLHS.first->getIsFunArg()) {
-//	  llvm::outs() << "\n LHS is a function argument. Generate liveness of Rhs unconditionally. ";
-//          std::pair<Token*, int> rhsVal = rhsVector[0];
-//	  INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
-//	  return INofInst;
-//	}
+        if (tempLHS.first->getIsFunArg()) {	
+	  llvm::outs() << "\n LHS is a function argument. Generate liveness of Rhs unconditionally. ";
+          std::pair<Token*, int> rhsVal = rhsVector[0];
+	  INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
+	  return INofInst;
+	}
         //if lhs is an array then dont consider the field index. 
         if (tempLHS.first->getIsArray()) {
 	   #ifdef PRINT
@@ -1572,7 +1756,7 @@ B IPLFCPA::performMeetBackward(const B& d1_currOUT, const  B& d2_succIN) const  
 
 ///Compares two TOKEN values
 bool IPLFCPA::compareToken(Token* T1, Token* T2) const{
- llvm::outs() << "\n Inside compareToken....";
+ //llvm::outs() << "\n Inside compareToken....";
  if (T1->getName() == T2->getName() and T1->getMemTypeName() == T2->getMemTypeName()) 
 	return true;
  return false;
@@ -1609,13 +1793,13 @@ bool IPLFCPA::EqualDataFlowValuesBackward(const B& d1, const B& d2) const{
 }
 
 F IPLFCPA::getBoundaryInformationForward() {
-    llvm::outs() << "\n Inside getBoundaryInformationForward ";
+    //llvm::outs() << "\n Inside getBoundaryInformationForward ";
     std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> F_TOP;
     return F_TOP;
 }
 
 F IPLFCPA::getInitialisationValueForward() {
-    llvm::outs() << "\n Inside getInitialisationValueForward ";
+    //llvm::outs() << "\n Inside getInitialisationValueForward ";
     std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> F_TOP;
    /* Token* INIT = IM->extractDummy("INIT");
     std::pair<Token*, std::string> TMP1; 
@@ -1626,13 +1810,13 @@ F IPLFCPA::getInitialisationValueForward() {
 }
 
 B IPLFCPA::getBoundaryInformationBackward() {
-    llvm::outs() << "\n Inside getBoundaryInformationBackward ";
+    //llvm::outs() << "\n Inside getBoundaryInformationBackward ";
     std::set<std::pair<Token*, std::string>> B_TOP;
     return B_TOP;
 }
 
 B IPLFCPA::getInitialisationValueBackward() {
-    llvm::outs() << "\n Inside getInitialisationValueBackward ";
+   // llvm::outs() << "\n Inside getInitialisationValueBackward ";
     std::set<std::pair<Token*, std::string>> B_TOP;
     return B_TOP;
 }
@@ -1655,10 +1839,15 @@ public:
  //	llvm::outs() << "\n Splitting the BB..............."; 
 //	lfcpaObj.startSplitting();
 
-	lfcpaObj.printGlobalInstrList();
+
 	llvm::outs() << "\n Executing VASCO........";
 	lfcpaObj.doAnalysis(M);
-	lfcpaObj.printContext();
+	lfcpaObj.printGlobalInstrList();
+	//#ifdef RELV_INS
+		lfcpaObj.printmapModeledIns();
+	//	#endif
+
+	//lfcpaObj.printContext();
         return false;
   }
 };
