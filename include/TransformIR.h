@@ -918,8 +918,7 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 		llvm::outs() << "\n Instr is a call instruction.........";
 		#endif
 		Function* FunType = CI->getCalledFunction();
-if (!FunType->isDeclaration()){
-   
+
 		insFlag = true; //Instr is considered and not skipped
 		
 		if (FunType == nullptr){
@@ -927,7 +926,7 @@ if (!FunType->isDeclaration()){
 		  funPtrFlag = true;
 		  std::vector<Token*> vecCall = IM->extractToken(CI);
 		  if (!vecCall.empty()) { 
-			if (vecCall[0]->getName() != "NULL") { llvm::outs() << "\n Check 2";
+			if (vecCall[0]->getName() != "NULL") { 
 				//Lhs is available for call instr
 				//if (vecCall[0]->isValPointerType()) { //this seems to be irrelevant now.
 				    //Lhs is a pointer
@@ -935,7 +934,7 @@ if (!FunType->isDeclaration()){
 					//&&&&&&&&&&&&&&&&	
 				//}
 			}
-				llvm::outs() << "\n Check 3";
+				
 				Token* opRhs = vecCall[1];
 			        Ob.RHS.push_back(std::make_pair(opRhs, 1));
 			        Ob.setCall();
@@ -949,10 +948,11 @@ if (!FunType->isDeclaration()){
 		}//end if indirect call		  
 		else {
 		      llvm::outs() << "\n Direct Function call...........";        
-		fetchLR newObjFetchLR, tempfetchLR;
-	        std::vector<Token*> vecCall = IM->extractToken(CI);
-		if (!vecCall.empty()) {
-			if (vecCall[0]->getName() != "NULL") {
+		if (!FunType->isDeclaration()){
+			fetchLR newObjFetchLR, tempfetchLR;
+	        	std::vector<Token*> vecCall = IM->extractToken(CI);
+			if (!vecCall.empty()) {
+			 if (vecCall[0]->getName() != "NULL") {
 			   if (vecCall[0]->isValPointerType()) {
 			     #if defined(TRACE) || defined(PRINT) 
 			     llvm::outs() << "\n LHS of the call instrutcion is a pointer.";
@@ -999,8 +999,8 @@ if (!FunType->isDeclaration()){
 		    	    flagArgs = true;
 		         }
 		 }//end if
- }//end else direct call
-}//end if not declaration fun
+      }//end if not declaration fun
+    }//end else direct call
 	   }//end else call
    }
    return Ob;
@@ -1202,10 +1202,11 @@ void Transform::simplifyIR(Function* F, BasicBlock* B) {
 	   else if (isa<CallInst>(ins)) {
 		#if defined(TRACE) || defined(PRINT) 
 		llvm::outs() << "\n Instr is a Call.";
-		ins->print(llvm::outs());
+		ins->print(llvm::outs());			
 		#endif
-
-		ArgStore.clear();
+		
+		if (!ArgStore.empty())
+		   ArgStore.clear();
 		insPrintf = objFetchLR.metaDataPrintfIns(ins);
 				
 		if (callFlag) {
