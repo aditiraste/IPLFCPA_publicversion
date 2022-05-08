@@ -760,37 +760,32 @@ fetchLR fetchLR::metaDataReturnIns(Instruction* I) {
 }// end RETURN
 
 fetchLR fetchLR::getArgStore(Value* LHS, Value* RHS) {
-#if defined(TRACE) || defined(PRINT) 
-  llvm::outs() << "\n Inside getArgStore....";
-#endif
-  fetchLR Ob;
-  spatial::Token* RHSTok = TW.getToken(new Token(RHS));
-  Ob.RHS.push_back(std::make_pair(RHSTok, 1));
-  llvm::outs() << "\n RHSTok name: "<<RHSTok->getName();
-  
-  Function* CalledFunction = dyn_cast<Argument>(LHS)->getParent();
-  llvm::outs() << "\n Called Function name check: "<<CalledFunction->getName();
-  spatial::Token* LHSTok = TW.getToken(new Token(LHS));
-  llvm::outs() << "\n LHSTok name: "<<LHSTok->getName();
-  LHSTok->setIsFunArg();  
-  LHSTok->setIsGlobal();
-  LHSTok->setFunction(CalledFunction);
-  llvm::outs() << "\n Lhs: <" <<LHSTok->getName()+"_"+LHSTok->getFunction()->getName().str();
-  //llvm::outs() << "\n LHSTok function name: "<<LHSTok->getFunction()->getName().str();
-  Ob.LHS = std::make_pair(LHSTok, 1);
-  return Ob;
+ #if defined(TRACE) || defined(PRINT) 
+ llvm::outs() << "\n Inside getArgStore....";
+ #endif
+ fetchLR Ob;
+ spatial::Token* RHSTok = TW.getToken(new Token(RHS));
+ Ob.RHS.push_back(std::make_pair(RHSTok, 1));
+
+ Function* CalledFunction = dyn_cast<Argument>(LHS)->getParent();
+ spatial::Token* LHSTok = TW.getToken(new Token(LHS));
+ LHSTok->setIsFunArg();  
+ LHSTok->setIsGlobal();
+ LHSTok->setFunction(CalledFunction);
+ Ob.LHS = std::make_pair(LHSTok, 1);
+ return Ob;
 }
 
 
 fetchLR fetchLR::getRetArgStore(Token* LHSTK, Token* RHSTK) {
-#if defined(TRACE) || defined(PRINT) 
-  llvm::outs() << "\n Inside getRetArgStore.............";
-#endif
+ #if defined(TRACE) || defined(PRINT) 
+ llvm::outs() << "\n Inside getRetArgStore.............";
+ #endif
   
-  fetchLR Ob;
-  Ob.RHS.push_back(std::make_pair(RHSTK, 1));
-  Ob.LHS = std::make_pair(LHSTK, 1);
-  return Ob;
+ fetchLR Ob;
+ Ob.RHS.push_back(std::make_pair(RHSTK, 1));
+ Ob.LHS = std::make_pair(LHSTK, 1);
+ return Ob;
 }
 
 
@@ -817,13 +812,16 @@ std::vector<Token*> fetchLR::mapReturnArg(Function *F) {
 	         llvm::outs() << "\n Return Value is Pointer Type. ";
 		 #endif
 		 spatial::Token* RHSTok = TW.getToken(new Token(RetVal)); 
-		 if(F && F->hasName())
+  		 RHSTok->setIsGlobal();
+		 vecRetToken.push_back(RHSTok);     
+
+		 /*if(F && F->hasName())
  	   		fName = "_" + F->getName().str();
 		 
 		 spatial::Token* newRHSTok = TW.getToken(new Token(RHSTok->getName().str() + fName, F));
   		 newRHSTok->setIsGlobal();
 		 newRHSTok->setTy(RHSTok->getTy());
-  		 vecRetToken.push_back(newRHSTok);     
+  		 vecRetToken.push_back(newRHSTok);     */
             }
             else if (RetVal && !llvm::isa<llvm::ConstantInt>(RetVal)) {
 		#if defined(TRACE) || defined(PRINT) 
@@ -947,8 +945,8 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
                   }		
 		}//end if indirect call		  
 		else {
-		      llvm::outs() << "\n Direct Function call...........";        
-		if (!FunType->isDeclaration()){
+		     llvm::outs() << "\n Direct Function call...........";        
+		     if (!FunType->isDeclaration()){
 			fetchLR newObjFetchLR, tempfetchLR;
 	        	std::vector<Token*> vecCall = IM->extractToken(CI);
 			if (!vecCall.empty()) {
@@ -959,6 +957,9 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 			     #endif
 			     Token* lhsTemp = vecCall[0]; 
 			     std::vector<Token*> vecRhsTokens = mapReturnArg(FunType);
+
+			     if (!ReturnArgStore.empty())
+				ReturnArgStore.clear();
 			    
 			     if (vecRhsTokens.size() >= 1) {
 				for (int i = 0; i < vecRhsTokens.size(); i++) { 
@@ -978,30 +979,27 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 					}
 				}//end for	
 			      }//end size>=1				  
-			   }//end inner if
-				//Commenting below code for now 12.4.22
-		        	/*Ob.LHS = std::make_pair(vecCall[0], 1);
-				llvm::outs() << "\n Call instr Lhs: "<<vecCall[0]->getName();*/				
-			}//end outer if
+			   }//end inner if pointer
+			}//end outer if name not NULL
 		        Token* opRhs = TW.getToken(new spatial::Token(FunType));
 			Ob.RHS.push_back(std::make_pair(opRhs, 1));
 			Ob.setCall();
 			callFlag = true;
-
-			//ArgStore.clear();
+		
+			if (!ArgStore.empty())
+				ArgStore.clear();
 			for(int i=0; i <CI->arg_size();i++) {
  			   fetchLR newObjFetchLR, tempfetchLR;
          	           if (!isa<Instruction>(CI->getArgOperand(i)))
                         	continue;
-			    llvm::outs() << "\n CAlled Function name: "<<CI->getCalledFunction()->getName();
 			    tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledFunction()->getArg(i),CI->getArgOperand(i));
 			    ArgStore.push_back(tempfetchLR);
 		    	    flagArgs = true;
 		         }
 		 }//end if
-      }//end if not declaration fun
-    }//end else direct call
-	   }//end else call
+            }//end if not declaration fun
+         }//end else direct call
+       }//end else call
    }
    return Ob;
 }
@@ -1292,10 +1290,11 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 			funPtrFlag = false;//reset flag
 		}
 
-		if (flagRetArg) { 
-		  for (std::list<fetchLR>::iterator i=ReturnArgStore.begin(), e=ReturnArgStore.end(); i!=e; ++i)  { 
+		if (flagRetArg) { llvm::outs() << "\n Inside flagRetArg............";
+		  for (std::list<fetchLR>::iterator i=ReturnArgStore.begin(), e=ReturnArgStore.end(); i!=e; ++i)  {
+			llvm::outs() << "\n Return value entered for index = "<< instrCounter;
 		       globalInstrIndexList[instrCounter] =  *i;  
-                       funcBBInsMap[std::make_pair(F, B)].push_back(instrCounter);
+		       funcBBInsMap[std::make_pair(F, B)].push_back(instrCounter);
 		       instrCounter++;
 		  }//end for
 		}
@@ -1355,8 +1354,6 @@ void Transform::printGlobalInstrList() {
 	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"->"<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t" ;
 	  else if (Obj.getFieldLhs() and !Lhs.first->isValPointerType())
 		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<"."<<objStruct.getStructFieldIndxLhs(i.first) <<", "<<Lhs.second<<" > \t";
-	  else if (Lhs.first->getIsFunArg()) 
-		llvm::outs() << "\t Lhs: <" <<Lhs.first->getName()+"_"+Lhs.first->getFunction()->getName().str()<<", "<<Lhs.second<<" > \t\t";
 	  else	
 	        llvm::outs() << "\t Lhs: <" <<Lhs.first->getName() <<", "<<Lhs.second<<" > \t\t";		
      }
