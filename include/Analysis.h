@@ -1182,7 +1182,7 @@ void Analysis<F,B>::doAnalysisForward() {
                       continue; //this is an inbuilt function so doesn't need to be processed.
                    }
                    contains_a_method_call = true;
-                   break;
+                   //break;
                 }
             }
         } else {
@@ -1762,7 +1762,7 @@ void Analysis<F,B>::doAnalysisBackward() {
                         continue; //this is an inbuilt function so doesn't need to be processed.
                     }
                     contains_a_method_call = true;
-                    break;
+                    //break;
                 }
             }
         } else {
