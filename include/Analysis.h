@@ -1174,13 +1174,12 @@ void Analysis<F,B>::doAnalysisForward() {
             for(auto &index : funcBBInsMap[{f,bb}]) { llvm::outs() << "\n Forward Index: "<<index;
                 auto &inst = globalInstrIndexList[index];
                 if(inst.getCall()) {
-		  // llvm::outs() << "\n Call instruction found in forwards analysis 1.";
-		   Instruction* Inst = getInstforIndx(index);
-		   CallInst *ci = dyn_cast<CallInst>(Inst);
-		   Function *target_function = ci->getCalledFunction(); 
-                   if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
-                      continue; //this is an inbuilt function so doesn't need to be processed.
-                   }
+                    Instruction* Inst = getInstforIndx(index);
+                    CallInst *ci = dyn_cast<CallInst>(Inst);
+                    Function *target_function = ci->getCalledFunction(); 
+                    if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
+                        continue; //this is an inbuilt function so doesn't need to be processed.
+                    }
                    contains_a_method_call = true;
                    //break;
                 }
@@ -1206,13 +1205,12 @@ void Analysis<F,B>::doAnalysisForward() {
                 for(auto &index : funcBBInsMap[{f,bb}]) { //llvm::outs() << "\n Forward contains a method call Index: "<<index;
                     auto &inst = globalInstrIndexList[index];
                     if(inst.getCall()) {
-			//llvm::outs() << "\n Call instruction found in forwards analysis 2.";
-                    Instruction* Inst = getInstforIndx(index);
-                    CallInst *ci = dyn_cast<CallInst>(Inst);
-                    Function *target_function = ci->getCalledFunction(); 
-                    if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
-                        continue; //this is an inbuilt function so doesn't need to be processed.
-                    }
+                        Instruction* Inst = getInstforIndx(index);
+                        CallInst *ci = dyn_cast<CallInst>(Inst);
+                        Function *target_function = ci->getCalledFunction(); 
+                        if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
+                            continue; //this is an inbuilt function so doesn't need to be processed.
+                        }
 			/*
                         At the call instruction, the value at IN should be splitted into two components:
                         1) Purely Global and 2) Mixed.
@@ -1242,8 +1240,7 @@ void Analysis<F,B>::doAnalysisForward() {
                         {
                             if (debug) {
                                 printLine(current_context_label);
-                               // llvm::outs() << *inst << "\n";
-				
+                                llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
                                 llvm::outs() << "IN: ";
                             }
                             //step 14
@@ -1258,7 +1255,7 @@ void Analysis<F,B>::doAnalysisForward() {
                             B d3 = getBackwardOutflowForThisContext(matching_context_label);
 
                             pair<F, B> outflow_pair = CallOutflowFunction(current_context_label, target_function, bb, a3,
-                                                                          d3, a1, d1);
+                                                                          d3, prev, d1);
                             F value_to_be_meet_with_prev_out = outflow_pair.first;
                             B d4 = outflow_pair.second;
 
@@ -1270,7 +1267,7 @@ void Analysis<F,B>::doAnalysisForward() {
                             to OUT of this instruction after executing computeOUTfromIN() on it.
                             */
 
-                             F a5 = getPurelyLocalComponentForward(a1);
+                             F a5 = getPurelyLocalComponentForward(prev);
                             /*
                             At the OUT of this instruction, the value from END of callee procedure is to be merged
                             with the local(mixed) value propagated from IN. Note that this merging "isn't"
@@ -1308,10 +1305,10 @@ void Analysis<F,B>::doAnalysisForward() {
                             return;
                         }
                     }//end if Call 
-		    else {
+		            else {
                         if (debug) {
                             printLine(current_context_label);
-                           // llvm::outs() << *inst << "\n";
+                            llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
                             llvm::outs() << "IN: ";
                             printDataFlowValuesForward(prev);
                         }
@@ -1545,6 +1542,7 @@ F Analysis<F,B>::NormalFlowFunctionForward(pair<int, BasicBlock *> current_pair_
             auto &inst = globalInstrIndexList[index];
             if (debug) {
                 printLine(current_pair_of_context_label_and_bb.first);
+                llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
                 llvm::outs() << "IN: ";
                 printDataFlowValuesForward(prev);
             }
@@ -1700,10 +1698,6 @@ void Analysis<F,B>::doAnalysisBackward() {
             llvm::outs() << "\n-------------------------------------------\n";
             llvm::outs() << "Retrive BB from backward worklist\n";
             auto &inst = globalInstrIndexList[index];
-//            if(not inst) {
-//                llvm::outs() << "NULL";
-//            }
-         //   inst.printOperands(inst);
             llvm::outs() << "\n-------------------------------------------\n";
         }
 
@@ -1740,12 +1734,12 @@ void Analysis<F,B>::doAnalysisBackward() {
 
         B previous_value_at_in_of_this_node = getIn(current_pair.first,
                                                     current_pair.second).second; //CS_BB_IN[current_pair].second;
-	B previous_value_at_out_of_this_node = getOut(current_pair.first, current_pair.second).second; //prev Lout
+	    B previous_value_at_out_of_this_node = getOut(current_pair.first, current_pair.second).second; //prev Lout
 	
         llvm::outs() << "\n Printing previous_value_at_out_of_this_node ";
         printDataFlowValuesBackward(previous_value_at_out_of_this_node);
 
-	llvm::outs() << "\n Printing previous_value_at_in_of_this_node ";
+	    llvm::outs() << "\n Printing previous_value_at_in_of_this_node ";
         printDataFlowValuesBackward(previous_value_at_in_of_this_node);
 
         //step 10
@@ -1780,7 +1774,8 @@ void Analysis<F,B>::doAnalysisBackward() {
             }
         }
         if (contains_a_method_call) {
-            B prev = getOut(current_pair.first, current_pair.second).second;
+            B prev = getBackwardComponentAtOutOfThisInstruction(globalInstrIndexList[funcBBInsMap[{f,bb}].back()]);
+            // B prev = getOut(current_pair.first, current_pair.second).second;
             //step 11
             if(SLIM) {
                 for(auto &index : getReverseList(funcBBInsMap[{f,bb}])) { //llvm::outs() << "\n Backwards contains a method call Index: "<<index;
@@ -1798,7 +1793,7 @@ void Analysis<F,B>::doAnalysisBackward() {
                         The purely global component is given to the end of callee.
                         */
                         //step 12
-			llvm::outs() << "\n CallInflowFunction .............2";
+			            llvm::outs() << "\n CallInflowFunction .............2";
                         pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, a1, prev);
                         F a2 = inflow_pair.first;
                         B d2 = inflow_pair.second;
@@ -1818,10 +1813,9 @@ void Analysis<F,B>::doAnalysisBackward() {
                         {
                             if (debug) {
                                 printLine(current_context_label);
-                                //llvm::outs() << *inst << "\n";
-				    //            inst.printOperands(inst);
+                                llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
                                 llvm::outs() << "OUT: ";
-                                printDataFlowValuesBackward(d1);
+                                printDataFlowValuesBackward(prev);
                             }
                             //step 14
                             pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
@@ -1832,7 +1826,7 @@ void Analysis<F,B>::doAnalysisBackward() {
                             B d3 = getBackwardOutflowForThisContext(matching_context_label);
 
                             pair<F, B> outflow_pair = CallOutflowFunction(current_context_label, target_function, bb, a3,
-                                                                          d3, a1, d1);
+                                                                          d3, a1, prev);
                             F a4 = outflow_pair.first;
                             B value_to_be_meet_with_prev_in = outflow_pair.second;
                             //step 18 and 19
@@ -1877,10 +1871,10 @@ void Analysis<F,B>::doAnalysisBackward() {
                             return;
                         }
                     }//end if not call instr
-		    else {
+		            else {
                         if (debug) {
                             printLine(current_context_label);
-                           // llvm::outs() << *inst << "\n";
+                            llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
                             llvm::outs() << "OUT: ";
                             printDataFlowValuesBackward(prev);
                         }
@@ -1911,7 +1905,7 @@ void Analysis<F,B>::doAnalysisBackward() {
                         The purely global component is given to the end of callee.
                         */
                         //step 12
-			llvm::outs() << "\n CallInflowFunction .............1";
+			            llvm::outs() << "\n CallInflowFunction .............1";
                         pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, a1, prev);
                         F a2 = inflow_pair.first;
                         B d2 = inflow_pair.second;
@@ -2019,7 +2013,7 @@ void Analysis<F,B>::doAnalysisBackward() {
             setBackwardIn(current_pair.first, current_pair.second, NormalFlowFunctionBackward(current_pair));
 
         }
-	llvm::outs() << "\n Check if LIN of BB has changed.";
+	    llvm::outs() << "\n Check if LIN of BB has changed.";
         //Check if IN value of the BB has changed
         bool changed = false;
         if (!EqualDataFlowValuesBackward(previous_value_at_in_of_this_node,
@@ -2113,11 +2107,10 @@ B Analysis<F,B>::NormalFlowFunctionBackward(pair<int, BasicBlock *> current_pair
     //traverse a basic block in backward direction
     if(SLIM) {
         for(auto &index : getReverseList(funcBBInsMap[{context_object->getFunction(),current_pair_of_context_label_and_bb.second}])) {
-	    //llvm::outs() << "\n Normal Backwards Index: "<<index;
             auto &inst = globalInstrIndexList[index];
             if (debug) {
                 printLine(current_pair_of_context_label_and_bb.first);
-                // llvm::outs() << *inst << "\n";
+                llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
                 llvm::outs() << "OUT: ";
                 printDataFlowValuesBackward(prev);
             }
