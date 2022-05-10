@@ -20,15 +20,15 @@
 
 
  Printing Global Instruction List.....#
- Index: 1	 Lhs: <y, 1 > 		 Rhs: <arg, 0>
- Index: 2	 Lhs: <i2, 1 > 		 Rhs: <y, 1>
- Index: 3 Rhs: <i2, 1>
- Index: 4	 Lhs: <x, 1 > 		 Rhs: <i1, 0>
- Index: 5	 Lhs: <i2, 1 > 		 Rhs: <x, 1>
- Index: 6	 Lhs: <arg, 1 > 		 Rhs: <i2, 1>
+ Index: 1	 Lhs: <y, 1 > 		 Rhs: <a, 1>
+ Index: 2	 Lhs: <i1, 1 > 		 Rhs: <y, 1>
+ Index: 3 Rhs: <i1, 1>
+ Index: 4	 Lhs: <x, 1 > 		 Rhs: <c, 0>
+ Index: 5	 Lhs: <i, 1 > 		 Rhs: <x, 1>
+ Index: 6	 Lhs: <a, 1 > 		 Rhs: <i, 1>
  Index: 7 Rhs: <fun, 1>
- Index: 8	 Lhs: <i3, 1 > 		 Rhs: <i2, 1>
- Index: 9	 Lhs: <z, 1 > 		 Rhs: <i3, 1>
+ Index: 8	 Lhs: <call, 1 > 		 Rhs: <i1, 1>
+ Index: 9	 Lhs: <z, 1 > 		 Rhs: <call, 1>
  Index: 10 Rhs: <z, 1>
 Time taken in Splitting Basic Block : 0 seconds
 INITIALIZING CONTEXT:-
@@ -62,7 +62,7 @@ OUT: {  }
 OUT: { z,  }
  Inside computeInFromOut...................
  Fetched LHS: z lhs indir: 1
- Rhs in loop: <i3, 1>IN: { i3,  }
+ Rhs in loop: <call, 1>IN: { call,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -70,7 +70,7 @@ OUT: { z,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
 LIN value has changed.Pushing predecessors in WL
 
  Check if LOUT of BB has changed.
@@ -94,34 +94,34 @@ Retrive BB from backward worklist
 
 -------------------------------------------
 
- Inside performMeetBackward...................After setting backward out: { i3,  }
- Printing previous_value_at_out_of_this_node { i3,  }
+ Inside performMeetBackward...................After setting backward out: { call,  }
+ Printing previous_value_at_out_of_this_node { call,  }
  Printing previous_value_at_in_of_this_node {  }
  Backwards Index: 6
  Backwards Index: 7
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i3,  }
+OUT: { call,  }
  Inside computeInFromOut...................
- Fetched LHS: i3 lhs indir: 1
- Rhs in loop: <i2, 1>IN: { i2,  }
+ Fetched LHS: call lhs indir: 1
+ Rhs in loop: <i1, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
 
  CallInflowFunction .............2
  Inside CallInflowFunction...............
  Inside printCurrPinPout............
- Inside printCurrLinLout............(i2, ) 
+ Inside printCurrLinLout............(i1, ) 
  Checking backward values first........
  For loop 1
- Bck val is global = i2
+ Bck val is global = i1
  Checking forward values now......
 ======================================================================================
 Context NOT found!!!!!
-Forward Inflow Value:- Backward Inflow Value:- { i2,  }
+Forward Inflow Value:- Backward Inflow Value:- { i1,  }
 ======================================================================================
 INITIALIZING CONTEXT:-
 LABEL: 1
 FUNCTION: fun
-Inflow Value: Forward:- Backward:- { i2,  }
+Inflow Value: Forward:- Backward:- { i1,  }
  Inside doAnalysisBackward..................
 -------------------------------------------
 Retrive BB from backward worklist
@@ -138,23 +138,23 @@ Retrive BB from backward worklist
 
 -------------------------------------------
 
- Printing previous_value_at_out_of_this_node { i2,  }
+ Printing previous_value_at_out_of_this_node { i1,  }
  Printing previous_value_at_in_of_this_node {  }
  Backwards Index: 1
  Backwards Index: 2
  Backwards Index: 3
 ===================================[BACKWARD-1 ]===========================================
-OUT: { i2,  }
+OUT: { i1,  }
  Inside computeInFromOut...................
- Rhs in loop: <i2, 1>
+ Rhs in loop: <i1, 1>
  Instr is a USE. 
- Instr is a return stmt. IN: { i2,  }
+ Instr is a return stmt. IN: { i1,  }
 ===================================[BACKWARD-1 ]===========================================
 
 ===================================[BACKWARD-1 ]===========================================
-OUT: { i2,  }
+OUT: { i1,  }
  Inside computeInFromOut...................
- Fetched LHS: i2 lhs indir: 1
+ Fetched LHS: i1 lhs indir: 1
  Rhs in loop: <y, 1>IN: { y,  }
 ===================================[BACKWARD-1 ]===========================================
 
@@ -162,7 +162,7 @@ OUT: { i2,  }
 OUT: { y,  }
  Inside computeInFromOut...................
  Fetched LHS: y lhs indir: 1
- Rhs in loop: <arg, 0>IN: {  }
+ Rhs in loop: <a, 1>IN: { a,  }
 ===================================[BACKWARD-1 ]===========================================
 
  Check if LIN of BB has changed.
@@ -170,13 +170,15 @@ OUT: { y,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............
+ Inside printCurrLinLout............(a, ) 
+LIN value has changed.Pushing predecessors in WL
+
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i2, ) 
+ Inside printCurrLinLout............(i1, ) 
  Value d2..........
- Inside printCurrLinLout............(i2, ) 
+ Inside printCurrLinLout............(i1, ) 
  BB is the entry block..........
  Inside getPurelyGlobalComponentBackward...............
  SLIM LOOP 
@@ -197,25 +199,25 @@ Retrive BB from backward worklist
 
 -------------------------------------------
 
- Inside performMeetBackward...................After setting backward out: { i3,  }
- Printing previous_value_at_out_of_this_node { i3,  }
+ Inside performMeetBackward...................After setting backward out: { call,  }
+ Printing previous_value_at_out_of_this_node { call,  }
  Printing previous_value_at_in_of_this_node {  }
  Backwards Index: 6
  Backwards Index: 7
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i3,  }
+OUT: { call,  }
  Inside computeInFromOut...................
- Fetched LHS: i3 lhs indir: 1
- Rhs in loop: <i2, 1>IN: { i2,  }
+ Fetched LHS: call lhs indir: 1
+ Rhs in loop: <i1, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
 
  CallInflowFunction .............2
  Inside CallInflowFunction...............
  Inside printCurrPinPout............
- Inside printCurrLinLout............(i2, ) 
+ Inside printCurrLinLout............(i1, ) 
  Checking backward values first........
  For loop 1
- Bck val is global = i2
+ Bck val is global = i1
  Checking forward values now......
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
@@ -224,34 +226,34 @@ OUT: { i3,  }
  Inside printCurrPinPout............
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i2, ) 
+ Inside printCurrLinLout............(i1, ) 
  Value d2..........
- Inside printCurrLinLout............(i2, ) ======================================================================================
+ Inside printCurrLinLout............(i1, ) ======================================================================================
 Context found!!!!!
 LABEL: 1
-Forward Inflow Value:- Backward Inflow Value:- { i2,  }======================================================================================
+Forward Inflow Value:- Backward Inflow Value:- { i1,  }======================================================================================
 
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i3,  }
+OUT: { call,  }
  Inside CallOutflowFunction..............
  Printing values of a1
  Inside printCurrPinPout............
  Printing values of d1
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
  Printing values of a3
  Inside printCurrPinPout............
  Printing values of d3
- Inside printCurrLinLout............
+ Inside printCurrLinLout............(a, ) 
  Inside getLocalComponentB.............
- Inside performMeetBackward...................IN: { i3,  }
+ Inside performMeetBackward...................IN: { a, call,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i3,  }
+OUT: { a, call,  }
  Inside computeInFromOut...................
- Fetched LHS: arg lhs indir: 1
- Rhs in loop: <i2, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { i2, i3,  }
+ Fetched LHS: a lhs indir: 1
+ Rhs in loop: <i, 1>
+ LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { a, i, call,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -259,15 +261,15 @@ OUT: { i3,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............(i2, ) (i3, ) 
+ Inside printCurrLinLout............(a, ) (i, ) (call, ) 
 LIN value has changed.Pushing predecessors in WL
 
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
  Value d2..........
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
 -------------------------------------------
 Retrive BB from backward worklist
 
@@ -278,23 +280,23 @@ Retrive BB from backward worklist
 
 -------------------------------------------
 
- Inside performMeetBackward...................After setting backward out: { i2, i3,  }
- Printing previous_value_at_out_of_this_node { i2, i3,  }
+ Inside performMeetBackward...................After setting backward out: { a, i, call,  }
+ Printing previous_value_at_out_of_this_node { a, i, call,  }
  Printing previous_value_at_in_of_this_node {  }
  Backwards Index: 4
  Backwards Index: 5
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i2, i3,  }
+OUT: { a, i, call,  }
  Inside computeInFromOut...................
- Fetched LHS: i2 lhs indir: 1
- Rhs in loop: <x, 1>IN: { x, i3,  }
+ Fetched LHS: i lhs indir: 1
+ Rhs in loop: <x, 1>IN: { a, x, call,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
-OUT: { x, i3,  }
+OUT: { a, x, call,  }
  Inside computeInFromOut...................
  Fetched LHS: x lhs indir: 1
- Rhs in loop: <i1, 0>IN: { i3,  }
+ Rhs in loop: <c, 0>IN: { a, call,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -302,22 +304,22 @@ OUT: { x, i3,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(a, ) (call, ) 
 LIN value has changed.Pushing predecessors in WL
 
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i2, ) (i3, ) 
+ Inside printCurrLinLout............(a, ) (i, ) (call, ) 
  Value d2..........
- Inside printCurrLinLout............(i2, ) (i3, ) 
+ Inside printCurrLinLout............(a, ) (i, ) (call, ) 
  BB is the entry block..........
  Inside getPurelyGlobalComponentBackward...............
  SLIM LOOP 
  Inside doAnalysisForward.................
 ===================================[FORWARD-1 ]===========================================
 TESTING
-INFLOW VALUES: Forward:-Backward:-{ i2,  }
+INFLOW VALUES: Forward:-Backward:-{ i1,  }
 ===================================[FORWARD-1 ]===========================================
 
  previous_value_at_in_of_this_node.........
@@ -329,35 +331,38 @@ INFLOW VALUES: Forward:-Backward:-{ i2,  }
 IN: 
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
- Rhs in loop: <arg, 0>
+ Rhs in loop: <a, 1>
  Checking backwardOUT values........
  Value: y
  ----------------------
  Normal instruction. 
- Rhs Value: arg indir= 0
- Rhs indir = 0 
+ Rhs Value: a indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
  Now fetching the pointees of LHS: y
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (y, )->((arg, ) , ) }
+ Inside printCurrPinPout............
  Printing backwardOUT value Val: y 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (y, )->((arg, ) , ) }
+ Inside printCurrPinPout............
  Inside forwardMerge.................
- Printing forward values: { (y, )->((arg, ) , ) }
- ----------------------------------OUT: { (y, )->((arg, ) , ) }
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-1 ]===========================================
 
  Index = 2
 ===================================[FORWARD-1 ]===========================================
-IN: { (y, )->((arg, ) , ) }
+IN: 
  Inside computeOutFromIn......................
- LHS in loop = i2 indir= 1
+ LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
  Checking backwardOUT values........
- Value: i2
+ Value: i1
  ----------------------
  Normal instruction. 
  Rhs Value: y indir= 1
@@ -365,36 +370,32 @@ IN: { (y, )->((arg, ) , ) }
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- PIN is not empty
- Pointees of Rhs found in Pin. 
- Second while loop
- Verify pointee of rhs: arg
- Now fetching the pointees of LHS: i2
+ Now fetching the pointees of LHS: i1
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (i2, )->((arg, ) , ) }{ (y, )->((arg, ) , ) }
- Printing backwardOUT value Val: i2 	
+ Inside printCurrPinPout............
+ Printing backwardOUT value Val: i1 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (i2, )->((arg, ) , ) }
+ Inside printCurrPinPout............
  Inside forwardMerge.................
- Printing forward values: { (i2, )->((arg, ) , ) }
- ----------------------------------OUT: { (i2, )->((arg, ) , ) }
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-1 ]===========================================
 
  Index = 3
 ===================================[FORWARD-1 ]===========================================
-IN: { (i2, )->((arg, ) , ) }
+IN: 
  Inside computeOutFromIn......................
- Rhs in loop: <i2, 1>
+ Rhs in loop: <i1, 1>
  Checking backwardOUT values........
- Value: i2
+ Value: i1
  ----------------------
  Instr is a USE. 
  Inside restrictByLivness().......
- Printing forward values: { (i2, )->((arg, ) , ) }
- ----------------------------------OUT: { (i2, )->((arg, ) , ) }
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-1 ]===========================================
 
  Index = 1
@@ -402,35 +403,38 @@ IN: { (i2, )->((arg, ) , ) }
 IN: 
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
- Rhs in loop: <arg, 0>
+ Rhs in loop: <a, 1>
  Checking backwardOUT values........
  Value: y
  ----------------------
  Normal instruction. 
- Rhs Value: arg indir= 0
- Rhs indir = 0 
+ Rhs Value: a indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
  Now fetching the pointees of LHS: y
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (y, )->((arg, ) , ) }
+ Inside printCurrPinPout............
  Printing backwardOUT value Val: y 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (y, )->((arg, ) , ) }
+ Inside printCurrPinPout............
  Inside forwardMerge.................
- Printing forward values: { (y, )->((arg, ) , ) }
- ----------------------------------OUT: { (y, )->((arg, ) , ) }
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-1 ]===========================================
 
  Index = 2
 ===================================[FORWARD-1 ]===========================================
-IN: { (y, )->((arg, ) , ) }
+IN: 
  Inside computeOutFromIn......................
- LHS in loop = i2 indir= 1
+ LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
  Checking backwardOUT values........
- Value: i2
+ Value: i1
  ----------------------
  Normal instruction. 
  Rhs Value: y indir= 1
@@ -438,45 +442,40 @@ IN: { (y, )->((arg, ) , ) }
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- PIN is not empty
- Pointees of Rhs found in Pin. 
- Second while loop
- Verify pointee of rhs: arg
- Now fetching the pointees of LHS: i2
+ Now fetching the pointees of LHS: i1
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (i2, )->((arg, ) , ) }{ (y, )->((arg, ) , ) }
- Printing backwardOUT value Val: i2 	
+ Inside printCurrPinPout............
+ Printing backwardOUT value Val: i1 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (i2, )->((arg, ) , ) }
+ Inside printCurrPinPout............
  Inside forwardMerge.................
- Printing forward values: { (i2, )->((arg, ) , ) }
- ----------------------------------OUT: { (i2, )->((arg, ) , ) }
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-1 ]===========================================
 
  Index = 3
 ===================================[FORWARD-1 ]===========================================
-IN: { (i2, )->((arg, ) , ) }
+IN: 
  Inside computeOutFromIn......................
- Rhs in loop: <i2, 1>
+ Rhs in loop: <i1, 1>
  Checking backwardOUT values........
- Value: i2
+ Value: i1
  ----------------------
  Instr is a USE. 
  Inside restrictByLivness().......
- Printing forward values: { (i2, )->((arg, ) , ) }
- ----------------------------------OUT: { (i2, )->((arg, ) , ) }
+ Printing forward values: 
+ ----------------------------------OUT: 
 ===================================[FORWARD-1 ]===========================================
-{ (i2, )->((arg, ) , ) }
+
  Check if POut has changed
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
  Inside printCurrPinPout............
  Value d2..........
- Inside printCurrPinPout............{ (i2, )->((arg, ) , ) }
- POUT value has changed. Insert succ into fWL 
+ Inside printCurrPinPout............
  Check if PIN has changed
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
@@ -490,7 +489,7 @@ IN: { (i2, )->((arg, ) , ) }
  Inserting into backwards worklist...
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: Forward:-Backward:-{ i2, i3,  }
+INFLOW VALUES: Forward:-Backward:-{ a, i, call,  }
 ===================================[FORWARD-0 ]===========================================
 
  previous_value_at_in_of_this_node.........
@@ -501,37 +500,39 @@ INFLOW VALUES: Forward:-Backward:-{ i2, i3,  }
 IN: 
  Inside computeOutFromIn......................
  LHS in loop = x indir= 1
- Rhs in loop: <i1, 0>
+ Rhs in loop: <c, 0>
  Checking backwardOUT values........
+ Value: a
  Value: x
- Value: i3
+ Value: call
  ----------------------
  Normal instruction. 
- Rhs Value: i1 indir= 0
+ Rhs Value: c indir= 0
  Rhs indir = 0 
  Now fetching the pointees of LHS: x
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (x, )->((i1, ) , ) }
- Printing backwardOUT value Val: x 	 Val: i3 	
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: x 	 Val: call 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (x, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }
  Inside forwardMerge.................
- Printing forward values: { (x, )->((i1, ) , ) }
- ----------------------------------OUT: { (x, )->((i1, ) , ) }
+ Printing forward values: { (x, )->((c, ) , ) }
+ ----------------------------------OUT: { (x, )->((c, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 
  Index = 5
 ===================================[FORWARD-0 ]===========================================
-IN: { (x, )->((i1, ) , ) }
+IN: { (x, )->((c, ) , ) }
  Inside computeOutFromIn......................
- LHS in loop = i2 indir= 1
+ LHS in loop = i indir= 1
  Rhs in loop: <x, 1>
  Checking backwardOUT values........
- Value: i2
- Value: i3
+ Value: a
+ Value: i
+ Value: call
  ----------------------
  Normal instruction. 
  Rhs Value: x indir= 1
@@ -542,19 +543,19 @@ IN: { (x, )->((i1, ) , ) }
  PIN is not empty
  Pointees of Rhs found in Pin. 
  Second while loop
- Verify pointee of rhs: i1
- Now fetching the pointees of LHS: i2
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: i
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (x, )->((i1, ) , ) }{ (i2, )->((i1, ) , ) }
- Printing backwardOUT value Val: i2 	 Val: i3 	
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }{ (i, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: i 	 Val: call 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Inside forwardMerge.................
- Printing forward values: { (i2, )->((i1, ) , ) }
- ----------------------------------OUT: { (i2, )->((i1, ) , ) }
+ Printing forward values: { (i, )->((c, ) , ) }
+ ----------------------------------OUT: { (i, )->((c, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 
  Index = 4
@@ -562,37 +563,39 @@ IN: { (x, )->((i1, ) , ) }
 IN: 
  Inside computeOutFromIn......................
  LHS in loop = x indir= 1
- Rhs in loop: <i1, 0>
+ Rhs in loop: <c, 0>
  Checking backwardOUT values........
+ Value: a
  Value: x
- Value: i3
+ Value: call
  ----------------------
  Normal instruction. 
- Rhs Value: i1 indir= 0
+ Rhs Value: c indir= 0
  Rhs indir = 0 
  Now fetching the pointees of LHS: x
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (x, )->((i1, ) , ) }
- Printing backwardOUT value Val: x 	 Val: i3 	
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: x 	 Val: call 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (x, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }
  Inside forwardMerge.................
- Printing forward values: { (x, )->((i1, ) , ) }
- ----------------------------------OUT: { (x, )->((i1, ) , ) }
+ Printing forward values: { (x, )->((c, ) , ) }
+ ----------------------------------OUT: { (x, )->((c, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 
  Index = 5
 ===================================[FORWARD-0 ]===========================================
-IN: { (x, )->((i1, ) , ) }
+IN: { (x, )->((c, ) , ) }
  Inside computeOutFromIn......................
- LHS in loop = i2 indir= 1
+ LHS in loop = i indir= 1
  Rhs in loop: <x, 1>
  Checking backwardOUT values........
- Value: i2
- Value: i3
+ Value: a
+ Value: i
+ Value: call
  ----------------------
  Normal instruction. 
  Rhs Value: x indir= 1
@@ -603,27 +606,27 @@ IN: { (x, )->((i1, ) , ) }
  PIN is not empty
  Pointees of Rhs found in Pin. 
  Second while loop
- Verify pointee of rhs: i1
- Now fetching the pointees of LHS: i2
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: i
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (x, )->((i1, ) , ) }{ (i2, )->((i1, ) , ) }
- Printing backwardOUT value Val: i2 	 Val: i3 	
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }{ (i, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: i 	 Val: call 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Inside forwardMerge.................
- Printing forward values: { (i2, )->((i1, ) , ) }
- ----------------------------------OUT: { (i2, )->((i1, ) , ) }
+ Printing forward values: { (i, )->((c, ) , ) }
+ ----------------------------------OUT: { (i, )->((c, ) , ) }
 ===================================[FORWARD-0 ]===========================================
-{ (i2, )->((i1, ) , ) }
+{ (i, )->((c, ) , ) }
  Check if POut has changed
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
  Inside printCurrPinPout............
  Value d2..........
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  POUT value has changed. Insert succ into fWL 
  Check if PIN has changed
  Inside EqualDataFlowValuesForward...............................
@@ -634,22 +637,23 @@ IN: { (x, )->((i1, ) , ) }
  Inside performMeetForward..............
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: Forward:-{ (i2, )->((i1, ) , ) }Backward:-{ i3,  }
+INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i2, )->((i1, ) , ) }
+ previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
  Forward Index: 6
  Forward Index: 7
 ===================================[FORWARD-0 ]===========================================
-IN: { (i2, )->((i1, ) , ) }
+IN: { (i, )->((c, ) , ) }
  Inside computeOutFromIn......................
- LHS in loop = arg indir= 1
- Rhs in loop: <i2, 1>
+ LHS in loop = a indir= 1
+ Rhs in loop: <i, 1>
  Checking backwardOUT values........
- Value: i3
+ Value: a
+ Value: call
  ----------------------
  Normal instruction. 
- Rhs Value: i2 indir= 1
+ Rhs Value: i indir= 1
  case 2: x=t1 or t1=x or *t2=t1 
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
@@ -657,73 +661,77 @@ IN: { (i2, )->((i1, ) , ) }
  PIN is not empty
  Pointees of Rhs found in Pin. 
  Second while loop
- Verify pointee of rhs: i1
- Now fetching the pointees of LHS: arg
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: a
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (arg, )->((i1, ) , ) }{ (i2, )->((i1, ) , ) }
- Printing backwardOUT value Val: i3 	
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }{ (i, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: call 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside forwardMerge.................
- Printing forward values: 
- ----------------------------------OUT: 
+ Printing forward values: { (a, )->((c, ) , ) }
+ ----------------------------------OUT: { (a, )->((c, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 
  Inside CallInflowFunction...............
- Inside printCurrPinPout............
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Inside printCurrLinLout............(call, ) 
  Checking backward values first........
  For loop 1
- Checking forward values now......This is call Instruction in forward direction: 
-{ (i2, )->((i1, ) , ) }{ i3,  }
+ Checking forward values now......
+ Ptr is global: : a
+ Checking Pointeess....This is call Instruction in forward direction: 
+{ (i, )->((c, ) , ) }{ call,  }
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Value d2..........
  Inside printCurrPinPout............
- Inside EqualDataFlowValuesBackward.................
- Value d1..........
- Inside printCurrLinLout............
- Value d2..........
- Inside printCurrLinLout............(i2, ) 
 ======================================================================================
 Context NOT found!!!!!
-Forward Inflow Value:- Backward Inflow Value:- {  }
+Forward Inflow Value:- { (a, )->((c, ) , ) }Backward Inflow Value:- {  }
 ======================================================================================
 INIT CONTEXT:- Backward:- {  }INITIALIZING CONTEXT:-
 LABEL: 2
 FUNCTION: fun
-Inflow Value: Forward:- Backward:- {  }
+Inflow Value: Forward:- { (a, )->((c, ) , ) }Backward:- {  }
  Inside doAnalysisForward.................
 ===================================[FORWARD-2 ]===========================================
 TESTING
-INFLOW VALUES: Forward:-Backward:-{  }
+INFLOW VALUES: Forward:-{ (a, )->((c, ) , ) }Backward:-{  }
 ===================================[FORWARD-2 ]===========================================
 
- previous_value_at_in_of_this_node.........
+ previous_value_at_in_of_this_node.........{ (a, )->((c, ) , ) }
  Forward Index: 1
  Forward Index: 2
  Forward Index: 3
  Index = 1
 ===================================[FORWARD-2 ]===========================================
-IN: 
+IN: { (a, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
- Rhs in loop: <arg, 0>
+ Rhs in loop: <a, 1>
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
  Normal instruction. 
- Rhs Value: arg indir= 0
- Rhs indir = 0 
+ Rhs Value: a indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ PIN is not empty
+ Pointees of Rhs found in Pin. 
+ Second while loop
+ Verify pointee of rhs: c
  Now fetching the pointees of LHS: y
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (y, )->((arg, ) , ) }
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }{ (a, )->((c, ) , ) }
  Printing backwardOUT value
 
  Inside restrictByLivness().......
@@ -737,7 +745,7 @@ IN:
 ===================================[FORWARD-2 ]===========================================
 IN: 
  Inside computeOutFromIn......................
- LHS in loop = i2 indir= 1
+ LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
  Checking backwardOUT values........
  BackwardOUT is empty.............
@@ -748,7 +756,7 @@ IN:
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- Now fetching the pointees of LHS: i2
+ Now fetching the pointees of LHS: i1
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
@@ -766,7 +774,7 @@ IN:
 ===================================[FORWARD-2 ]===========================================
 IN: 
  Inside computeOutFromIn......................
- Rhs in loop: <i2, 1>
+ Rhs in loop: <i1, 1>
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -778,21 +786,28 @@ IN:
 
  Index = 1
 ===================================[FORWARD-2 ]===========================================
-IN: 
+IN: { (a, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
- Rhs in loop: <arg, 0>
+ Rhs in loop: <a, 1>
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
  Normal instruction. 
- Rhs Value: arg indir= 0
- Rhs indir = 0 
+ Rhs Value: a indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ PIN is not empty
+ Pointees of Rhs found in Pin. 
+ Second while loop
+ Verify pointee of rhs: c
  Now fetching the pointees of LHS: y
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (y, )->((arg, ) , ) }
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }{ (a, )->((c, ) , ) }
  Printing backwardOUT value
 
  Inside restrictByLivness().......
@@ -806,7 +821,7 @@ IN:
 ===================================[FORWARD-2 ]===========================================
 IN: 
  Inside computeOutFromIn......................
- LHS in loop = i2 indir= 1
+ LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
  Checking backwardOUT values........
  BackwardOUT is empty.............
@@ -817,7 +832,7 @@ IN:
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- Now fetching the pointees of LHS: i2
+ Now fetching the pointees of LHS: i1
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
@@ -835,7 +850,7 @@ IN:
 ===================================[FORWARD-2 ]===========================================
 IN: 
  Inside computeOutFromIn......................
- Rhs in loop: <i2, 1>
+ Rhs in loop: <i1, 1>
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -854,9 +869,9 @@ IN:
  Check if PIN has changed
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Value d2..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  BB is the last node....
  Inside getPurelyGlobalComponentForward...........
  Inside SLIM loop 
@@ -865,22 +880,23 @@ IN:
  Inside performMeetForward..............
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: Forward:-{ (i2, )->((i1, ) , ) }Backward:-{ i3,  }
+INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i2, )->((i1, ) , ) }
+ previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
  Forward Index: 6
  Forward Index: 7
 ===================================[FORWARD-0 ]===========================================
-IN: { (i2, )->((i1, ) , ) }
+IN: { (i, )->((c, ) , ) }
  Inside computeOutFromIn......................
- LHS in loop = arg indir= 1
- Rhs in loop: <i2, 1>
+ LHS in loop = a indir= 1
+ Rhs in loop: <i, 1>
  Checking backwardOUT values........
- Value: i3
+ Value: a
+ Value: call
  ----------------------
  Normal instruction. 
- Rhs Value: i2 indir= 1
+ Rhs Value: i indir= 1
  case 2: x=t1 or t1=x or *t2=t1 
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
@@ -888,33 +904,35 @@ IN: { (i2, )->((i1, ) , ) }
  PIN is not empty
  Pointees of Rhs found in Pin. 
  Second while loop
- Verify pointee of rhs: i1
- Now fetching the pointees of LHS: arg
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: a
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (arg, )->((i1, ) , ) }{ (i2, )->((i1, ) , ) }
- Printing backwardOUT value Val: i3 	
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }{ (i, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: call 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside forwardMerge.................
- Printing forward values: 
- ----------------------------------OUT: 
+ Printing forward values: { (a, )->((c, ) , ) }
+ ----------------------------------OUT: { (a, )->((c, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 
  Inside CallInflowFunction...............
- Inside printCurrPinPout............
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Inside printCurrLinLout............(call, ) 
  Checking backward values first........
  For loop 1
- Checking forward values now......This is call Instruction in forward direction: 
-{ (i2, )->((i1, ) , ) }{ i3,  }
+ Checking forward values now......
+ Ptr is global: : a
+ Checking Pointeess....This is call Instruction in forward direction: 
+{ (i, )->((c, ) , ) }{ call,  }
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Value d2..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
  Inside printCurrLinLout............
@@ -922,15 +940,15 @@ IN: { (i2, )->((i1, ) , ) }
  Inside printCurrLinLout............======================================================================================
 Context found!!!!!
 LABEL: 2
-Forward Inflow Value:- Backward Inflow Value:- {  }======================================================================================
+Forward Inflow Value:- { (a, )->((c, ) , ) }Backward Inflow Value:- {  }======================================================================================
 
 ===================================[FORWARD-0 ]===========================================
-IN: { (i2, )->((i1, ) , ) }
+IN: { (i, )->((c, ) , ) }
  Inside CallOutflowFunction..............
  Printing values of a1
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Printing values of d1
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
  Printing values of a3
  Inside printCurrPinPout............
  Printing values of d3
@@ -944,23 +962,23 @@ IN: { (i2, )->((i1, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 IN: 
  Inside computeOutFromIn......................
- LHS in loop = i3 indir= 1
- Rhs in loop: <i2, 1>
+ LHS in loop = call indir= 1
+ Rhs in loop: <i1, 1>
  Checking backwardOUT values........
- Value: i3
+ Value: call
  ----------------------
  Normal instruction. 
- Rhs Value: i2 indir= 1
+ Rhs Value: i1 indir= 1
  case 2: x=t1 or t1=x or *t2=t1 
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- Now fetching the pointees of LHS: i3
+ Now fetching the pointees of LHS: call
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
  Inside printCurrPinPout............
- Printing backwardOUT value Val: i3 	
+ Printing backwardOUT value Val: call 	
 
  Inside restrictByLivness().......
  Inside printCurrPinPout............
@@ -972,15 +990,16 @@ IN:
  Check if POut has changed
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Value d2..........
  Inside printCurrPinPout............
+ POUT value has changed. Insert succ into fWL 
  Check if PIN has changed
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Value d2..........
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Inside performMeetForward..............
 ===================================[FORWARD-0 ]===========================================
 TESTING
@@ -995,12 +1014,12 @@ INFLOW VALUES: Forward:-Backward:-{  }
 IN: 
  Inside computeOutFromIn......................
  LHS in loop = z indir= 1
- Rhs in loop: <i3, 1>
+ Rhs in loop: <call, 1>
  Checking backwardOUT values........
  Value: z
  ----------------------
  Normal instruction. 
- Rhs Value: i3 indir= 1
+ Rhs Value: call indir= 1
  case 2: x=t1 or t1=x or *t2=t1 
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
@@ -1038,12 +1057,12 @@ IN:
 IN: 
  Inside computeOutFromIn......................
  LHS in loop = z indir= 1
- Rhs in loop: <i3, 1>
+ Rhs in loop: <call, 1>
  Checking backwardOUT values........
  Value: z
  ----------------------
  Normal instruction. 
- Rhs Value: i3 indir= 1
+ Rhs Value: call indir= 1
  case 2: x=t1 or t1=x or *t2=t1 
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
@@ -1115,15 +1134,15 @@ Retrive BB from backward worklist
 ===================================[BACKWARD-2 ]===========================================
 OUT: {  }
  Inside computeInFromOut...................
- Rhs in loop: <i2, 1>
+ Rhs in loop: <i1, 1>
  Instr is a USE. 
- Instr is a return stmt. IN: { i2,  }
+ Instr is a return stmt. IN: { i1,  }
 ===================================[BACKWARD-2 ]===========================================
 
 ===================================[BACKWARD-2 ]===========================================
-OUT: { i2,  }
+OUT: { i1,  }
  Inside computeInFromOut...................
- Fetched LHS: i2 lhs indir: 1
+ Fetched LHS: i1 lhs indir: 1
  Rhs in loop: <y, 1>IN: { y,  }
 ===================================[BACKWARD-2 ]===========================================
 
@@ -1131,7 +1150,7 @@ OUT: { i2,  }
 OUT: { y,  }
  Inside computeInFromOut...................
  Fetched LHS: y lhs indir: 1
- Rhs in loop: <arg, 0>IN: {  }
+ Rhs in loop: <a, 1>IN: { a,  }
 ===================================[BACKWARD-2 ]===========================================
 
  Check if LIN of BB has changed.
@@ -1139,7 +1158,9 @@ OUT: { y,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............
+ Inside printCurrLinLout............(a, ) 
+LIN value has changed.Pushing predecessors in WL
+
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
@@ -1166,36 +1187,31 @@ Retrive BB from backward worklist
 
 -------------------------------------------
 
- Inside performMeetBackward...................After setting backward out: { i3,  }
- Printing previous_value_at_out_of_this_node { i3,  }
- Printing previous_value_at_in_of_this_node { i2, i3,  }
+ Inside performMeetBackward...................After setting backward out: { call,  }
+ Printing previous_value_at_out_of_this_node { call,  }
+ Printing previous_value_at_in_of_this_node { a, i, call,  }
  Backwards Index: 6
  Backwards Index: 7
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i3,  }
+OUT: { call,  }
  Inside computeInFromOut...................
- Fetched LHS: i3 lhs indir: 1
- Rhs in loop: <i2, 1>IN: { i2,  }
+ Fetched LHS: call lhs indir: 1
+ Rhs in loop: <i1, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
 
  CallInflowFunction .............2
  Inside CallInflowFunction...............
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
- Inside printCurrLinLout............(i2, ) 
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Inside printCurrLinLout............(i1, ) 
  Checking backward values first........
  For loop 1
- Bck val is global = i2
+ Bck val is global = i1
  Checking forward values now......
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
  Inside printCurrPinPout............
  Value d2..........
- Inside printCurrPinPout............
- Inside EqualDataFlowValuesBackward.................
- Value d1..........
- Inside printCurrLinLout............(i2, ) 
- Value d2..........
- Inside printCurrLinLout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
  Inside printCurrPinPout............
@@ -1203,68 +1219,69 @@ OUT: { i3,  }
  Inside printCurrPinPout............
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i2, ) 
+ Inside printCurrLinLout............(i1, ) 
  Value d2..........
- Inside printCurrLinLout............(i2, ) ======================================================================================
+ Inside printCurrLinLout............(i1, ) ======================================================================================
 Context found!!!!!
 LABEL: 1
-Forward Inflow Value:- Backward Inflow Value:- { i2,  }======================================================================================
+Forward Inflow Value:- Backward Inflow Value:- { i1,  }======================================================================================
 
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i3,  }
+OUT: { call,  }
  Inside CallOutflowFunction..............
  Printing values of a1
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Printing values of d1
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
  Printing values of a3
- Inside printCurrPinPout............{ (i2, )->((arg, ) , ) }
+ Inside printCurrPinPout............
  Printing values of d3
- Inside printCurrLinLout............
+ Inside printCurrLinLout............(a, ) 
  Inside getLocalComponentB.............
- Inside performMeetBackward...................IN: { i3,  }
+ Inside performMeetBackward...................IN: { a, call,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
-OUT: { i3,  }
+OUT: { a, call,  }
  Inside computeInFromOut...................
- Fetched LHS: arg lhs indir: 1
- Rhs in loop: <i2, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { i2, i3,  }
+ Fetched LHS: a lhs indir: 1
+ Rhs in loop: <i, 1>
+ LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { a, i, call,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i2, ) (i3, ) 
+ Inside printCurrLinLout............(a, ) (i, ) (call, ) 
  Value d2..........
- Inside printCurrLinLout............(i2, ) (i3, ) 
+ Inside printCurrLinLout............(a, ) (i, ) (call, ) 
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
  Value d2..........
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
  Inside doAnalysisForward.................
  Inside performMeetForward..............
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: Forward:-{ (i2, )->((i1, ) , ) }Backward:-{ i3,  }
+INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i2, )->((i1, ) , ) }
+ previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
  Forward Index: 6
  Forward Index: 7
 ===================================[FORWARD-0 ]===========================================
-IN: { (i2, )->((i1, ) , ) }
+IN: { (i, )->((c, ) , ) }
  Inside computeOutFromIn......................
- LHS in loop = arg indir= 1
- Rhs in loop: <i2, 1>
+ LHS in loop = a indir= 1
+ Rhs in loop: <i, 1>
  Checking backwardOUT values........
- Value: i3
+ Value: a
+ Value: call
  ----------------------
  Normal instruction. 
- Rhs Value: i2 indir= 1
+ Rhs Value: i indir= 1
  case 2: x=t1 or t1=x or *t2=t1 
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
@@ -1272,33 +1289,35 @@ IN: { (i2, )->((i1, ) , ) }
  PIN is not empty
  Pointees of Rhs found in Pin. 
  Second while loop
- Verify pointee of rhs: i1
- Now fetching the pointees of LHS: arg
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: a
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (arg, )->((i1, ) , ) }{ (i2, )->((i1, ) , ) }
- Printing backwardOUT value Val: i3 	
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }{ (i, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: call 	
 
  Inside restrictByLivness().......
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside forwardMerge.................
- Printing forward values: 
- ----------------------------------OUT: 
+ Printing forward values: { (a, )->((c, ) , ) }
+ ----------------------------------OUT: { (a, )->((c, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 
  Inside CallInflowFunction...............
- Inside printCurrPinPout............
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Inside printCurrLinLout............(call, ) 
  Checking backward values first........
  For loop 1
- Checking forward values now......This is call Instruction in forward direction: 
-{ (i2, )->((i1, ) , ) }{ i3,  }
+ Checking forward values now......
+ Ptr is global: : a
+ Checking Pointeess....This is call Instruction in forward direction: 
+{ (i, )->((c, ) , ) }{ call,  }
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Value d2..........
- Inside printCurrPinPout............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
  Inside printCurrLinLout............
@@ -1306,19 +1325,19 @@ IN: { (i2, )->((i1, ) , ) }
  Inside printCurrLinLout............======================================================================================
 Context found!!!!!
 LABEL: 2
-Forward Inflow Value:- Backward Inflow Value:- {  }======================================================================================
+Forward Inflow Value:- { (a, )->((c, ) , ) }Backward Inflow Value:- {  }======================================================================================
 
 ===================================[FORWARD-0 ]===========================================
-IN: { (i2, )->((i1, ) , ) }
+IN: { (i, )->((c, ) , ) }
  Inside CallOutflowFunction..............
  Printing values of a1
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Printing values of d1
- Inside printCurrLinLout............(i3, ) 
+ Inside printCurrLinLout............(call, ) 
  Printing values of a3
  Inside printCurrPinPout............
  Printing values of d3
- Inside printCurrLinLout............
+ Inside printCurrLinLout............(a, ) 
  Inside getLocalComponentB.............
  Inside getPurelyLocalComponentForward.............
  Inside performMeetForward..............
@@ -1328,23 +1347,23 @@ IN: { (i2, )->((i1, ) , ) }
 ===================================[FORWARD-0 ]===========================================
 IN: 
  Inside computeOutFromIn......................
- LHS in loop = i3 indir= 1
- Rhs in loop: <i2, 1>
+ LHS in loop = call indir= 1
+ Rhs in loop: <i1, 1>
  Checking backwardOUT values........
- Value: i3
+ Value: call
  ----------------------
  Normal instruction. 
- Rhs Value: i2 indir= 1
+ Rhs Value: i1 indir= 1
  case 2: x=t1 or t1=x or *t2=t1 
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- Now fetching the pointees of LHS: i3
+ Now fetching the pointees of LHS: call
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
  Inside printCurrPinPout............
- Printing backwardOUT value Val: i3 	
+ Printing backwardOUT value Val: call 	
 
  Inside restrictByLivness().......
  Inside printCurrPinPout............
@@ -1362,30 +1381,428 @@ IN:
  Check if PIN has changed
  Inside EqualDataFlowValuesForward...............................
  Value d1..........
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Value d2..........
- Inside printCurrPinPout............{ (i2, )->((i1, ) , ) }Time taken by analysis: 0 seconds
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+===================================[FORWARD-2 ]===========================================
+TESTING
+INFLOW VALUES: Forward:-{ (a, )->((c, ) , ) }Backward:-{  }
+===================================[FORWARD-2 ]===========================================
+
+ previous_value_at_in_of_this_node.........{ (a, )->((c, ) , ) }
+ Forward Index: 1
+ Forward Index: 2
+ Forward Index: 3
+ Index = 1
+===================================[FORWARD-2 ]===========================================
+IN: { (a, )->((c, ) , ) }
+ Inside computeOutFromIn......................
+ LHS in loop = y indir= 1
+ Rhs in loop: <a, 1>
+ Checking backwardOUT values........
+ Value: y
+ ----------------------
+ Normal instruction. 
+ Rhs Value: a indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ PIN is not empty
+ Pointees of Rhs found in Pin. 
+ Second while loop
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: y
+ Inside while loop for Lhs
+ Must points-to relation. Delete points-to pairs from OutofInst 
+
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }{ (a, )->((c, ) , ) }
+ Printing backwardOUT value Val: y 	
+
+ Inside restrictByLivness().......
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }
+ Inside forwardMerge.................
+ Printing forward values: { (y, )->((c, ) , ) }
+ ----------------------------------OUT: { (y, )->((c, ) , ) }
+===================================[FORWARD-2 ]===========================================
+
+ Index = 2
+===================================[FORWARD-2 ]===========================================
+IN: { (y, )->((c, ) , ) }
+ Inside computeOutFromIn......................
+ LHS in loop = i1 indir= 1
+ Rhs in loop: <y, 1>
+ Checking backwardOUT values........
+ Value: i1
+ ----------------------
+ Normal instruction. 
+ Rhs Value: y indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ PIN is not empty
+ Pointees of Rhs found in Pin. 
+ Second while loop
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: i1
+ Inside while loop for Lhs
+ Must points-to relation. Delete points-to pairs from OutofInst 
+
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }{ (y, )->((c, ) , ) }
+ Printing backwardOUT value Val: i1 	
+
+ Inside restrictByLivness().......
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
+ Inside forwardMerge.................
+ Printing forward values: { (i1, )->((c, ) , ) }
+ ----------------------------------OUT: { (i1, )->((c, ) , ) }
+===================================[FORWARD-2 ]===========================================
+
+ Index = 3
+===================================[FORWARD-2 ]===========================================
+IN: { (i1, )->((c, ) , ) }
+ Inside computeOutFromIn......................
+ Rhs in loop: <i1, 1>
+ Checking backwardOUT values........
+ BackwardOUT is empty.............
+ ----------------------
+ Instr is a USE. 
+ Inside restrictByLivness().......
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-2 ]===========================================
+
+ Index = 1
+===================================[FORWARD-2 ]===========================================
+IN: { (a, )->((c, ) , ) }
+ Inside computeOutFromIn......................
+ LHS in loop = y indir= 1
+ Rhs in loop: <a, 1>
+ Checking backwardOUT values........
+ Value: y
+ ----------------------
+ Normal instruction. 
+ Rhs Value: a indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ PIN is not empty
+ Pointees of Rhs found in Pin. 
+ Second while loop
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: y
+ Inside while loop for Lhs
+ Must points-to relation. Delete points-to pairs from OutofInst 
+
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }{ (a, )->((c, ) , ) }
+ Printing backwardOUT value Val: y 	
+
+ Inside restrictByLivness().......
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }
+ Inside forwardMerge.................
+ Printing forward values: { (y, )->((c, ) , ) }
+ ----------------------------------OUT: { (y, )->((c, ) , ) }
+===================================[FORWARD-2 ]===========================================
+
+ Index = 2
+===================================[FORWARD-2 ]===========================================
+IN: { (y, )->((c, ) , ) }
+ Inside computeOutFromIn......................
+ LHS in loop = i1 indir= 1
+ Rhs in loop: <y, 1>
+ Checking backwardOUT values........
+ Value: i1
+ ----------------------
+ Normal instruction. 
+ Rhs Value: y indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ PIN is not empty
+ Pointees of Rhs found in Pin. 
+ Second while loop
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: i1
+ Inside while loop for Lhs
+ Must points-to relation. Delete points-to pairs from OutofInst 
+
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }{ (y, )->((c, ) , ) }
+ Printing backwardOUT value Val: i1 	
+
+ Inside restrictByLivness().......
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
+ Inside forwardMerge.................
+ Printing forward values: { (i1, )->((c, ) , ) }
+ ----------------------------------OUT: { (i1, )->((c, ) , ) }
+===================================[FORWARD-2 ]===========================================
+
+ Index = 3
+===================================[FORWARD-2 ]===========================================
+IN: { (i1, )->((c, ) , ) }
+ Inside computeOutFromIn......................
+ Rhs in loop: <i1, 1>
+ Checking backwardOUT values........
+ BackwardOUT is empty.............
+ ----------------------
+ Instr is a USE. 
+ Inside restrictByLivness().......
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-2 ]===========================================
+
+ Check if POut has changed
+ Inside EqualDataFlowValuesForward...............................
+ Value d1..........
+ Inside printCurrPinPout............
+ Value d2..........
+ Inside printCurrPinPout............
+ Check if PIN has changed
+ Inside EqualDataFlowValuesForward...............................
+ Value d1..........
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Value d2..........
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ BB is the last node....
+ Inside getPurelyGlobalComponentForward...........
+ Inside SLIM loop 
+ Inserting into forward worklist......
+ Inserting into backwards worklist...
+ Inside performMeetForward..............
+===================================[FORWARD-0 ]===========================================
+TESTING
+INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
+===================================[FORWARD-0 ]===========================================
+
+ previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
+ Forward Index: 6
+ Forward Index: 7
+===================================[FORWARD-0 ]===========================================
+IN: { (i, )->((c, ) , ) }
+ Inside computeOutFromIn......................
+ LHS in loop = a indir= 1
+ Rhs in loop: <i, 1>
+ Checking backwardOUT values........
+ Value: a
+ Value: call
+ ----------------------
+ Normal instruction. 
+ Rhs Value: i indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ PIN is not empty
+ Pointees of Rhs found in Pin. 
+ Second while loop
+ Verify pointee of rhs: c
+ Now fetching the pointees of LHS: a
+ Inside while loop for Lhs
+ Must points-to relation. Delete points-to pairs from OutofInst 
+
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }{ (i, )->((c, ) , ) }
+ Printing backwardOUT value Val: a 	 Val: call 	
+
+ Inside restrictByLivness().......
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Inside forwardMerge.................
+ Printing forward values: { (a, )->((c, ) , ) }
+ ----------------------------------OUT: { (a, )->((c, ) , ) }
+===================================[FORWARD-0 ]===========================================
+
+ Inside CallInflowFunction...............
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Inside printCurrLinLout............(call, ) 
+ Checking backward values first........
+ For loop 1
+ Checking forward values now......
+ Ptr is global: : a
+ Checking Pointeess....This is call Instruction in forward direction: 
+{ (i, )->((c, ) , ) }{ call,  }
+ Inside EqualDataFlowValuesForward...............................
+ Value d1..........
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Value d2..........
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Inside EqualDataFlowValuesBackward.................
+ Value d1..........
+ Inside printCurrLinLout............
+ Value d2..........
+ Inside printCurrLinLout............======================================================================================
+Context found!!!!!
+LABEL: 2
+Forward Inflow Value:- { (a, )->((c, ) , ) }Backward Inflow Value:- {  }======================================================================================
+
+===================================[FORWARD-0 ]===========================================
+IN: { (i, )->((c, ) , ) }
+ Inside CallOutflowFunction..............
+ Printing values of a1
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Printing values of d1
+ Inside printCurrLinLout............(call, ) 
+ Printing values of a3
+ Inside printCurrPinPout............
+ Printing values of d3
+ Inside printCurrLinLout............(a, ) 
+ Inside getLocalComponentB.............
+ Inside getPurelyLocalComponentForward.............
+ Inside performMeetForward..............
+ Inside performMeetForward..............OUT: 
+===================================[FORWARD-0 ]===========================================
+
+===================================[FORWARD-0 ]===========================================
+IN: 
+ Inside computeOutFromIn......................
+ LHS in loop = call indir= 1
+ Rhs in loop: <i1, 1>
+ Checking backwardOUT values........
+ Value: call
+ ----------------------
+ Normal instruction. 
+ Rhs Value: i1 indir= 1
+ case 2: x=t1 or t1=x or *t2=t1 
+ While loop rhsIndir is 1Rhs value is a pointer
+ Fetch pointees of t1 from Pin. 
+ RhsValue is not an array
+ Now fetching the pointees of LHS: call
+ Inside while loop for Lhs
+ Must points-to relation. Delete points-to pairs from OutofInst 
+
+ Inside printCurrPinPout............
+ Printing backwardOUT value Val: call 	
+
+ Inside restrictByLivness().......
+ Inside printCurrPinPout............
+ Inside forwardMerge.................
+ Printing forward values: 
+ ----------------------------------OUT: 
+===================================[FORWARD-0 ]===========================================
+
+ Check if POut has changed
+ Inside EqualDataFlowValuesForward...............................
+ Value d1..........
+ Inside printCurrPinPout............
+ Value d2..........
+ Inside printCurrPinPout............
+ Check if PIN has changed
+ Inside EqualDataFlowValuesForward...............................
+ Value d1..........
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Value d2..........
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Inside doAnalysisBackward..................
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+-------------------------------------------
+Retrive BB from backward worklist
+
+-------------------------------------------
+
+ Inside performMeetBackward...................After setting backward out: { call,  }
+ Printing previous_value_at_out_of_this_node { call,  }
+ Printing previous_value_at_in_of_this_node { a, i, call,  }
+ Backwards Index: 6
+ Backwards Index: 7
+===================================[BACKWARD-0 ]===========================================
+OUT: { call,  }
+ Inside computeInFromOut...................
+ Fetched LHS: call lhs indir: 1
+ Rhs in loop: <i1, 1>IN: { i1,  }
+===================================[BACKWARD-0 ]===========================================
+
+ CallInflowFunction .............2
+ Inside CallInflowFunction...............
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Inside printCurrLinLout............(i1, ) 
+ Checking backward values first........
+ For loop 1
+ Bck val is global = i1
+ Checking forward values now......
+ Inside EqualDataFlowValuesForward...............................
+ Value d1..........
+ Inside printCurrPinPout............
+ Value d2..........
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Inside EqualDataFlowValuesForward...............................
+ Value d1..........
+ Inside printCurrPinPout............
+ Value d2..........
+ Inside printCurrPinPout............
+ Inside EqualDataFlowValuesBackward.................
+ Value d1..........
+ Inside printCurrLinLout............(i1, ) 
+ Value d2..........
+ Inside printCurrLinLout............(i1, ) ======================================================================================
+Context found!!!!!
+LABEL: 1
+Forward Inflow Value:- Backward Inflow Value:- { i1,  }======================================================================================
+
+===================================[BACKWARD-0 ]===========================================
+OUT: { call,  }
+ Inside CallOutflowFunction..............
+ Printing values of a1
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Printing values of d1
+ Inside printCurrLinLout............(call, ) 
+ Printing values of a3
+ Inside printCurrPinPout............
+ Printing values of d3
+ Inside printCurrLinLout............(a, ) 
+ Inside getLocalComponentB.............
+ Inside performMeetBackward...................IN: { a, call,  }
+===================================[BACKWARD-0 ]===========================================
+
+===================================[BACKWARD-0 ]===========================================
+OUT: { a, call,  }
+ Inside computeInFromOut...................
+ Fetched LHS: a lhs indir: 1
+ Rhs in loop: <i, 1>
+ LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { a, i, call,  }
+===================================[BACKWARD-0 ]===========================================
+
+ Check if LIN of BB has changed.
+ Inside EqualDataFlowValuesBackward.................
+ Value d1..........
+ Inside printCurrLinLout............(a, ) (i, ) (call, ) 
+ Value d2..........
+ Inside printCurrLinLout............(a, ) (i, ) (call, ) 
+ Check if LOUT of BB has changed.
+ Inside EqualDataFlowValuesBackward.................
+ Value d1..........
+ Inside printCurrLinLout............(call, ) 
+ Value d2..........
+ Inside printCurrLinLout............(call, ) Time taken by analysis: 0 seconds
 
  Printing Global Instruction List.....#
- Index: 1	 Lhs: <y, 1 > 		 Rhs: <arg, 0>
- Index: 2	 Lhs: <i2, 1 > 		 Rhs: <y, 1>
- Index: 3 Rhs: <i2, 1>
- Index: 4	 Lhs: <x, 1 > 		 Rhs: <i1, 0>
- Index: 5	 Lhs: <i2, 1 > 		 Rhs: <x, 1>
- Index: 6	 Lhs: <arg, 1 > 		 Rhs: <i2, 1>
+ Index: 1	 Lhs: <y, 1 > 		 Rhs: <a, 1>
+ Index: 2	 Lhs: <i1, 1 > 		 Rhs: <y, 1>
+ Index: 3 Rhs: <i1, 1>
+ Index: 4	 Lhs: <x, 1 > 		 Rhs: <c, 0>
+ Index: 5	 Lhs: <i, 1 > 		 Rhs: <x, 1>
+ Index: 6	 Lhs: <a, 1 > 		 Rhs: <i, 1>
  Index: 7 Rhs: <fun, 1>
- Index: 8	 Lhs: <i3, 1 > 		 Rhs: <i2, 1>
- Index: 9	 Lhs: <z, 1 > 		 Rhs: <i3, 1>
+ Index: 8	 Lhs: <call, 1 > 		 Rhs: <i1, 1>
+ Index: 9	 Lhs: <z, 1 > 		 Rhs: <call, 1>
  Index: 10 Rhs: <z, 1>
 
  Printing Modeled LLVM IR instructions...........#
-  store i32* %arg, i32** @y, align 8
-  %i2 = load i32*, i32** @y, align 8
-  ret i32* %i2
-  store i32* %i3, i32** @z, align 8
-  ret i32 %i5
-  store i32* %i1, i32** @x, align 8
-  %i2 = load i32*, i32** @x, align 8
-  %i3 = call i32* @fun(i32* %i2)0.000000 MB
+  store i32* %a, i32** @y, align 8
+  %i1 = load i32*, i32** @y, align 8
+  ret i32* %i1
+  store i32* %call, i32** @z, align 8
+  ret i32 %i2
+  store i32* %c, i32** @x, align 8
+  %i = load i32*, i32** @x, align 8
+  %call = call i32* @fun(i32* %i)0.000000 MB
 
 Memory consume: 

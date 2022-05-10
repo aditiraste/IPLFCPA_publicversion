@@ -1207,12 +1207,12 @@ void Analysis<F,B>::doAnalysisForward() {
                     auto &inst = globalInstrIndexList[index];
                     if(inst.getCall()) {
 			//llvm::outs() << "\n Call instruction found in forwards analysis 2.";
-		        Instruction* Inst = getInstforIndx(index);
-		        CallInst *ci = dyn_cast<CallInst>(Inst);
-		        Function *target_function = ci->getCalledFunction(); 
-                        if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
-                            continue; //this is an inbuilt function so doesn't need to be processed.
-     			}
+                    Instruction* Inst = getInstforIndx(index);
+                    CallInst *ci = dyn_cast<CallInst>(Inst);
+                    Function *target_function = ci->getCalledFunction(); 
+                    if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
+                        continue; //this is an inbuilt function so doesn't need to be processed.
+                    }
 			/*
                         At the call instruction, the value at IN should be splitted into two components:
                         1) Purely Global and 2) Mixed.

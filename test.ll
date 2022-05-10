@@ -9,30 +9,30 @@ target triple = "x86_64-pc-linux-gnu"
 @u = dso_local global i32 0, align 4
 
 ; Function Attrs: noinline nounwind uwtable
-define dso_local i32* @fun(i32* %arg) #0 {
-bb:
-  store i32* %arg, i32** @y, align 8
-  %i2 = load i32*, i32** @y, align 8
-  ret i32* %i2
+define dso_local i32* @fun(i32* %a) #0 {
+entry:
+  store i32* %a, i32** @y, align 8
+  %i1 = load i32*, i32** @y, align 8
+  ret i32* %i1
 }
 
 ; Function Attrs: noinline nounwind uwtable
 define dso_local i32 @main() #0 {
-bb:
-  %i1 = alloca i32, align 4
-  store i32* %i1, i32** @x, align 8
-  %i2 = load i32*, i32** @x, align 8
+entry:
+  %c = alloca i32, align 4
+  store i32* %c, i32** @x, align 8
+  %i = load i32*, i32** @x, align 8
   br label %0
 
-0:                                                ; preds = %bb
-  %i3 = call i32* @fun(i32* %i2)
+0:                                                ; preds = %entry
+  %call = call i32* @fun(i32* %i)
   br label %1
 
 1:                                                ; preds = %0
-  store i32* %i3, i32** @z, align 8
-  %i4 = load i32*, i32** @z, align 8
-  %i5 = load i32, i32* %i4, align 4
-  ret i32 %i5
+  store i32* %call, i32** @z, align 8
+  %i1 = load i32*, i32** @z, align 8
+  %i2 = load i32, i32* %i1, align 4
+  ret i32 %i2
 }
 
 attributes #0 = { noinline nounwind uwtable "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" "unsafe-fp-math"="false" "use-soft-float"="false" }
