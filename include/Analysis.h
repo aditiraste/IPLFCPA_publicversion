@@ -790,16 +790,8 @@ void Analysis<F,B>::doAnalysis(Module &M) {
                 setLhsRhsMap(&Func, &BB);
             }
         }
-	printGlobalInstrList();
+	    printGlobalInstrList();
     }
-//    for (Module::iterator ff=M.begin(), ef=M.end(); ef!=ff; ++ff) {
-//        Function *F = &(*ff);
-//        for (Function::iterator bb=F->begin(), e=F->end(); e!=bb; ++bb)  {
-//            BasicBlock* BB = &(*bb);
-//            simplifyIR(F,BB);
-//            setLhsRhsMap(F, BB);
-//        }
-//    }
     auto duration = duration_cast<seconds>(stop - start);
     llvm::outs() << "Time taken in Splitting Basic Block : " << duration.count() << " seconds" << "\n";
     start = high_resolution_clock::now();
@@ -1166,12 +1158,13 @@ void Analysis<F,B>::doAnalysisForward() {
                                                       current_pair.second).first;
         F previous_value_at_in_of_this_node = getIn(current_pair.first,
                                                       current_pair.second).first;
-	llvm::outs() << "\n previous_value_at_in_of_this_node.........";
-	printDataFlowValuesForward(previous_value_at_in_of_this_node);
+        llvm::outs() << "\n previous_value_at_in_of_this_node.........";
+        printDataFlowValuesForward(previous_value_at_in_of_this_node);
 
         bool contains_a_method_call = false;
         if(SLIM) {
-            for(auto &index : funcBBInsMap[{f,bb}]) { llvm::outs() << "\n Forward Index: "<<index;
+            for(auto &index : funcBBInsMap[{f,bb}]) { 
+                llvm::outs() << "\n Forward Index: "<<index;
                 auto &inst = globalInstrIndexList[index];
                 if(inst.getCall()) {
                     Instruction* Inst = getInstforIndx(index);
@@ -1181,7 +1174,6 @@ void Analysis<F,B>::doAnalysisForward() {
                         continue; //this is an inbuilt function so doesn't need to be processed.
                     }
                    contains_a_method_call = true;
-                   //break;
                 }
             }
         } else {
@@ -1202,8 +1194,10 @@ void Analysis<F,B>::doAnalysisForward() {
             //step 11
             if(SLIM) {
                 F prev = getForwardComponentAtInOfThisInstruction(globalInstrIndexList[funcBBInsMap[{f,bb}].front()]);
-                for(auto &index : funcBBInsMap[{f,bb}]) { //llvm::outs() << "\n Forward contains a method call Index: "<<index;
+                d1 = getBackwardComponentAtOutOfThisInstruction(globalInstrIndexList[funcBBInsMap[{f,bb}].back()]);
+                for(auto &index : funcBBInsMap[{f,bb}]) {
                     auto &inst = globalInstrIndexList[index];
+                    d1 = getBackwardComponentAtOutOfThisInstruction(inst);
                     if(inst.getCall()) {
                         Instruction* Inst = getInstforIndx(index);
                         CallInst *ci = dyn_cast<CallInst>(Inst);
@@ -1211,7 +1205,7 @@ void Analysis<F,B>::doAnalysisForward() {
                         if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
                             continue; //this is an inbuilt function so doesn't need to be processed.
                         }
-			/*
+			            /*
                         At the call instruction, the value at IN should be splitted into two components:
                         1) Purely Global and 2) Mixed.
                         The purely global component is given to the start of callee.
@@ -1224,9 +1218,6 @@ void Analysis<F,B>::doAnalysisForward() {
 
                         F new_outflow_forward;
                         B new_outflow_backward;
-                        llvm::outs() << "This is call Instruction in forward direction: \n";
-                        printDataFlowValuesForward(a1);
-                        printDataFlowValuesBackward(getOut(current_context_label,bb).second);
 
                         //step 13
 
@@ -1291,11 +1282,9 @@ void Analysis<F,B>::doAnalysisForward() {
                                 printLine(current_context_label);
                             }
                         }//end if matching context 
-			else//step 20
+			            else//step 20
                         {
                             //creating a new context
-                            llvm::outs() << "INIT CONTEXT:- Backward:- ";
-                            printDataFlowValuesBackward(d2);
                             INIT_CONTEXT(target_function, {a2, d2}, {new_outflow_forward, new_outflow_backward}); //step 21
 
                             //step 14
@@ -1324,7 +1313,7 @@ void Analysis<F,B>::doAnalysisForward() {
                             printLine(current_context_label);
                         }
                     }//end else
-            	    setForwardOut(current_pair.first, current_pair.second, prev);                     
+            	    setForwardOut(current_pair.first, current_pair.second, prev);
 		 }//end for
             }//end if SLIM 
 	    else {
