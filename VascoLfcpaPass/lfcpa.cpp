@@ -605,7 +605,9 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 
   //Fetch the previous OUT of the instr
   prevNewOutofInst = getForwardComponentAtOutOfThisInstruction(I);
-  
+  llvm::outs() << "\n Forward Component at OUT  ....previos component";
+  printCurrPinPout(prevNewOutofInst);	  
+
   //Fetch current IN of the instr
   INofInst = getForwardComponentAtInOfThisInstruction(I);
  
@@ -1298,10 +1300,14 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
      llvm::outs() << "\n";
      //######OUTPTA[std::make_tuple(contextId,B,instrCount)] = OUTofInst; 
      newOutofInst = restrictByLivness(OUTofInst, backwardOUT);
+     llvm::outs() << "\n Printing new POUT after restrictByLvness";
      printCurrPinPout(newOutofInst);
 
      F tempMergeOutofInst;
      std::set<Token*> emptyset;
+     llvm::outs() << "\n Merging prev and curr POUT values";
+     llvm::outs() << "\n Printing prevNewOutofInst.........";
+     printCurrPinPout(prevNewOutofInst);
      tempMergeOutofInst = forwardMerge(prevNewOutofInst, newOutofInst); /* merge new and previous POUT values */
      newOutofInst = tempMergeOutofInst;  /* set the value of variable newOutofInst */
      llvm::outs() << "\n Printing forward values: ";
@@ -1478,6 +1484,8 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
         if (tempLHS.first->getIsFunArg()) {	
 	  llvm::outs() << "\n LHS is a function argument. Generate liveness of Rhs unconditionally. ";
           std::pair<Token*, int> rhsVal = rhsVector[0];
+	  llvm::outs() << "\n Erasing Lhs from IN now.";
+   	  INofInst = eraseFromLin(lhsVal, indxLHS, INofInst);
 	  INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
 	  return INofInst;
 	}
