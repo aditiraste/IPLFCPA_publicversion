@@ -1141,25 +1141,13 @@ void Analysis<F,B>::doAnalysisForward() {
         }
 
         //step 9
-        F a1 = getIn(current_pair.first, current_pair.second).first; //CS_BB_IN[current_pair].first;00
+        F a1 = getIn(current_pair.first, current_pair.second).first;
         B d1 = getOut(current_pair.first, current_pair.second).second;
-        if (debug) {
-            printLine(current_pair.first);
-            llvm::outs() << "TESTING\n";
-            llvm::outs() << "INFLOW VALUES: ";
-            llvm::outs() << "Forward:-";
-            printDataFlowValuesForward(a1);
-            llvm::outs() << "Backward:-";
-            printDataFlowValuesBackward(d1);
-            printLine(current_pair.first);
-        }
 
         F previous_value_at_out_of_this_node = getOut(current_pair.first,
                                                       current_pair.second).first;
         F previous_value_at_in_of_this_node = getIn(current_pair.first,
                                                       current_pair.second).first;
-        llvm::outs() << "\n previous_value_at_in_of_this_node.........";
-        printDataFlowValuesForward(previous_value_at_in_of_this_node);
 
         bool contains_a_method_call = false;
         if(SLIM) {
@@ -1169,8 +1157,8 @@ void Analysis<F,B>::doAnalysisForward() {
                 if(inst.getCall()) {
                     Instruction* Inst = getInstforIndx(index);
                     CallInst *ci = dyn_cast<CallInst>(Inst);
-                    Function *target_function = ci->getCalledFunction(); 
-                    if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
+                    Function *target_function = ci->getCalledFunction();
+                    if (target_function && (target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst))) {
                         continue; //this is an inbuilt function so doesn't need to be processed.
                     }
                    contains_a_method_call = true;
@@ -1198,7 +1186,9 @@ void Analysis<F,B>::doAnalysisForward() {
                 for(auto &index : funcBBInsMap[{f,bb}]) {
                     auto &inst = globalInstrIndexList[index];
                     d1 = getBackwardComponentAtOutOfThisInstruction(inst);
-                    if(inst.getCall()) {
+                    if(inst.getInsFunPtr()) {
+                        
+                    } else if(inst.getCall()) {
                         Instruction* Inst = getInstforIndx(index);
                         CallInst *ci = dyn_cast<CallInst>(Inst);
                         Function *target_function = ci->getCalledFunction(); 
@@ -1238,7 +1228,7 @@ void Analysis<F,B>::doAnalysisForward() {
                             pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
                             SLIM_context_transition_graph[mypair] = matching_context_label;
                             if (debug) {
-                                printDataFlowValuesForward(a1);
+                                printDataFlowValuesForward(prev);
                             }
 
                             //step 16 and 17
@@ -1432,15 +1422,11 @@ void Analysis<F,B>::doAnalysisForward() {
                 }
                 setForwardOut(current_pair.first, current_pair.second, prev);
             }
-        } else//step 22
-        {    
-            //step 23
-            //NormalFlowFunction
+        } else { //Step 22
             setForwardOut(current_pair.first, current_pair.second, NormalFlowFunctionForward(current_pair));
-	    printDataFlowValuesForward(NormalFlowFunctionForward(current_pair));
-	    
+	        printDataFlowValuesForward(NormalFlowFunctionForward(current_pair));
         }
-	llvm::outs() << "\n Check if POut has changed";
+	    llvm::outs() << "\n Check if POut has changed";
         bool changed = false;
         if (not EqualDataFlowValuesForward(previous_value_at_out_of_this_node, getOut(current_pair.first,
                                                                                    current_pair.second).first)) {
@@ -1448,7 +1434,7 @@ void Analysis<F,B>::doAnalysisForward() {
         }
         if (changed)//step 24
         {
-	    llvm::outs() << "\n POUT value has changed. Insert succ into fWL ";
+	        llvm::outs() << "\n POUT value has changed. Insert succ into fWL ";
             //not yet converged
            // backward_worklist.workInsert({current_context_label,bb});
             for (auto succ_bb:successors(bb))//step 25
@@ -1469,13 +1455,13 @@ void Analysis<F,B>::doAnalysisForward() {
         }
         if (changed1)//step 24
         {
-	    llvm::outs() << "\n PIN value has changed. Insert node into bWL ";
+	        llvm::outs() << "\n PIN value has changed. Insert node into bWL ";
             backward_worklist.workInsert({current_context_label,bb});      
         } 
 
         if (bb == &function.back())//step 27
         {
-		llvm::outs() << "\n BB is the last node....";
+		    llvm::outs() << "\n BB is the last node....";
             //last node
             //step 28
             setForwardOutflowForThisContext(current_context_label, getPurelyGlobalComponentForward(
@@ -1488,8 +1474,8 @@ void Analysis<F,B>::doAnalysisForward() {
                  {
                     //step 30
                     BasicBlock *bb = getBBfromFetchLR(*context_inst_pairs.first.second);
-		    pair<int, BasicBlock *> context_bb_pair = make_pair(context_inst_pairs.first.first, bb);
-		    llvm::outs() << "\n Inserting into forward worklist......";
+                    pair<int, BasicBlock *> context_bb_pair = make_pair(context_inst_pairs.first.first, bb);
+                    llvm::outs() << "\n Inserting into forward worklist......";
                     forward_worklist.workInsert(context_bb_pair);
                     if (direction == "bidirectional") { llvm::outs() << "\n Inserting into backwards worklist...";
                         backward_worklist.workInsert(context_bb_pair);   
@@ -1683,12 +1669,12 @@ void Analysis<F,B>::doAnalysisBackward() {
         BasicBlock &b = *bb;
         Function *f = context_label_to_context_object_map[current_context_label]->getFunction();
         Function &function = *f;
-        for(auto &index : funcBBInsMap[{f,bb}]) {
-            llvm::outs() << "\n-------------------------------------------\n";
-            llvm::outs() << "Retrive BB from backward worklist\n";
-            auto &inst = globalInstrIndexList[index];
-            llvm::outs() << "\n-------------------------------------------\n";
-        }
+        // for(auto &index : funcBBInsMap[{f,bb}]) {
+        //     llvm::outs() << "\n-------------------------------------------\n";
+        //     llvm::outs() << "Retrive BB from backward worklist\n";
+        //     auto &inst = globalInstrIndexList[index];
+        //     llvm::outs() << "\n-------------------------------------------\n";
+        // }
 
 
         //step 5
@@ -1706,8 +1692,6 @@ void Analysis<F,B>::doAnalysisBackward() {
                         )
                 );
             }
-            llvm::outs() << "After setting backward out: ";
-            printDataFlowValuesBackward(getOut(current_pair.first,current_pair.second).second);
         } else {
             //Out value of this node is same as INFLOW value
             setBackwardOut(
@@ -1724,28 +1708,21 @@ void Analysis<F,B>::doAnalysisBackward() {
         B previous_value_at_in_of_this_node = getIn(current_pair.first,
                                                     current_pair.second).second; //CS_BB_IN[current_pair].second;
 	    B previous_value_at_out_of_this_node = getOut(current_pair.first, current_pair.second).second; //prev Lout
-	
-        llvm::outs() << "\n Printing previous_value_at_out_of_this_node ";
-        printDataFlowValuesBackward(previous_value_at_out_of_this_node);
-
-	    llvm::outs() << "\n Printing previous_value_at_in_of_this_node ";
-        printDataFlowValuesBackward(previous_value_at_in_of_this_node);
 
         //step 10
         bool contains_a_method_call = false;
         if(SLIM) {
-            for(auto &index : funcBBInsMap[{f,bb}]) { llvm::outs() << "\n Backwards Index: "<<index;
+            for(auto &index : funcBBInsMap[{f,bb}]) { 
+                llvm::outs() << "\n Backwards Index: "<<index;
                 auto &inst = globalInstrIndexList[index];
                 if(inst.getCall()) {
-                   //llvm::outs() << "\n Call instruction found in backwards analysis.";
                     Instruction* Inst = getInstforIndx(index);
                     CallInst *ci = dyn_cast<CallInst>(Inst);
                     Function *target_function = ci->getCalledFunction(); 
-                    if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst)) {
+                    if (target_function && (target_function->isDeclaration() || isAnIgnorableDebugInstruction(Inst))) {
                         continue; //this is an inbuilt function so doesn't need to be processed.
                     }
                     contains_a_method_call = true;
-                    //break;
                 }
             }
         } else {
@@ -1756,7 +1733,6 @@ void Analysis<F,B>::doAnalysisBackward() {
                     if (not target_function || target_function->isDeclaration() || isAnIgnorableDebugInstruction(&I)) {
                         continue;
                     }
-                    // contains_a_method_call=true;
                     contains_a_method_call = true;
                     break;
                 }
@@ -1764,12 +1740,13 @@ void Analysis<F,B>::doAnalysisBackward() {
         }
         if (contains_a_method_call) {
             B prev = getBackwardComponentAtOutOfThisInstruction(globalInstrIndexList[funcBBInsMap[{f,bb}].back()]);
-            // B prev = getOut(current_pair.first, current_pair.second).second;
             //step 11
             if(SLIM) {
                 for(auto &index : getReverseList(funcBBInsMap[{f,bb}])) { //llvm::outs() << "\n Backwards contains a method call Index: "<<index;
                     auto &inst = globalInstrIndexList[index];
-                    if(inst.getCall()) {
+                    if(inst.getInsFunPtr()) {
+                        
+                    } else if(inst.getCall()) {
         			   Instruction* Inst = getInstforIndx(index);
         			   CallInst *ci = dyn_cast<CallInst>(Inst);
         			   Function *target_function = ci->getCalledFunction(); 

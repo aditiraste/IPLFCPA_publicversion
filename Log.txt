@@ -273,7 +273,8 @@ OUT: { a,  }
  Inside computeInFromOut...................
  Fetched LHS: a lhs indir: 1
  Rhs in loop: <i, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { a, i,  }
+ LHS is a function argument. Generate liveness of Rhs unconditionally. 
+ Erasing Lhs from IN now.IN: { i,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -281,7 +282,7 @@ OUT: { a,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............(a, ) (i, ) 
+ Inside printCurrLinLout............(i, ) 
 LIN value has changed.Pushing predecessors in WL
 
  Check if LOUT of BB has changed.
@@ -300,27 +301,27 @@ Retrive BB from backward worklist
 
 -------------------------------------------
 
- Inside performMeetBackward...................After setting backward out: { a, i,  }
- Printing previous_value_at_out_of_this_node { a, i,  }
+ Inside performMeetBackward...................After setting backward out: { i,  }
+ Printing previous_value_at_out_of_this_node { i,  }
  Printing previous_value_at_in_of_this_node {  }
  Backwards Index: 4
  Backwards Index: 5
 ===================================[BACKWARD-0 ]===========================================
 
 Processing instruction at INDEX = 5
-OUT: { a, i,  }
+OUT: { i,  }
  Inside computeInFromOut...................
  Fetched LHS: i lhs indir: 1
- Rhs in loop: <x, 1>IN: { a, x,  }
+ Rhs in loop: <x, 1>IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
 
 Processing instruction at INDEX = 4
-OUT: { a, x,  }
+OUT: { x,  }
  Inside computeInFromOut...................
  Fetched LHS: x lhs indir: 1
- Rhs in loop: <c, 0>IN: { a,  }
+ Rhs in loop: <c, 0>IN: {  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -328,15 +329,13 @@ OUT: { a, x,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............(a, ) 
-LIN value has changed.Pushing predecessors in WL
-
+ Inside printCurrLinLout............
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(a, ) (i, ) 
+ Inside printCurrLinLout............(i, ) 
  Value d2..........
- Inside printCurrLinLout............(a, ) (i, ) 
+ Inside printCurrLinLout............(i, ) 
  BB is the entry block..........
  Inside getPurelyGlobalComponentBackward...............
  SLIM LOOP 
@@ -346,7 +345,6 @@ TESTING
 INFLOW VALUES: Forward:-Backward:-{ i1,  }
 ===================================[FORWARD-1 ]===========================================
 
- previous_value_at_in_of_this_node.........
  Forward Index: 1
  Forward Index: 2
  Forward Index: 3
@@ -358,6 +356,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
  Rhs in loop: <a, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: y
  ----------------------
@@ -375,6 +375,10 @@ IN:
  Printing backwardOUT value Val: y 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -389,6 +393,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -406,6 +412,10 @@ IN:
  Printing backwardOUT value Val: i1 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -419,6 +429,8 @@ Processing instruction at INDEX = 3
 IN: 
  Inside computeOutFromIn......................
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -436,6 +448,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
  Rhs in loop: <a, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: y
  ----------------------
@@ -453,6 +467,10 @@ IN:
  Printing backwardOUT value Val: y 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -467,6 +485,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -484,6 +504,10 @@ IN:
  Printing backwardOUT value Val: i1 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -497,6 +521,8 @@ Processing instruction at INDEX = 3
 IN: 
  Inside computeOutFromIn......................
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -525,10 +551,9 @@ IN:
  Inserting into backwards worklist...
 ===================================[FORWARD-0 ]===========================================
 TESTING
-INFLOW VALUES: Forward:-Backward:-{ a, i,  }
+INFLOW VALUES: Forward:-Backward:-{ i,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........
  Forward Index: 4
  Forward Index: 5
  Index = 4
@@ -539,8 +564,9 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = x indir= 1
  Rhs in loop: <c, 0>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
- Value: a
  Value: x
  ----------------------
  Normal instruction. 
@@ -551,10 +577,14 @@ IN:
  Must points-to relation. Delete points-to pairs from OutofInst 
 
  Inside printCurrPinPout............{ (x, )->((c, ) , ) }
- Printing backwardOUT value Val: a 	 Val: x 	
+ Printing backwardOUT value Val: x 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
  Inside printCurrPinPout............{ (x, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
+ Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: { (x, )->((c, ) , ) }
  ----------------------------------OUT: { (x, )->((c, ) , ) }
@@ -568,8 +598,9 @@ IN: { (x, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = i indir= 1
  Rhs in loop: <x, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
- Value: a
  Value: i
  ----------------------
  Normal instruction. 
@@ -587,10 +618,14 @@ IN: { (x, )->((c, ) , ) }
  Must points-to relation. Delete points-to pairs from OutofInst 
 
  Inside printCurrPinPout............{ (x, )->((c, ) , ) }{ (i, )->((c, ) , ) }
- Printing backwardOUT value Val: a 	 Val: i 	
+ Printing backwardOUT value Val: i 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
  Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
+ Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: { (i, )->((c, ) , ) }
  ----------------------------------OUT: { (i, )->((c, ) , ) }
@@ -604,8 +639,9 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = x indir= 1
  Rhs in loop: <c, 0>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }
  Checking backwardOUT values........
- Value: a
  Value: x
  ----------------------
  Normal instruction. 
@@ -616,9 +652,13 @@ IN:
  Must points-to relation. Delete points-to pairs from OutofInst 
 
  Inside printCurrPinPout............{ (x, )->((c, ) , ) }
- Printing backwardOUT value Val: a 	 Val: x 	
+ Printing backwardOUT value Val: x 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (x, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (x, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (x, )->((c, ) , ) }
@@ -633,8 +673,9 @@ IN: { (x, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = i indir= 1
  Rhs in loop: <x, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Checking backwardOUT values........
- Value: a
  Value: i
  ----------------------
  Normal instruction. 
@@ -652,9 +693,13 @@ IN: { (x, )->((c, ) , ) }
  Must points-to relation. Delete points-to pairs from OutofInst 
 
  Inside printCurrPinPout............{ (x, )->((c, ) , ) }{ (i, )->((c, ) , ) }
- Printing backwardOUT value Val: a 	 Val: i 	
+ Printing backwardOUT value Val: i 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (i, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (i, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (i, )->((c, ) , ) }
@@ -680,7 +725,6 @@ TESTING
 INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
  Forward Index: 6
  Forward Index: 7
  Forward Index: 8
@@ -691,6 +735,8 @@ IN: { (i, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = a indir= 1
  Rhs in loop: <i, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: a
  ----------------------
@@ -712,7 +758,11 @@ IN: { (i, )->((c, ) , ) }
  Printing backwardOUT value Val: a 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
  Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
+ Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: { (a, )->((c, ) , ) }
  ----------------------------------OUT: { (a, )->((c, ) , ) }
@@ -746,7 +796,6 @@ TESTING
 INFLOW VALUES: Forward:-{ (a, )->((c, ) , ) }Backward:-{ i1,  }
 ===================================[FORWARD-2 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (a, )->((c, ) , ) }
  Forward Index: 1
  Forward Index: 2
  Forward Index: 3
@@ -758,6 +807,8 @@ IN: { (a, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
  Rhs in loop: <a, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -779,6 +830,10 @@ IN: { (a, )->((c, ) , ) }
  Printing backwardOUT value
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -793,6 +848,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -810,6 +867,10 @@ IN:
  Printing backwardOUT value
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -823,6 +884,8 @@ Processing instruction at INDEX = 3
 IN: 
  Inside computeOutFromIn......................
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -840,6 +903,8 @@ IN: { (a, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
  Rhs in loop: <a, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -861,6 +926,10 @@ IN: { (a, )->((c, ) , ) }
  Printing backwardOUT value
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -875,6 +944,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -892,6 +963,10 @@ IN:
  Printing backwardOUT value
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -905,6 +980,8 @@ Processing instruction at INDEX = 3
 IN: 
  Inside computeOutFromIn......................
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -937,7 +1014,6 @@ TESTING
 INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
  Forward Index: 6
  Forward Index: 7
  Forward Index: 8
@@ -948,6 +1024,8 @@ IN: { (i, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = a indir= 1
  Rhs in loop: <i, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: a
  ----------------------
@@ -969,6 +1047,10 @@ IN: { (i, )->((c, ) , ) }
  Printing backwardOUT value Val: a 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (a, )->((c, ) , ) }
@@ -1001,7 +1083,7 @@ Forward Inflow Value:- { (a, )->((c, ) , ) }Backward Inflow Value:- { i1,  }====
 ===================================[FORWARD-0 ]===========================================
 
 Processing instruction at INDEX = 7
-IN: { (i, )->((c, ) , ) }
+IN: { (a, )->((c, ) , ) }
  Inside CallOutflowFunction..............
  Printing values of a1
  Inside printCurrPinPout............{ (a, )->((c, ) , ) }
@@ -1024,6 +1106,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = call indir= 1
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: call
  ----------------------
@@ -1041,6 +1125,10 @@ IN:
  Printing backwardOUT value Val: call 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -1066,7 +1154,6 @@ TESTING
 INFLOW VALUES: Forward:-Backward:-{  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........
  Forward Index: 9
  Forward Index: 10
  Index = 9
@@ -1077,6 +1164,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = z indir= 1
  Rhs in loop: <call, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: z
  ----------------------
@@ -1094,6 +1183,10 @@ IN:
  Printing backwardOUT value Val: z 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -1107,6 +1200,8 @@ Processing instruction at INDEX = 10
 IN: 
  Inside computeOutFromIn......................
  Rhs in loop: <z, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -1124,6 +1219,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = z indir= 1
  Rhs in loop: <call, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: z
  ----------------------
@@ -1141,6 +1238,10 @@ IN:
  Printing backwardOUT value Val: z 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -1154,6 +1255,8 @@ Processing instruction at INDEX = 10
 IN: 
  Inside computeOutFromIn......................
  Rhs in loop: <z, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -1263,7 +1366,7 @@ Retrive BB from backward worklist
 
  Inside performMeetBackward...................After setting backward out: { call,  }
  Printing previous_value_at_out_of_this_node { call,  }
- Printing previous_value_at_in_of_this_node { a, i,  }
+ Printing previous_value_at_in_of_this_node { i,  }
  Backwards Index: 6
  Backwards Index: 7
  Backwards Index: 8
@@ -1327,15 +1430,16 @@ OUT: { a,  }
  Inside computeInFromOut...................
  Fetched LHS: a lhs indir: 1
  Rhs in loop: <i, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { a, i,  }
+ LHS is a function argument. Generate liveness of Rhs unconditionally. 
+ Erasing Lhs from IN now.IN: { i,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(a, ) (i, ) 
+ Inside printCurrLinLout............(i, ) 
  Value d2..........
- Inside printCurrLinLout............(a, ) (i, ) 
+ Inside printCurrLinLout............(i, ) 
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
@@ -1349,7 +1453,6 @@ TESTING
 INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
  Forward Index: 6
  Forward Index: 7
  Forward Index: 8
@@ -1360,6 +1463,8 @@ IN: { (i, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = a indir= 1
  Rhs in loop: <i, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: a
  ----------------------
@@ -1381,6 +1486,10 @@ IN: { (i, )->((c, ) , ) }
  Printing backwardOUT value Val: a 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (a, )->((c, ) , ) }
@@ -1413,7 +1522,7 @@ Forward Inflow Value:- { (a, )->((c, ) , ) }Backward Inflow Value:- { i1,  }====
 ===================================[FORWARD-0 ]===========================================
 
 Processing instruction at INDEX = 7
-IN: { (i, )->((c, ) , ) }
+IN: { (a, )->((c, ) , ) }
  Inside CallOutflowFunction..............
  Printing values of a1
  Inside printCurrPinPout............{ (a, )->((c, ) , ) }
@@ -1436,6 +1545,8 @@ IN:
  Inside computeOutFromIn......................
  LHS in loop = call indir= 1
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: call
  ----------------------
@@ -1453,6 +1564,10 @@ IN:
  Printing backwardOUT value Val: call 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: 
@@ -1476,7 +1591,6 @@ TESTING
 INFLOW VALUES: Forward:-{ (a, )->((c, ) , ) }Backward:-{ i1,  }
 ===================================[FORWARD-2 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (a, )->((c, ) , ) }
  Forward Index: 1
  Forward Index: 2
  Forward Index: 3
@@ -1488,6 +1602,8 @@ IN: { (a, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
  Rhs in loop: <a, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: y
  ----------------------
@@ -1509,7 +1625,11 @@ IN: { (a, )->((c, ) , ) }
  Printing backwardOUT value Val: y 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
  Inside printCurrPinPout............{ (y, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
+ Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: { (y, )->((c, ) , ) }
  ----------------------------------OUT: { (y, )->((c, ) , ) }
@@ -1523,6 +1643,8 @@ IN: { (y, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -1544,7 +1666,11 @@ IN: { (y, )->((c, ) , ) }
  Printing backwardOUT value Val: i1 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
  Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
+ Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: { (i1, )->((c, ) , ) }
  ----------------------------------OUT: { (i1, )->((c, ) , ) }
@@ -1557,6 +1683,8 @@ Processing instruction at INDEX = 3
 IN: { (i1, )->((c, ) , ) }
  Inside computeOutFromIn......................
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -1574,6 +1702,8 @@ IN: { (a, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = y indir= 1
  Rhs in loop: <a, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: y
  ----------------------
@@ -1595,6 +1725,10 @@ IN: { (a, )->((c, ) , ) }
  Printing backwardOUT value Val: y 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (y, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (y, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (y, )->((c, ) , ) }
@@ -1609,6 +1743,8 @@ IN: { (y, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -1630,6 +1766,10 @@ IN: { (y, )->((c, ) , ) }
  Printing backwardOUT value Val: i1 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (i1, )->((c, ) , ) }
@@ -1643,6 +1783,8 @@ Processing instruction at INDEX = 3
 IN: { (i1, )->((c, ) , ) }
  Inside computeOutFromIn......................
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: i1
  ----------------------
@@ -1676,7 +1818,6 @@ TESTING
 INFLOW VALUES: Forward:-{ (i, )->((c, ) , ) }Backward:-{ call,  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i, )->((c, ) , ) }
  Forward Index: 6
  Forward Index: 7
  Forward Index: 8
@@ -1687,6 +1828,8 @@ IN: { (i, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = a indir= 1
  Rhs in loop: <i, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: a
  ----------------------
@@ -1708,6 +1851,10 @@ IN: { (i, )->((c, ) , ) }
  Printing backwardOUT value Val: a 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (a, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (a, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (a, )->((c, ) , ) }
@@ -1740,7 +1887,7 @@ Forward Inflow Value:- { (a, )->((c, ) , ) }Backward Inflow Value:- { i1,  }====
 ===================================[FORWARD-0 ]===========================================
 
 Processing instruction at INDEX = 7
-IN: { (i, )->((c, ) , ) }
+IN: { (a, )->((c, ) , ) }
  Inside CallOutflowFunction..............
  Printing values of a1
  Inside printCurrPinPout............{ (a, )->((c, ) , ) }
@@ -1763,6 +1910,8 @@ IN: { (i1, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = call indir= 1
  Rhs in loop: <i1, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: call
  ----------------------
@@ -1784,7 +1933,11 @@ IN: { (i1, )->((c, ) , ) }
  Printing backwardOUT value Val: call 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
  Inside printCurrPinPout............{ (call, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
+ Inside printCurrPinPout............{ (i1, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }
  ----------------------------------OUT: { (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }
@@ -1809,7 +1962,6 @@ TESTING
 INFLOW VALUES: Forward:-{ (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }Backward:-{  }
 ===================================[FORWARD-0 ]===========================================
 
- previous_value_at_in_of_this_node.........{ (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }
  Forward Index: 9
  Forward Index: 10
  Index = 9
@@ -1820,6 +1972,8 @@ IN: { (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = z indir= 1
  Rhs in loop: <call, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  Value: z
  ----------------------
@@ -1842,7 +1996,11 @@ IN: { (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }
  Printing backwardOUT value Val: z 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
  Inside printCurrPinPout............{ (z, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
+ Inside printCurrPinPout............
  Inside forwardMerge.................
  Printing forward values: { (z, )->((c, ) , ) }
  ----------------------------------OUT: { (z, )->((c, ) , ) }
@@ -1855,6 +2013,8 @@ Processing instruction at INDEX = 10
 IN: { (z, )->((c, ) , ) }
  Inside computeOutFromIn......................
  Rhs in loop: <z, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -1872,6 +2032,8 @@ IN: { (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }
  Inside computeOutFromIn......................
  LHS in loop = z indir= 1
  Rhs in loop: <call, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............{ (z, )->((c, ) , ) }
  Checking backwardOUT values........
  Value: z
  ----------------------
@@ -1894,6 +2056,10 @@ IN: { (i1, )->((c, ) , ) }{ (call, )->((c, ) , ) }
  Printing backwardOUT value Val: z 	
 
  Inside restrictByLivness().......
+ Printing new POUT after restrictByLvness
+ Inside printCurrPinPout............{ (z, )->((c, ) , ) }
+ Merging prev and curr POUT values
+ Printing prevNewOutofInst.........
  Inside printCurrPinPout............{ (z, )->((c, ) , ) }
  Inside forwardMerge.................
  Printing forward values: { (z, )->((c, ) , ) }
@@ -1907,6 +2073,8 @@ Processing instruction at INDEX = 10
 IN: { (z, )->((c, ) , ) }
  Inside computeOutFromIn......................
  Rhs in loop: <z, 1>
+ Forward Component at OUT  ....previos component
+ Inside printCurrPinPout............
  Checking backwardOUT values........
  BackwardOUT is empty.............
  ----------------------
@@ -1949,7 +2117,7 @@ Retrive BB from backward worklist
 
  Inside performMeetBackward...................After setting backward out: { call,  }
  Printing previous_value_at_out_of_this_node { call,  }
- Printing previous_value_at_in_of_this_node { a, i,  }
+ Printing previous_value_at_in_of_this_node { i,  }
  Backwards Index: 6
  Backwards Index: 7
  Backwards Index: 8
@@ -2013,15 +2181,16 @@ OUT: { a,  }
  Inside computeInFromOut...................
  Fetched LHS: a lhs indir: 1
  Rhs in loop: <i, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. IN: { a, i,  }
+ LHS is a function argument. Generate liveness of Rhs unconditionally. 
+ Erasing Lhs from IN now.IN: { i,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(a, ) (i, ) 
+ Inside printCurrLinLout............(i, ) 
  Value d2..........
- Inside printCurrLinLout............(a, ) (i, ) 
+ Inside printCurrLinLout............(i, ) 
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
