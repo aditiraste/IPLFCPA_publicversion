@@ -4,6 +4,8 @@
  Applying SLIM modeling..............#
 
 
+ REACHED HERE
+ REACHED HERE 1
  Function call is an indirect call....
  Set the function pointer flag.
 
@@ -45,56 +47,40 @@ OUT: {  }
  Instr is a return stmt. IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
-Call Instruction at INDEX = 6 is Function Pointer and Pointees are : 
- Inside getIndirectCalleeFromIN..............
- Index =  6
- Inside getFetchLRObfromIndex..............
- Rhs in loop: <i, 1>
- Get Hash name: imain
-
- Inside getFPandArgs..............
- Index =  6
- Inside getFetchLRObfromIndex..............
- Rhs in loop: <i, 1>
- Get Hash name: imain
-===================================[BACKWARD-0 ]===========================================
-
-Processing instruction at INDEX = 6
-OUT: { x,  }IN: { i, i1,  }
 ===================================[BACKWARD-0 ]===========================================
 
 Processing instruction at INDEX = 5
-OUT: { i, i1,  }
+OUT: { x,  }
  Inside computeInFromOut...................
  Fetched LHS: i1 lhs indir: 1
- Rhs in loop: <y, 1>IN: { i, y,  }
+ Rhs in loop: <y, 1>IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
 
 Processing instruction at INDEX = 4
-OUT: { i, y,  }
+OUT: { x,  }
  Inside computeInFromOut...................
  Fetched LHS: i lhs indir: 1
- Rhs in loop: <fp, 1>IN: { y, fp,  }
+ Rhs in loop: <fp, 1>IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
 
 Processing instruction at INDEX = 3
-OUT: { y, fp,  }
+OUT: { x,  }
  Inside computeInFromOut...................
  Fetched LHS: fp lhs indir: 1
- Rhs in loop: <fun, 0>IN: { y,  }
+ Rhs in loop: <fun, 0>IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
 ===================================[BACKWARD-0 ]===========================================
 
 Processing instruction at INDEX = 2
-OUT: { y,  }
+OUT: { x,  }
  Inside computeInFromOut...................
  Fetched LHS: y lhs indir: 1
- Rhs in loop: <u, 0>IN: {  }
+ Rhs in loop: <u, 0>IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -102,7 +88,9 @@ OUT: { y,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............
+ Inside printCurrLinLout............(x, ) 
+LIN value has changed.Pushing predecessors in WL
+
  Check if LOUT of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
@@ -129,7 +117,7 @@ IN:
  Forward Component at OUT  ....previos component
  Inside printCurrPinPout............
  Checking backwardOUT values........
- Value: y
+ Value: x
  ----------------------
  Normal instruction. 
  Rhs Value: u indir= 0
@@ -139,7 +127,7 @@ IN:
  Must points-to relation. Delete points-to pairs from OutofInst 
 
  Inside printCurrPinPout............{ (y, )->((u, ) , ) }
- Printing backwardOUT value Val: y 	
+ Printing backwardOUT value Val: x 	
 
  Merging prev and curr POUT values
  Inside forwardMerge.................
@@ -147,22 +135,21 @@ IN:
  ----------------------------------
  Inside restrictByLivness().......
  Printing new POUT after restrictByLvness
- Inside printCurrPinPout............{ (y, )->((u, ) , ) }OUT: { (y, )->((u, ) , ) }
- Backward value is : { y,  }
+ Inside printCurrPinPout............OUT: 
+ Backward value is : { x,  }
 ===================================[FORWARD-0 ]===========================================
 
 ===================================[FORWARD-0 ]===========================================
 
 Processing instruction at INDEX = 3
-IN: { (y, )->((u, ) , ) }
+IN: 
  Inside computeOutFromIn......................
  LHS in loop = fp indir= 1
  Rhs in loop: <fun, 0>
  Forward Component at OUT  ....previos component
  Inside printCurrPinPout............
  Checking backwardOUT values........
- Value: y
- Value: fp
+ Value: x
  ----------------------
  Normal instruction. 
  Rhs Value: fun indir= 0
@@ -171,31 +158,30 @@ IN: { (y, )->((u, ) , ) }
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }
- Printing backwardOUT value Val: y 	 Val: fp 	
+ Inside printCurrPinPout............{ (fp, )->((fun, ) , ) }
+ Printing backwardOUT value Val: x 	
 
  Merging prev and curr POUT values
  Inside forwardMerge.................
- Printing forward values: { (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }
+ Printing forward values: { (fp, )->((fun, ) , ) }
  ----------------------------------
  Inside restrictByLivness().......
  Printing new POUT after restrictByLvness
- Inside printCurrPinPout............{ (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }OUT: { (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }
- Backward value is : { y, fp,  }
+ Inside printCurrPinPout............OUT: 
+ Backward value is : { x,  }
 ===================================[FORWARD-0 ]===========================================
 
 ===================================[FORWARD-0 ]===========================================
 
 Processing instruction at INDEX = 4
-IN: { (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }
+IN: 
  Inside computeOutFromIn......................
  LHS in loop = i indir= 1
  Rhs in loop: <fp, 1>
  Forward Component at OUT  ....previos component
  Inside printCurrPinPout............
  Checking backwardOUT values........
- Value: i
- Value: y
+ Value: x
  ----------------------
  Normal instruction. 
  Rhs Value: fp indir= 1
@@ -203,40 +189,34 @@ IN: { (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- PIN is not empty
- PIN is not empty
- Pointees of Rhs found in Pin. 
- Second while loop
- Verify pointee of rhs: fun
  Now fetching the pointees of LHS: i
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (i, )->((fun, ) , ) }{ (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }
- Printing backwardOUT value Val: i 	 Val: y 	
+ Inside printCurrPinPout............
+ Printing backwardOUT value Val: x 	
 
  Merging prev and curr POUT values
  Inside forwardMerge.................
- Printing forward values: { (i, )->((fun, ) , ) }{ (y, )->((u, ) , ) }{ (fp, )->((fun, ) , ) }
+ Printing forward values: 
  ----------------------------------
  Inside restrictByLivness().......
  Printing new POUT after restrictByLvness
- Inside printCurrPinPout............{ (y, )->((u, ) , ) }OUT: { (y, )->((u, ) , ) }
- Backward value is : { i, y,  }
+ Inside printCurrPinPout............OUT: 
+ Backward value is : { x,  }
 ===================================[FORWARD-0 ]===========================================
 
 ===================================[FORWARD-0 ]===========================================
 
 Processing instruction at INDEX = 5
-IN: { (y, )->((u, ) , ) }
+IN: 
  Inside computeOutFromIn......................
  LHS in loop = i1 indir= 1
  Rhs in loop: <y, 1>
  Forward Component at OUT  ....previos component
  Inside printCurrPinPout............
  Checking backwardOUT values........
- Value: i
- Value: i1
+ Value: x
  ----------------------
  Normal instruction. 
  Rhs Value: y indir= 1
@@ -244,34 +224,22 @@ IN: { (y, )->((u, ) , ) }
  While loop rhsIndir is 1Rhs value is a pointer
  Fetch pointees of t1 from Pin. 
  RhsValue is not an array
- PIN is not empty
- Pointees of Rhs found in Pin. 
- Second while loop
- Verify pointee of rhs: u
  Now fetching the pointees of LHS: i1
  Inside while loop for Lhs
  Must points-to relation. Delete points-to pairs from OutofInst 
 
- Inside printCurrPinPout............{ (i1, )->((u, ) , ) }{ (y, )->((u, ) , ) }
- Printing backwardOUT value Val: i 	 Val: i1 	
+ Inside printCurrPinPout............
+ Printing backwardOUT value Val: x 	
 
  Merging prev and curr POUT values
  Inside forwardMerge.................
- Printing forward values: { (i1, )->((u, ) , ) }{ (y, )->((u, ) , ) }
+ Printing forward values: 
  ----------------------------------
  Inside restrictByLivness().......
  Printing new POUT after restrictByLvness
  Inside printCurrPinPout............OUT: 
- Backward value is : { i, i1,  }
+ Backward value is : { x,  }
 ===================================[FORWARD-0 ]===========================================
-
-Call Instruction at INDEX = 6 in Forward Analysis is Function Pointer and Pointees are : 
- Inside getIndirectCalleeFromIN..............
- Index =  6
- Inside getFetchLRObfromIndex..............
- Rhs in loop: <i, 1>
- Get Hash name: imain
-Size of vector is: 0 Prev DFV is: { i, i1,  }
 
 ===================================[FORWARD-0 ]===========================================
 

@@ -1195,96 +1195,97 @@ void Analysis<F,B>::doAnalysisForward() {
                     auto &inst = globalInstrIndexList[index];
                     d1 = getBackwardComponentAtOutOfThisInstruction(inst);
                     if(inst.getInsFunPtr()) {
-                        llvm::outs() << "\nCall Instruction at INDEX = " << index << " in Forward Analysis is Function Pointer and Pointees are : ";
-                        std::vector<llvm::Function *> target_functions = getIndirectCalleeFromIN(index, prev);
-                        llvm::outs() << "\nSize of vector is: " << target_functions.size() << " ";
-                        for(auto& function : target_functions) {
-                            llvm::outs() << function->hasName() << "   ";
-                            llvm::outs() << function->getName() << "   ";
-                        }
-                        llvm::outs() << "Prev DFV is: ";
-                        printDataFlowValuesBackward(getBackwardComponentAtInOfThisInstruction(inst));
-                        llvm::outs() << "\n";
-                        setForwardComponentAtOutOfThisInstruction(&inst,prev);
-                        for(auto& target_function : target_functions) {
-                            if(target_function->isDeclaration()) {
-                                continue;
-                            }
-                            Instruction* Inst = getInstforIndx(index);
-                            F PinStartCallee = getPinStartCallee(index, Inst, prev, target_function);
-                            PinStartCallee = performMeetForward(PinStartCallee,prev);
-                            pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, PinStartCallee, d1);
-                            F a2 = inflow_pair.first;
-                            B d2 = inflow_pair.second;
-                            F new_outflow_forward;
-                            B new_outflow_backward;
-                            // setForwardComponentAtInOfThisInstruction(&inst, prev);
-                            int matching_context_label = 0;
-                            matching_context_label = check_if_context_already_exists(target_function, inflow_pair,
-                                                                                    make_pair(new_outflow_forward,
-                                                                                            new_outflow_backward));
-                            if (matching_context_label > 0) {
-                                if (debug) {
-                                    printLine(current_context_label);
-                                    llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
-                                    llvm::outs() << "IN: ";
-                                }
-                                //step 14
-                                pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
-                                SLIM_context_transition_graph[mypair] = matching_context_label;
-                                if (debug) {
-                                    printDataFlowValuesForward(prev);
-                                }
+                        // llvm::outs() << "\nCall Instruction at INDEX = " << index << " in Forward Analysis is Function Pointer and Pointees are : ";
+                        // std::vector<llvm::Function *> target_functions = getIndirectCalleeFromIN(index, prev);
+                        // llvm::outs() << "\nSize of vector is: " << target_functions.size() << " ";
+                        // for(auto& function : target_functions) {
+                        //     llvm::outs() << function->hasName() << "   ";
+                        //     llvm::outs() << function->getName() << "   ";
+                        // }
+                        // llvm::outs() << "Prev DFV is: ";
+                        // printDataFlowValuesBackward(getBackwardComponentAtInOfThisInstruction(inst));
+                        // llvm::outs() << "\n";
+                        // setForwardComponentAtOutOfThisInstruction(&inst,prev);
+                        // for(auto& target_function : target_functions) {
+                        //     if(target_function->isDeclaration()) {
+                        //         continue;
+                        //     }
+                        //     Instruction* Inst = getInstforIndx(index);
+                        //     F PinStartCallee = getPinStartCallee(index, Inst, prev, target_function);
+                        //     PinStartCallee = performMeetForward(PinStartCallee,prev);
+                        //     pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, PinStartCallee, d1);
+                        //     F a2 = inflow_pair.first;
+                        //     B d2 = inflow_pair.second;
+                        //     F new_outflow_forward;
+                        //     B new_outflow_backward;
+                        //     // setForwardComponentAtInOfThisInstruction(&inst, prev);
+                        //     int matching_context_label = 0;
+                        //     matching_context_label = check_if_context_already_exists(target_function, inflow_pair,
+                        //                                                             make_pair(new_outflow_forward,
+                        //                                                                     new_outflow_backward));
+                        //     if (matching_context_label > 0) {
+                        //         if (debug) {
+                        //             printLine(current_context_label);
+                        //             llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
+                        //             llvm::outs() << "IN: ";
+                        //         }
+                        //         //step 14
+                        //         pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
+                        //         SLIM_context_transition_graph[mypair] = matching_context_label;
+                        //         if (debug) {
+                        //             printDataFlowValuesForward(prev);
+                        //         }
 
-                                //step 16 and 17
-                                F a3 = getForwardOutflowForThisContext(matching_context_label);
-                                B d3 = getBackwardOutflowForThisContext(matching_context_label);
+                        //         //step 16 and 17
+                        //         F a3 = getForwardOutflowForThisContext(matching_context_label);
+                        //         B d3 = getBackwardOutflowForThisContext(matching_context_label);
 
-                                pair<F, B> outflow_pair = CallOutflowFunction(current_context_label, target_function, bb, a3,
-                                                                          d3, prev, d1);
-                                F value_to_be_meet_with_prev_out = outflow_pair.first;
-                                B d4 = outflow_pair.second;
+                        //         pair<F, B> outflow_pair = CallOutflowFunction(current_context_label, target_function, bb, a3,
+                        //                                                   d3, prev, d1);
+                        //         F value_to_be_meet_with_prev_out = outflow_pair.first;
+                        //         B d4 = outflow_pair.second;
 
-                                //step 18 and 19
+                        //         //step 18 and 19
 
-                                /*
-                                At the call instruction, the value at IN should be splitted into two components.
-                                The purely global component is given to the callee while the mixed component is propagated
-                                to OUT of this instruction after executing computeOUTfromIN() on it.
-                                */
+                        //         /*
+                        //         At the call instruction, the value at IN should be splitted into two components.
+                        //         The purely global component is given to the callee while the mixed component is propagated
+                        //         to OUT of this instruction after executing computeOUTfromIN() on it.
+                        //         */
 
-                                F a5 = getPurelyLocalComponentForward(prev);
-                                /*
-                                At the OUT of this instruction, the value from END of callee procedure is to be merged
-                                with the local(mixed) value propagated from IN. Note that this merging "isn't"
-                                exactly (necessarily) the meet between these two values.
-                                */
+                        //         F a5 = getPurelyLocalComponentForward(prev);
+                        //         /*
+                        //         At the OUT of this instruction, the value from END of callee procedure is to be merged
+                        //         with the local(mixed) value propagated from IN. Note that this merging "isn't"
+                        //         exactly (necessarily) the meet between these two values.
+                        //         */
 
 
-                                /*
-                                As explained in ip-vasco,pdf, we need to perform meet with the original value of OUT
-                                of this instruction to avoid the oscillation problem.
-                                */
-                                setForwardComponentAtOutOfThisInstruction(&inst, performMeetForward(
-                                    performMeetForward(value_to_be_meet_with_prev_out,
-                                                        getForwardComponentAtOutOfThisInstruction(inst)), a5));
-                                // prev = getForwardComponentAtOutOfThisInstruction((inst));
-                                if (debug) {
-                                    llvm::outs() << "OUT: ";
-                                    printDataFlowValuesForward(prev);
-                                    printLine(current_context_label);
-                                }
-                            } else {
-                                //creating a new context
-                                INIT_CONTEXT(target_function, {a2, d2}, {new_outflow_forward, new_outflow_backward}); //step 21
+                        //         /*
+                        //         As explained in ip-vasco,pdf, we need to perform meet with the original value of OUT
+                        //         of this instruction to avoid the oscillation problem.
+                        //         */
+                        //         setForwardComponentAtOutOfThisInstruction(&inst, performMeetForward(
+                        //             performMeetForward(value_to_be_meet_with_prev_out,
+                        //                                 getForwardComponentAtOutOfThisInstruction(inst)), a5));
+                        //         // prev = getForwardComponentAtOutOfThisInstruction((inst));
+                        //         if (debug) {
+                        //             llvm::outs() << "OUT: ";
+                        //             printDataFlowValuesForward(prev);
+                        //             printLine(current_context_label);
+                        //         }
+                        //     } else {
+                        //         //creating a new context
+                        //         INIT_CONTEXT(target_function, {a2, d2}, {new_outflow_forward, new_outflow_backward}); //step 21
 
-                                //step 14
-                                //This step must be done after above step because context label counter gets updated after INIT-Context is invoked.
-                                pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
-                                SLIM_context_transition_graph[mypair] = getContextLabelCounter();
-                            }
-                        }
-                        prev = getForwardComponentAtOutOfThisInstruction(inst);
+                        //         //step 14
+                        //         //This step must be done after above step because context label counter gets updated after INIT-Context is invoked.
+                        //         pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
+                        //         SLIM_context_transition_graph[mypair] = getContextLabelCounter();
+                        //     }
+                        // }
+                        // prev = getForwardComponentAtOutOfThisInstruction(inst);
+                        continue;
                     } else if(inst.getCall()) {
                         Instruction* Inst = getInstforIndx(index);
                         CallInst *ci = dyn_cast<CallInst>(Inst);
@@ -1839,99 +1840,100 @@ void Analysis<F,B>::doAnalysisBackward() {
                     auto &inst = globalInstrIndexList[index];
                     a1 = getForwardComponentAtInOfThisInstruction(inst);
                     if(inst.getInsFunPtr()) {
-                        llvm::outs() << "\nCall Instruction at INDEX = " << index << " is Function Pointer and Pointees are : ";
-                        std::vector<llvm::Function *> target_functions = getIndirectCalleeFromIN(index, a1);
-                        for(auto function : target_functions) {
-                            llvm::outs() << function->getName() << "   ";
-                        }
-                        llvm::outs() << "\n";
-                        Instruction* Inst = getInstforIndx(index);
-                        B FPArgs = getFPandArgsBackward(index, Inst);
-                        if(debug) {
-                            printLine(current_context_label);
-                            llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
-                            llvm::outs() << "OUT: ";
-                            printDataFlowValuesBackward(prev);
-                        }
-                        setBackwardComponentAtInOfThisInstruction(&inst,FPArgs);
-                        for(auto& target_function : target_functions) {
-                            if(target_function->isDeclaration()) {
-                                continue;
-                            }
-                            llvm::outs() << "\n CallInflowFunction .............";
-                            pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, a1, prev);
-                            F a2 = inflow_pair.first;
-                            B d2 = inflow_pair.second;
-                            F new_outflow_forward;
-                            B new_outflow_backward;
-                            setBackwardComponentAtOutOfThisInstruction(&inst, prev);
-                            int matching_context_label = 0;
-                            matching_context_label = check_if_context_already_exists(target_function, {a2, d2},
-                                                                                    {new_outflow_forward,
-                                                                                    new_outflow_backward});
-                            if (matching_context_label > 0) { //Step 15
-                                if (debug) {
-                                    printLine(current_context_label);
-                                    llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
-                                    llvm::outs() << "OUT: ";
-                                    printDataFlowValuesBackward(prev);
-                                }
-                                //step 14
-                                pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
-                                SLIM_context_transition_graph[mypair] = matching_context_label;
+                        // llvm::outs() << "\nCall Instruction at INDEX = " << index << " is Function Pointer and Pointees are : ";
+                        // std::vector<llvm::Function *> target_functions = getIndirectCalleeFromIN(index, a1);
+                        // for(auto function : target_functions) {
+                        //     llvm::outs() << function->getName() << "   ";
+                        // }
+                        // llvm::outs() << "\n";
+                        // Instruction* Inst = getInstforIndx(index);
+                        // B FPArgs = getFPandArgsBackward(index, Inst);
+                        // if(debug) {
+                        //     printLine(current_context_label);
+                        //     llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
+                        //     llvm::outs() << "OUT: ";
+                        //     printDataFlowValuesBackward(prev);
+                        // }
+                        // setBackwardComponentAtInOfThisInstruction(&inst,FPArgs);
+                        // for(auto& target_function : target_functions) {
+                        //     if(target_function->isDeclaration()) {
+                        //         continue;
+                        //     }
+                        //     llvm::outs() << "\n CallInflowFunction .............";
+                        //     pair<F, B> inflow_pair = CallInflowFunction(current_context_label, target_function, bb, a1, prev);
+                        //     F a2 = inflow_pair.first;
+                        //     B d2 = inflow_pair.second;
+                        //     F new_outflow_forward;
+                        //     B new_outflow_backward;
+                        //     setBackwardComponentAtOutOfThisInstruction(&inst, prev);
+                        //     int matching_context_label = 0;
+                        //     matching_context_label = check_if_context_already_exists(target_function, {a2, d2},
+                        //                                                             {new_outflow_forward,
+                        //                                                             new_outflow_backward});
+                        //     if (matching_context_label > 0) { //Step 15
+                        //         if (debug) {
+                        //             printLine(current_context_label);
+                        //             llvm::outs() << "\nProcessing instruction at INDEX = " << index << "\n";
+                        //             llvm::outs() << "OUT: ";
+                        //             printDataFlowValuesBackward(prev);
+                        //         }
+                        //         //step 14
+                        //         pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
+                        //         SLIM_context_transition_graph[mypair] = matching_context_label;
 
-                                //step 16 and 17
-                                F a3 = getForwardOutflowForThisContext(matching_context_label);
-                                B d3 = getBackwardOutflowForThisContext(matching_context_label);
+                        //         //step 16 and 17
+                        //         F a3 = getForwardOutflowForThisContext(matching_context_label);
+                        //         B d3 = getBackwardOutflowForThisContext(matching_context_label);
 
-                                pair<F, B> outflow_pair = CallOutflowFunction(current_context_label, target_function, bb, a3,
-                                                                            d3, a1, prev);
-                                F a4 = outflow_pair.first;
-                                B value_to_be_meet_with_prev_in = outflow_pair.second;
-                                //step 18 and 19
+                        //         pair<F, B> outflow_pair = CallOutflowFunction(current_context_label, target_function, bb, a3,
+                        //                                                     d3, a1, prev);
+                        //         F a4 = outflow_pair.first;
+                        //         B value_to_be_meet_with_prev_in = outflow_pair.second;
+                        //         //step 18 and 19
 
-                                /*
-                                At the call instruction, the value at OUT should be splitted into two components.
-                                The purely global component is given to the callee while the mixed component is propagated
-                                to IN of this instruction after executing computeINfromOUT() on it.
-                                */
+                        //         /*
+                        //         At the call instruction, the value at OUT should be splitted into two components.
+                        //         The purely global component is given to the callee while the mixed component is propagated
+                        //         to IN of this instruction after executing computeINfromOUT() on it.
+                        //         */
 
-                                /*
-                                At the IN of this instruction, the value from START of callee procedure is to be merged
-                                with the local(mixed) value propagated from OUT. Note that this merging "isn't"
-                                exactly (necessarily) the meet between these two values.
-                                */
+                        //         /*
+                        //         At the IN of this instruction, the value from START of callee procedure is to be merged
+                        //         with the local(mixed) value propagated from OUT. Note that this merging "isn't"
+                        //         exactly (necessarily) the meet between these two values.
+                        //         */
 
-                                /*
-                                As explained in ip-vasco,pdf, we need to perform meet with the original value of IN
-                                of this instruction to avoid the oscillation problem.
-                                */
-                                setBackwardComponentAtInOfThisInstruction(&inst,
-                                                                        performMeetBackward(value_to_be_meet_with_prev_in,
-                                                                                            getBackwardComponentAtInOfThisInstruction(
-                                                                                                    (inst))));
+                        //         /*
+                        //         As explained in ip-vasco,pdf, we need to perform meet with the original value of IN
+                        //         of this instruction to avoid the oscillation problem.
+                        //         */
+                        //         setBackwardComponentAtInOfThisInstruction(&inst,
+                        //                                                 performMeetBackward(value_to_be_meet_with_prev_in,
+                        //                                                                     getBackwardComponentAtInOfThisInstruction(
+                        //                                                                             (inst))));
 
 
-                                // prev = getBackwardComponentAtInOfThisInstruction(inst);
-                                if (debug) {
-                                    llvm::outs() << "IN: ";
-                                    printDataFlowValuesBackward(prev);
-                                    printLine(current_context_label);
-                                }
-                            } else {
-                                //creating a new context
-                                INIT_CONTEXT(target_function, {a2, d2}, {new_outflow_forward, new_outflow_backward});//step 21
+                        //         // prev = getBackwardComponentAtInOfThisInstruction(inst);
+                        //         if (debug) {
+                        //             llvm::outs() << "IN: ";
+                        //             printDataFlowValuesBackward(prev);
+                        //             printLine(current_context_label);
+                        //         }
+                        //     } else {
+                        //         //creating a new context
+                        //         INIT_CONTEXT(target_function, {a2, d2}, {new_outflow_forward, new_outflow_backward});//step 21
 
-                                pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
-                                //step 14
-                                SLIM_context_transition_graph[mypair] = context_label_counter;
-                            }
-                        }
-                        prev = getBackwardComponentAtInOfThisInstruction(inst);
-                        if(debug) {
-                            llvm::outs() << "IN: ";
-                            printDataFlowValuesBackward(prev);
-                        }
+                        //         pair<int, fetchLR *> mypair = make_pair(current_context_label, &inst);
+                        //         //step 14
+                        //         SLIM_context_transition_graph[mypair] = context_label_counter;
+                        //     }
+                        // }
+                        // prev = getBackwardComponentAtInOfThisInstruction(inst);
+                        // if(debug) {
+                        //     llvm::outs() << "IN: ";
+                        //     printDataFlowValuesBackward(prev);
+                        // }
+                        continue;
                     } else if(inst.getCall()) {
 
                         Instruction* Inst = getInstforIndx(index);
