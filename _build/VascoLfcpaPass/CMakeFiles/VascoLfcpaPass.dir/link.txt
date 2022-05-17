@@ -1,1 +1,1 @@
-/usr/bin/clang++-12 -fPIC   -shared  -o libVascoLfcpaPass.so CMakeFiles/VascoLfcpaPass.dir/lfcpa.cpp.o   -L/usr/lib/llvm-12/lib 
+/usr/bin/clang++-12 -fPIC -pg  -shared  -o libVascoLfcpaPass.so CMakeFiles/VascoLfcpaPass.dir/lfcpa.cpp.o   -L/usr/lib/llvm-12/lib 

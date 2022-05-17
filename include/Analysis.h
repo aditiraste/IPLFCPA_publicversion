@@ -152,7 +152,7 @@ public:
 
     void setProcessingContextLabel(int);
 
-    int getNumberOfContexts();
+    unsigned int getNumberOfContexts();
 
     void doAnalysis(Module &M);
 
@@ -241,6 +241,8 @@ public:
     void printContext();
     void printInOutMaps();
 
+    float getTotalMemory();
+
     virtual pair<F, B> CallInflowFunction(int, Function *, BasicBlock *, const F &, const B &);
 
     virtual pair<F, B> CallOutflowFunction(int, Function *, BasicBlock *, const F &, const B &, const F &, const B &);
@@ -279,9 +281,24 @@ public:
 
     virtual F getPinStartCallee(long int, Instruction*, F&, Function*);
 
+    virtual unsigned int getSize(F &);
+    virtual unsigned int getSize(B &);
+
 };
 
 //========================================================================================
+template<class F, class B>
+unsigned int Analysis<F,B>::getSize(F &dfv) {
+    llvm::outs() << "\nThis function getSize() has not been implemented. EXITING !!\n";
+    exit(-1);
+}
+
+template<class F, class B>
+unsigned int Analysis<F,B>::getSize(B &dfv) {
+    llvm::outs() << "\nThis function getSize() has not been implemented. EXITING !!\n";
+    exit(-1);
+}
+
 template<class F, class B>
 B Analysis<F,B>::getFPandArgsBackward(long int Index, Instruction* I) {
     llvm::outs() << "\nThis function getFPandArgs() has not been implemented. EXITING !!\n";
@@ -340,8 +357,7 @@ Analysis<F,B>::Analysis(bool debug, const string &fileName, bool SLIM) {
 
 template<class F, class B>
 Analysis<F,B>::~Analysis() {
-    llvm::outs() << "Memory consume: ";
-    //printMemory(this->total_memory);
+    
 }
 
 template<class F, class B>
@@ -771,7 +787,7 @@ Function *Analysis<F,B>::getFunctionAssociatedWithThisContext(int context_label)
 }
 
 template<class F, class B>
-int Analysis<F,B>::getNumberOfContexts() {
+unsigned int Analysis<F,B>::getNumberOfContexts() {
     return ProcedureContext.size();
 }
 
@@ -2406,6 +2422,11 @@ void Analysis<F,B>::printContext() {
                 << "=================================================================================================="
                 << "\n";
     }
+}
+
+template<class F, class B>
+float Analysis<F,B>::getTotalMemory() {
+    return this->total_memory;
 }
 #endif
 

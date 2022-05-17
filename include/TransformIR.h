@@ -958,15 +958,16 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
                   fetchLR newObjFetchLR, tempfetchLR;
 		  auto i = 0;
 		  for (Value *ArgOperand : CI->args()) {
-		    llvm::outs() << "\n Args operand : "<<ArgOperand->getName();
+		    // llvm::outs() << "\n Args operand : "<<ArgOperand->getName();
 
-		    if (ArgOperand->getType()->isPointerTy()) {
-			llvm::outs() << "\n Call Inst Arg is of pointer type.";
-			tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledFunction()->getArg(i),ArgOperand);
-			ArgStore.push_back(tempfetchLR);
-		    	flagArgs = true;
-                     }//end if
-		     i++;	
+		    // if (ArgOperand->getType()->isPointerTy()) {
+			// llvm::outs() << "\n Call Inst Arg is of pointer type.";
+			// llvm::errs() << "\n This instruction giving error:- " << *I;
+			// tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledFunction()->getArg(i),ArgOperand);
+			// ArgStore.push_back(tempfetchLR);
+		    // 	flagArgs = true;
+            //          }//end if
+		    //  i++;	
                   }//end for
 				
 		/*	for(Function::arg_iterator argi=FunType->arg_begin(),arge=FunType->arg_end(); argi!=arge;argi++ )
