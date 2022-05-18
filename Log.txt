@@ -46,6 +46,8 @@ Inflow Value: Forward:- Backward:- {  }
 Processing instruction at INDEX = 10
 OUT: {  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............
  Rhs in loop: <z, 1>
  Instr is a USE. 
  Instr is a return stmt. IN: { z,  }
@@ -56,6 +58,8 @@ OUT: {  }
 Processing instruction at INDEX = 9
 OUT: { z,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(z, ) 
  Fetched LHS: z lhs indir: 1
  Rhs in loop: <call, 1>IN: { call,  }
 ===================================[BACKWARD-0 ]===========================================
@@ -83,6 +87,8 @@ LIN value has changed.Pushing predecessors in WL
 Processing instruction at INDEX = 8
 OUT: { call,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(call, ) 
  Fetched LHS: call lhs indir: 1
  Rhs in loop: <i1, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
@@ -108,10 +114,10 @@ Inflow Value: Forward:- Backward:- { i1,  }
 Processing instruction at INDEX = 6
 OUT: { i1,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(i1, ) 
  Fetched LHS: a lhs indir: 1
- Rhs in loop: <i, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. 
- Erasing Lhs from IN now.IN: { i1, i,  }
+ Rhs in loop: <i, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -119,7 +125,7 @@ OUT: { i1,  }
  Value d1..........
  Inside printCurrLinLout............
  Value d2..........
- Inside printCurrLinLout............(i1, ) (i, ) 
+ Inside printCurrLinLout............(i1, ) 
 LIN value has changed.Pushing predecessors in WL
 
  Check if LOUT of BB has changed.
@@ -136,6 +142,8 @@ LIN value has changed.Pushing predecessors in WL
 Processing instruction at INDEX = 3
 OUT: { i1,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(i1, ) 
  Rhs in loop: <i1, 1>
  Instr is a USE. 
  Instr is a return stmt. IN: { i1,  }
@@ -146,6 +154,8 @@ OUT: { i1,  }
 Processing instruction at INDEX = 2
 OUT: { i1,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(i1, ) 
  Fetched LHS: i1 lhs indir: 1
  Rhs in loop: <y, 1>IN: { y,  }
 ===================================[BACKWARD-1 ]===========================================
@@ -155,6 +165,8 @@ OUT: { i1,  }
 Processing instruction at INDEX = 1
 OUT: { y,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(y, ) 
  Fetched LHS: y lhs indir: 1
  Rhs in loop: <a, 1>IN: { a,  }
 ===================================[BACKWARD-1 ]===========================================
@@ -187,6 +199,8 @@ LIN value has changed.Pushing predecessors in WL
 Processing instruction at INDEX = 8
 OUT: { call,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(call, ) 
  Fetched LHS: call lhs indir: 1
  Rhs in loop: <i1, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
@@ -235,16 +249,16 @@ OUT: { i1,  }
 Processing instruction at INDEX = 6
 OUT: { a,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(a, ) 
  Fetched LHS: a lhs indir: 1
- Rhs in loop: <i, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. 
- Erasing Lhs from IN now.IN: { i,  }
+ Rhs in loop: <i, 1>IN: { i,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
  Inside EqualDataFlowValuesBackward.................
  Value d1..........
- Inside printCurrLinLout............(i1, ) (i, ) 
+ Inside printCurrLinLout............(i1, ) 
  Value d2..........
  Inside printCurrLinLout............(i, ) 
 LIN value has changed.Pushing predecessors in WL
@@ -263,6 +277,8 @@ LIN value has changed.Pushing predecessors in WL
 Processing instruction at INDEX = 5
 OUT: { i,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(i, ) 
  Fetched LHS: i lhs indir: 1
  Rhs in loop: <x, 1>IN: { x,  }
 ===================================[BACKWARD-0 ]===========================================
@@ -272,6 +288,8 @@ OUT: { i,  }
 Processing instruction at INDEX = 4
 OUT: { x,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(x, ) 
  Fetched LHS: x lhs indir: 1
  Rhs in loop: <c, 0>IN: {  }
 ===================================[BACKWARD-0 ]===========================================
@@ -1181,6 +1199,8 @@ IN:
 Processing instruction at INDEX = 3
 OUT: { i1,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(i1, ) 
  Rhs in loop: <i1, 1>
  Instr is a USE. 
  Instr is a return stmt. IN: { i1,  }
@@ -1191,6 +1211,8 @@ OUT: { i1,  }
 Processing instruction at INDEX = 2
 OUT: { i1,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(i1, ) 
  Fetched LHS: i1 lhs indir: 1
  Rhs in loop: <y, 1>IN: { y,  }
 ===================================[BACKWARD-2 ]===========================================
@@ -1200,6 +1222,8 @@ OUT: { i1,  }
 Processing instruction at INDEX = 1
 OUT: { y,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(y, ) 
  Fetched LHS: y lhs indir: 1
  Rhs in loop: <a, 1>IN: { a,  }
 ===================================[BACKWARD-2 ]===========================================
@@ -1232,6 +1256,8 @@ LIN value has changed.Pushing predecessors in WL
 Processing instruction at INDEX = 8
 OUT: { call,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(call, ) 
  Fetched LHS: call lhs indir: 1
  Rhs in loop: <i1, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
@@ -1282,10 +1308,10 @@ OUT: { i1,  }
 Processing instruction at INDEX = 6
 OUT: { a,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(a, ) 
  Fetched LHS: a lhs indir: 1
- Rhs in loop: <i, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. 
- Erasing Lhs from IN now.IN: { i,  }
+ Rhs in loop: <i, 1>IN: { i,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -1925,6 +1951,8 @@ IN: { (z, )->((c, ) , ) }
 Processing instruction at INDEX = 8
 OUT: { call,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(call, ) 
  Fetched LHS: call lhs indir: 1
  Rhs in loop: <i1, 1>IN: { i1,  }
 ===================================[BACKWARD-0 ]===========================================
@@ -1975,10 +2003,10 @@ OUT: { i1,  }
 Processing instruction at INDEX = 6
 OUT: { a,  }
  Inside computeInFromOut...................
+ PRinting LOUT of the instr
+ Inside printCurrLinLout............(a, ) 
  Fetched LHS: a lhs indir: 1
- Rhs in loop: <i, 1>
- LHS is a function argument. Generate liveness of Rhs unconditionally. 
- Erasing Lhs from IN now.IN: { i,  }
+ Rhs in loop: <i, 1>IN: { i,  }
 ===================================[BACKWARD-0 ]===========================================
 
  Check if LIN of BB has changed.
@@ -1993,7 +2021,6 @@ OUT: { a,  }
  Inside printCurrLinLout............(call, ) 
  Value d2..........
  Inside printCurrLinLout............(call, ) 
- Execution ends..........
  Printing Global Instruction List.....#
  Index: 1	 Lhs: <y, 1 > 		 Rhs: <a, 1>
  Index: 2	 Lhs: <i1, 1 > 		 Rhs: <y, 1>
@@ -2015,9 +2042,29 @@ OUT: { a,  }
   store i32* %c, i32** @x, align 8
   %i = load i32*, i32** @x, align 8
   %call = call i32* @fun(i32* %i)
-
 =================-------------------Statistics of Analysis-------------------=================
  Total number of Contexts: 3
  Total time taken in Splitting Basic Blocks: 0 seconds
  Total time taken in SLIM Modelling: 0 seconds
  Total time taken in Analysis: 0 seconds
+ Total memory taken by Analysis: 131.433594 MB
+
+------------------------------------------------------------------
+---------------------------------------
+ Context Label: 2
+ Function Name: fun
+ Forward size: 1
+ Backward size: 1
+---------------------------------------
+---------------------------------------
+ Context Label: 1
+ Function Name: fun
+ Forward size: 0
+ Backward size: 1
+---------------------------------------
+---------------------------------------
+ Context Label: 0
+ Function Name: main
+ Forward size: 0
+ Backward size: 0
+---------------------------------------

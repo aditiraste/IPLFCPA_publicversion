@@ -95,8 +95,8 @@ unsigned int IPLFCPA::getSize(B& dfvB) {
 unsigned int IPLFCPA::getSize(F& dfvF) {
     unsigned int size = 0;
     for (auto f : dfvF) {
-	for (auto p : f.second)
-		size++;
+		for (auto p : f.second)
+			size++;
     }
     return size;
 }

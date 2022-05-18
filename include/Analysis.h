@@ -123,8 +123,6 @@ private:
     bool debug{};
     bool SLIM{};
     float total_memory{}, vm{}, rss{};
-    bool measuretime,measurememory;
-
     std::chrono::seconds AnalysisTime, SLIMTime, SplittingBBTime;
 
     void printLine(int);
@@ -295,11 +293,25 @@ public:
 //========================================================================================
 template<class F, class B>
 void Analysis<F,B>::printStats() {
-    llvm::outs() << "\n=================-------------------Statistics of Analysis-------------------=================";
-    llvm::outs() << "\n Total number of Contexts: " << this->getNumberOfContexts();
-    llvm::outs() << "\n Total time taken in Splitting Basic Blocks: " << this->SplittingBBTime.count() << " seconds";
-    llvm::outs() << "\n Total time taken in SLIM Modelling: " << this->SLIMTime.count() << " seconds";
-    llvm::outs() << "\n Total time taken in Analysis: " << this->AnalysisTime.count() << " seconds";
+    std::cout << "\n=================-------------------Statistics of Analysis-------------------=================";
+    std::cout << "\n Total number of Contexts: " << this->getNumberOfContexts();
+    std::cout << "\n Total time taken in Splitting Basic Blocks: " << this->SplittingBBTime.count() << " seconds";
+    std::cout << "\n Total time taken in SLIM Modelling: " << this->SLIMTime.count() << " seconds";
+    std::cout << "\n Total time taken in Analysis: " << this->AnalysisTime.count() << " seconds";
+    std::cout << "\n Total memory taken by Analysis: ";
+    printMemory(this->total_memory);
+    std::cout << "\n------------------------------------------------------------------";
+    for(auto& label : ProcedureContext) {
+        std::cout << "\n---------------------------------------";
+        Context<F,B> *context = this->context_label_to_context_object_map[label];
+        F temp1 = context->getInflowValue().first;
+        B temp2 = context->getInflowValue().second;
+        std::cout << "\n Context Label: " << label;
+        std::cout << "\n Function Name: " << context->getFunction()->getName().str();
+        std::cout << "\n Forward size: " << this->getSize(temp1);
+        std::cout << "\n Backward size: " << this->getSize(temp2);
+        std::cout << "\n---------------------------------------";
+    }
 } 
 
 
@@ -355,9 +367,6 @@ Analysis<F,B>::Analysis(bool debug,bool SLIM) {
     this->debug = debug;
     this->direction = "";
     this->SLIM = SLIM;
-    this->measurememory = false;
-    this->measuretime = false;
-    this->AnalysisTime = this->SLIMTime = this->SplittingBBTime = 0.0;
 }
 
 template<class F, class B>
@@ -368,13 +377,10 @@ Analysis<F,B>::Analysis(bool debug, const string &fileName, bool SLIM) {
     freopen(fileName.c_str(), "w", stdout);
     this->direction = "";
     this->SLIM = SLIM;
-    this->measurememory = false;
-    this->measuretime = false;
 }
 
 template<class F, class B>
 Analysis<F,B>::~Analysis() {
-    // this->printStats();
 }
 
 template<class F, class B>
@@ -814,12 +820,6 @@ void Analysis<F,B>::doAnalysis(Module &M) {
     llvm::outs() << "\n Inside doAnalysis...............";
     setCurrentModule(&M);
     //====================================SPLITTING========================================
-#ifdef Time
-    this->measuretime = true;
-#endif
-#ifdef Memory
-    this->measurememory = true;
-#endif
     auto start = high_resolution_clock::now();
     startSplitting();
     auto stop = high_resolution_clock::now();
@@ -946,6 +946,8 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
                     setForwardComponentAtOutOfThisInstruction(&(*inst), getInitialisationValueForward());
                 }
             }
+            process_mem_usage(this->vm, this->rss);
+            this->total_memory = max(this->total_memory, this->vm);
         }
         if (current_context_label == 0)//main function with first invocation
         {
@@ -992,6 +994,8 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
                     setBackwardComponentAtOutOfThisInstruction(&(*inst), getInitialisationValueBackward());
                 }
             }
+            process_mem_usage(this->vm, this->rss);
+            this->total_memory = max(this->total_memory, this->vm);
         }
         if (current_context_label == 0)//main function with first invocation
         {
@@ -1107,6 +1111,8 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
                         setBackwardComponentAtOutOfThisInstruction(&(*inst),getInitialisationValueBackward());
                     }
                 }
+                process_mem_usage(this->vm, this->rss);
+                this->total_memory = max(this->total_memory, this->vm);
             }
             for(BasicBlock *BB : post_order(&context_object->getFunction()->getEntryBlock()))
             {
@@ -1130,6 +1136,8 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
                         setForwardComponentAtOutOfThisInstruction(&(*inst),getInitialisationValueForward());
                     }
                 }
+                process_mem_usage(this->vm, this->rss);
+                this->total_memory = max(this->total_memory, this->vm);
             }
             if(current_context_label==0){ //main function with first invocation
                 setForwardInflowForThisContext(current_context_label,getBoundaryInformationForward());//setting inflow forward
@@ -1141,10 +1149,6 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
             setForwardIn(current_context_label,&context_object->getFunction()->getEntryBlock(),getForwardInflowForThisContext(current_context_label));
             setBackwardOut(current_context_label,&context_object->getFunction()->back(),getBackwardInflowForThisContext(current_context_label));
         }
-    }
-    if(this->measurememory) {
-        process_mem_usage(this->vm, this->rss);
-        this->total_memory = max(this->total_memory, this->vm);
     }
 }
 
@@ -1632,10 +1636,8 @@ void Analysis<F,B>::doAnalysisForward() {
             }
             }
         }
-        if(this->measurememory) {
-            process_mem_usage(this->vm, this->rss);
-            this->total_memory = max(this->total_memory, this->vm);
-        }
+        process_mem_usage(this->vm, this->rss);
+        this->total_memory = max(this->total_memory, this->vm);
     }
 }
 
@@ -1666,6 +1668,8 @@ F Analysis<F,B>::NormalFlowFunctionForward(pair<int, BasicBlock *> current_pair_
             if (debug) {
                 printLine(current_pair_of_context_label_and_bb.first);
             }
+            process_mem_usage(this->vm, this->rss);
+            this->total_memory = max(this->total_memory, this->vm);
         }
     } else {
         for (auto inst = &*(b.begin()); inst != nullptr; inst = inst->getNextNonDebugInstruction()) {
@@ -1686,6 +1690,8 @@ F Analysis<F,B>::NormalFlowFunctionForward(pair<int, BasicBlock *> current_pair_
             if (debug) {
                 printLine(current_pair_of_context_label_and_bb.first);
             }
+            process_mem_usage(this->vm, this->rss);
+            this->total_memory = max(this->total_memory, this->vm);
         }
     }
     return prev;
@@ -1713,6 +1719,8 @@ int Analysis<F,B>::check_if_context_already_exists(llvm::Function *function, con
                             << "\n";
                 }
                 return set_itr;
+                process_mem_usage(this->vm, this->rss);
+                this->total_memory = max(this->total_memory, this->vm);
             }
         }
     } else if (std::is_same<F, NoAnalysisType>::value) {
@@ -1735,6 +1743,8 @@ int Analysis<F,B>::check_if_context_already_exists(llvm::Function *function, con
                             << "======================================================================================"
                             << "\n";
                 }
+                process_mem_usage(this->vm, this->rss);
+                this->total_memory = max(this->total_memory, this->vm);
                 return set_itr;
             }
         }
@@ -1762,6 +1772,8 @@ int Analysis<F,B>::check_if_context_already_exists(llvm::Function *function, con
                             << "======================================================================================"
                             << "\n";
                 }
+                process_mem_usage(this->vm, this->rss);
+                this->total_memory = max(this->total_memory, this->vm);
                 return set_itr;
             }
         }
@@ -2277,10 +2289,8 @@ void Analysis<F,B>::doAnalysisBackward() {
             }
             }
         }
-        if(this->measurememory) {
-            process_mem_usage(this->vm, this->rss);
-            this->total_memory = max(this->total_memory, this->vm);
-        }
+        process_mem_usage(this->vm, this->rss);
+        this->total_memory = max(this->total_memory, this->vm);
     }
 }
 
@@ -2311,6 +2321,8 @@ B Analysis<F,B>::NormalFlowFunctionBackward(pair<int, BasicBlock *> current_pair
                 printLine(current_pair_of_context_label_and_bb.first);
             }
             prev = getBackwardComponentAtInOfThisInstruction(inst);
+            process_mem_usage(this->vm, this->rss);
+            this->total_memory = max(this->total_memory, this->vm);
         }
     } else {
         for (auto inst = &*(b.rbegin()); inst != nullptr; inst = inst->getPrevNonDebugInstruction()) {
@@ -2329,6 +2341,8 @@ B Analysis<F,B>::NormalFlowFunctionBackward(pair<int, BasicBlock *> current_pair
                 printLine(current_pair_of_context_label_and_bb.first);
             }
             prev = getBackwardComponentAtInOfThisInstruction(*inst);
+            process_mem_usage(this->vm, this->rss);
+            this->total_memory = max(this->total_memory, this->vm);
         }
     }
     return prev;
