@@ -44,47 +44,62 @@ class IPLFCPA : public Analysis<F, B> {  //, public Transform {
 	Token* dangling = IM->extractDummy("dangling"); /* local pointees of global pointers*/
 public: 
 	IPLFCPA();
-	F getBoundaryInformationForward() override;
-	F getInitialisationValueForward() override;
-	B getBoundaryInformationBackward() override;
-	B getInitialisationValueBackward() override;
-	bool EqualDataFlowValuesBackward(const B& d1, const B& d2) const override; 
+	F getBoundaryInformationForward();
+	F getInitialisationValueForward();
+	B getBoundaryInformationBackward();
+	B getInitialisationValueBackward();
+	bool EqualDataFlowValuesBackward(const B& d1, const B& d2) const;
 	bool compareToken(Token*, Token*) const;
-	B performMeetBackward(const B&, const B&) const override;
-	B computeInFromOut(fetchLR &I) override;
+	B performMeetBackward(const B&, const B&) const;
+	B computeInFromOut(fetchLR &I);
 	std::string fetchLhsIndex (fetchLR*, Token*);
 	B eraseFromLin(Token*, std::string, B);
 	B insertRhsLin(B, std::vector<std::pair<Token*, int >>, F, fetchLR &);
-	B getPurelyGlobalComponentBackward(const B& dfv) const override;
-	void printDataFlowValuesBackward(const B& dfv) const override;
-	F computeOutFromIn(fetchLR &I) override;
+	B getPurelyGlobalComponentBackward(const B& dfv) const;
+	void printDataFlowValuesBackward(const B& dfv) const;
+	F computeOutFromIn(fetchLR &I);
 	std::string fetchRhsIndxfrmPin(F, Token*);
         F restrictByLivness(F, B);
 	B backwardMerge(B, B);
         F forwardMerge(F, F);   
-	bool EqualDataFlowValuesForward(const F &d1, const F &d2) const override;
-	F performMeetForward(const F& d1, const F& d2) const override;  
-	F getPurelyGlobalComponentForward(const F& dfv) const override;      
-	void printDataFlowValuesForward(const F &dfv) const override;
-	pair<F, B> CallInflowFunction(int, Function *, BasicBlock *, const F &, const B &) override;
-	pair<F, B> CallOutflowFunction(int, Function *, BasicBlock *, const F &, const B &, const F &, const B &) override;
+	bool EqualDataFlowValuesForward(const F &d1, const F &d2) const;
+	F performMeetForward(const F& d1, const F& d2) const;  
+	F getPurelyGlobalComponentForward(const F& dfv) const;      
+	void printDataFlowValuesForward(const F &dfv) const;
+	pair<F, B> CallInflowFunction(int, Function *, BasicBlock *, const F &, const B &);
+	pair<F, B> CallOutflowFunction(int, Function *, BasicBlock *, const F &, const B &, const F &, const B &);
 	B getLocalComponentB(const B &);
 	void printCurrPinPout(const F) const;
 	void printCurrLinLout(const B) const;
-	F getPurelyLocalComponentForward(const F& dfv) const override;
-	std::vector<Function*> getIndirectCalleeFromIN(long int, F&) override;
-	B getFPandArgsBackward(long int, Instruction*) override;
+	F getPurelyLocalComponentForward(const F& dfv) const;
+	std::vector<Function*> getIndirectCalleeFromIN(long int, F&);
+	B getFPandArgsBackward(long int, Instruction*);
 	fetchLR* getFetchLRObfromIndex(long int);
-	F getPinStartCallee(long int, Instruction*, F&, Function*) override;
+	F getPinStartCallee(long int, Instruction*, F&, Function*);
 	F mapIndirectFunArgForward(Value*, Value*, F&);
+	unsigned int getSize(F& );
+	unsigned int getSize(B& );
 };
 
 
-IPLFCPA::IPLFCPA() : Analysis<F, B>(true,"Log.txt", true){ };
+IPLFCPA::IPLFCPA() : Analysis<F, B>(true, "Log.txt",true){ };
 IPLFCPA lfcpaObj;
 bool vFlag = true;
 bool flgBitcast = true;
 std::set<int> insBitcastSet;
+
+unsigned int IPLFCPA::getSize(B& dfvB) {
+    return dfvB.size();
+}
+
+unsigned int IPLFCPA::getSize(F& dfvF) {
+    unsigned int size = 0;
+    for (auto f : dfvF) {
+	for (auto p : f.second)
+		size++;
+    }
+    return size;
+}
 
 F IPLFCPA::mapIndirectFunArgForward(Value* LHS, Value* RHS, F& currPIN) {
  llvm::outs() << "\n Inside mapIndirectFunArgForward................";
@@ -163,21 +178,9 @@ F IPLFCPA::getPinStartCallee(long int Index, Instruction* I, F& currPIN, Functio
 fetchLR* IPLFCPA::getFetchLRObfromIndex(long int Index) {
  llvm::outs() << "\n Inside getFetchLRObfromIndex..............";
  fetchLR * ins;
- for (auto& g : globalInstrIndexList) {
-  if (g.first == Index)  {
-	  ins = &g.second;
-	  	// std::vector<std::pair<Token*, int>> rhsVector;
-		// rhsVector = ins->getRHS();
-		// if(rhsVector.empty()) {
-		// 	llvm::outs() << "Vector is empty in getFetchLRObfromIndex\n";
-		// }
-		// std::pair<Token*, int > rhsVal;
-		// for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {					
-		// 	rhsVal = *r;
-		// 	llvm::outs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
-		// 	llvm::outs() << "\n Get Hash name: "<<rhsVal.first->getHash();
-		// }
-		// break;
+ for (auto g : globalInstrIndexList) {
+  if (g.first == Index)  { 
+   ins = &g.second;
   }
  }
  return ins;
@@ -185,7 +188,7 @@ fetchLR* IPLFCPA::getFetchLRObfromIndex(long int Index) {
 
 
 B IPLFCPA::getFPandArgsBackward(long int Index, Instruction* I) {
- llvm::outs() << "\n Inside getFPandArgs..............";
+ llvm::outs() << "\n Inside getFPandArgsBackward..............";
  std::pair<Token*, int> tempLHS;
  Token* lhsVal;
  int indirLhs;
@@ -199,18 +202,15 @@ B IPLFCPA::getFPandArgsBackward(long int Index, Instruction* I) {
 
  /*Fetch the RHS (FP) first*/
  ins = getFetchLRObfromIndex(Index);
-//  llvm::outs() << "Instruction is ";
  tempLHS = ins->getLHS();
  lhsVal = tempLHS.first;  
  indirLhs = tempLHS.second;
  rhsVector = ins->getRHS();
- //llvm::outs() << "Printing templhs " << tempLHS.first->getName() << "\n";
  for (std::vector<std::pair<Token*, int>>::iterator r = rhsVector.begin(); r!=rhsVector.end(); r++) {					
    rhsVal = *r;
    llvm::outs() << "\n Rhs in loop: <"<< rhsVal.first->getName() << ", "<<rhsVal.second <<">";
    llvm::outs() << "\n Get Hash name: "<<rhsVal.first->getHash();
  }
-//  llvm::outs() << "HERE 2\n";
 
   retLivenessInfo.insert(std::make_pair(rhsVal.first, "1"));
   CallInst *CI = dyn_cast<CallInst>(I);
@@ -1372,6 +1372,8 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 
   //Fetch the currLOUT of instr I
   OUTofInst = getBackwardComponentAtOutOfThisInstruction(I);
+  llvm::outs() << "\n PRinting LOUT of the instr";
+  printCurrLinLout(OUTofInst);
 
   //Fetch the currPIN of instr I
   std::map<std::pair<Token*, std::string>, std::set<std::pair<Token*, std::string>>> forwardIN = getForwardComponentAtInOfThisInstruction(I);
@@ -1498,14 +1500,14 @@ B IPLFCPA::computeInFromOut(fetchLR &I) {
 	llvm::outs() << "\n LHS indir is 1. ";
 	#endif
 	//if lhs is a function argument then generate liveness of rhs
-        if (tempLHS.first->getIsFunArg()) {	
+        /*if (tempLHS.first->getIsFunArg()) {	
 	  llvm::outs() << "\n LHS is a function argument. Generate liveness of Rhs unconditionally. ";
           std::pair<Token*, int> rhsVal = rhsVector[0];
 	  llvm::outs() << "\n Erasing Lhs from IN now.";
    	  INofInst = eraseFromLin(lhsVal, indxLHS, INofInst);
 	  INofInst.insert(std::make_pair(rhsVal.first, rhsVal.first->getFieldIndex()));
 	  return INofInst;
-	}
+	}*/
         //if lhs is an array then dont consider the field index. 
         if (tempLHS.first->getIsArray()) {
 	   #ifdef PRINT
@@ -1867,11 +1869,9 @@ public:
 
 	llvm::outs() << "\n Executing VASCO........";
 	lfcpaObj.doAnalysis(M);
-	llvm::outs() << "\n Execution ends..........";
 	lfcpaObj.printGlobalInstrList();
 	//#ifdef RELV_INS
 		lfcpaObj.printmapModeledIns();
-		llvm::errs() << "\n";
 	//	#endif
 
 	//lfcpaObj.printContext();
