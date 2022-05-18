@@ -29,6 +29,8 @@
 #include "Worklist.h"
 #include "TransformIR.h"
 
+#include "bprinter/table_printer.h"
+
 using namespace llvm;
 using namespace std;
 using namespace std::chrono;
@@ -122,6 +124,8 @@ private:
     bool SLIM{};
     float total_memory{}, vm{}, rss{};
     bool measuretime,measurememory;
+
+    std::chrono::seconds AnalysisTime, SLIMTime, SplittingBBTime;
 
     void printLine(int);
 
@@ -243,6 +247,8 @@ public:
 
     float getTotalMemory();
 
+    void printStats();
+
     virtual pair<F, B> CallInflowFunction(int, Function *, BasicBlock *, const F &, const B &);
 
     virtual pair<F, B> CallOutflowFunction(int, Function *, BasicBlock *, const F &, const B &, const F &, const B &);
@@ -287,6 +293,16 @@ public:
 };
 
 //========================================================================================
+template<class F, class B>
+void Analysis<F,B>::printStats() {
+    llvm::outs() << "\n=================-------------------Statistics of Analysis-------------------=================";
+    llvm::outs() << "\n Total number of Contexts: " << this->getNumberOfContexts();
+    llvm::outs() << "\n Total time taken in Splitting Basic Blocks: " << this->SplittingBBTime.count() << " seconds";
+    llvm::outs() << "\n Total time taken in SLIM Modelling: " << this->SLIMTime.count() << " seconds";
+    llvm::outs() << "\n Total time taken in Analysis: " << this->AnalysisTime.count() << " seconds";
+} 
+
+
 template<class F, class B>
 unsigned int Analysis<F,B>::getSize(F &dfv) {
     llvm::outs() << "\nThis function getSize() has not been implemented. EXITING !!\n";
@@ -341,6 +357,7 @@ Analysis<F,B>::Analysis(bool debug,bool SLIM) {
     this->SLIM = SLIM;
     this->measurememory = false;
     this->measuretime = false;
+    this->AnalysisTime = this->SLIMTime = this->SplittingBBTime = 0.0;
 }
 
 template<class F, class B>
@@ -357,7 +374,7 @@ Analysis<F,B>::Analysis(bool debug, const string &fileName, bool SLIM) {
 
 template<class F, class B>
 Analysis<F,B>::~Analysis() {
-    
+    // this->printStats();
 }
 
 template<class F, class B>
@@ -806,7 +823,9 @@ void Analysis<F,B>::doAnalysis(Module &M) {
     auto start = high_resolution_clock::now();
     startSplitting();
     auto stop = high_resolution_clock::now();
+    this->SplittingBBTime = duration_cast<seconds>(stop - start);
     if(SLIM) {
+        auto start = high_resolution_clock::now();
         llvm::outs() << "\n Applying SLIM modeling..............#";
         for(llvm::Function &Func : M) {
             for(llvm::BasicBlock &BB : Func) {
@@ -814,10 +833,10 @@ void Analysis<F,B>::doAnalysis(Module &M) {
                 setLhsRhsMap(&Func, &BB);
             }
         }
+        auto stop = high_resolution_clock::now();
+        this->SLIMTime = duration_cast<seconds>(stop - start);
 	    printGlobalInstrList();
     }
-    auto duration = duration_cast<seconds>(stop - start);
-    llvm::outs() << "Time taken in Splitting Basic Block : " << duration.count() << " seconds" << "\n";
     start = high_resolution_clock::now();
     int i = 0;
     for (Function &function: M) {
@@ -877,8 +896,7 @@ void Analysis<F,B>::doAnalysis(Module &M) {
         }
     }
     stop = high_resolution_clock::now();
-    duration = duration_cast<seconds>(stop - start);
-    llvm::outs() << "Time taken by analysis: " << duration.count() << " seconds" << "\n";
+    this->AnalysisTime = duration_cast<seconds>(stop - start);
 }
 
 

@@ -35,11 +35,11 @@ export FOO_VAR
 mkdir -p _build
 pushd _build
 make clean
-cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg ..
-make 
+cmake ..
+make
 popd
-clang-12 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -fno-discard-value-names -c fp1.c -o test.ll
-opt-12 -S -instnamer -mem2reg -stats -time-passes -load /usr/local/lib/libSpatial.so -load  _build/*/*VascoLfcpa*  -lfcpa ./SPEC/hmmer.ll -o test.ll
+clang-12 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -fno-discard-value-names -c call_test4.c -o test.ll
+opt-12 -S -instnamer -mem2reg -stats -time-passes -load /usr/local/lib/libSpatial.so -load  _build/*/*VascoLfcpa*  -lfcpa test.ll -o test.ll
 #clang++-11 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -c All_Testcases/7.cpp -o test.ll
 #opt-11 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*TransformIR*  -lfcpa test.ll -o test.ll #> /dev/null
 #opt-11 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*TransformIR*  -lfcpa /home/aditi/rebenchmarktesting/Aditi/gcc.ll -o test.ll

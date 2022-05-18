@@ -11,6 +11,9 @@ add_definitions($ENV{FOO_VAR})
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 
+# add_library(Bprinter SHARED IMPORTED)
+# set_target_properties(Bprinter PROPERTIES IMPORTED_LOCATION "/usr/local/lib/libbprinter.a")
+
 include_directories("/usr/local/include/spatial")
 include_directories("./include")
 add_subdirectory(VascoLfcpaPass)  # Use your pass name here.

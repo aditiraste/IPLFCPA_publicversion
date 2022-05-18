@@ -1873,8 +1873,7 @@ public:
 		lfcpaObj.printmapModeledIns();
 		llvm::errs() << "\n";
 	//	#endif
-
-	//lfcpaObj.printContext();
+	lfcpaObj.printStats();
         return false;
   }
 };

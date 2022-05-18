@@ -10,6 +10,8 @@ set_target_properties(VascoLfcpaPass PROPERTIES
     COMPILE_FLAGS "-fno-rtti -g"
 )
 
+# target_link_libraries(VascoLfcpaPass bprinter)
+
 # Get proper shared-library behavior (where symbols are not necessarily
 # resolved when the shared library is linked) on OS X.
 if(APPLE)
