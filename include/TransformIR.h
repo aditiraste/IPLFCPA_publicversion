@@ -119,7 +119,7 @@ std::vector<std::tuple<int, Token*, std::string,int>> Structure::fetchIcmpRhsOpd
 	return insIcmpRhsIndx[I];
 }
 //--------------------------------------------------------------------------------------------------------
-enum InstTy { insUse, insKill, insCall, insPhi, insGEP, gopLhs, gopRhs, fieldLhs, fieldRhs, insBitcast, bitcastRhs, phiRhsIndx/*GEP in Phi*/, insFunPtr, ArgFieldRhs };
+enum InstTy { insUse, insKill, insCall, insPhi, insGEP, gopLhs, gopRhs, fieldLhs, fieldRhs, insBitcast, bitcastRhs, phiRhsIndx/*GEP in Phi*/, insFunPtr, ArgFieldRhs, RetFieldRhs };
 bool retFlag = false;  /* Set only if return stmt is considered */
 bool insFlag = false;  /* Set only is instr is considered for analysis. Required for Skip instr */
 bool callFlag = false; /* Set only if call instr is considered */
@@ -150,6 +150,7 @@ public:
 	void setPhiRhsIndx();
 	void setInsFunPtr();
 	void setArgFieldRhs();
+	void setRetFieldRhs();
 	bool getUse();
 	bool getKill();
 	bool getPhi();
@@ -164,6 +165,7 @@ public:
 	bool getPhiRhsIndx();
 	bool getInsFunPtr();
 	bool getArgFieldRhs();
+	bool getRetFieldRhs();
 	fetchLR metaDataSetter(Instruction*);
 	std::pair<Token*, int> getLHS();
 	std::vector<std::pair<Token*, int>> getRHS();
@@ -220,7 +222,7 @@ void fetchLR::printOperands(fetchLR Ob) {
 }
 
 fetchLR::fetchLR() {
-  this->Length = 14;
+  this->Length = 15;
   InstTy = llvm::BitVector(this->Length, false);
 }
 
@@ -257,6 +259,8 @@ void fetchLR::setInsFunPtr() { InstTy.set(insFunPtr); }
 
 void fetchLR::setArgFieldRhs() { InstTy.set(ArgFieldRhs); }
 
+void fetchLR::setRetFieldRhs() { InstTy.set(RetFieldRhs); }
+
 bool fetchLR::getUse() { return InstTy.test(insUse); }
 
 bool fetchLR::getKill() { return InstTy.test(insKill); }
@@ -284,6 +288,8 @@ bool fetchLR::getPhiRhsIndx() { return InstTy.test(phiRhsIndx); }
 bool fetchLR::getInsFunPtr() { return InstTy.test(insFunPtr); }
 
 bool fetchLR::getArgFieldRhs() { return InstTy.test(ArgFieldRhs); }
+
+bool fetchLR::getRetFieldRhs() { return InstTy.test(RetFieldRhs); }
 
 std::pair<Token*, int> fetchLR::getLHS() { return (this->LHS);}
 
@@ -827,9 +833,21 @@ std::vector<Token*> fetchLR::mapReturnArg(Function *F) {
 		 #if defined(TRACE) || defined(PRINT) 
 	         llvm::outs() << "\n Return Value is Pointer Type. ";
 		 #endif
-		 spatial::Token* RHSTok = TW.getToken(new Token(RetVal)); 
-  		 RHSTok->setIsGlobal();
-		 vecRetToken.push_back(RHSTok);     
+		 if (isa<GEPOperator>(RetVal)) {
+			llvm::outs() << "\n RetVal is a GEP Operator";
+		        GEPOperator *GOP = dyn_cast<GEPOperator>(RetVal);
+			spatial::Token* RHSTok = TW.getToken(new spatial::Token(GOP->getOperand(0)));
+			RHSTok->setIndex(GOP);
+			RHSTok->setTy(RetVal->getType());
+			RHSTok->setIsRetGEP();
+			vecRetToken.push_back(RHSTok);
+		 }
+		 else {
+		    llvm::outs() << "\n Normal operand in Return Ins ";
+		    spatial::Token* RHSTok = TW.getToken(new Token(RetVal)); 
+  		    RHSTok->setIsGlobal();
+		    vecRetToken.push_back(RHSTok);     
+		 }
             }
             else if (RetVal && !llvm::isa<llvm::ConstantInt>(RetVal)) {
 		#if defined(TRACE) || defined(PRINT) 
@@ -947,29 +965,43 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 		}//end if indirect call		  
 		else if (FunType && FunType->isVarArg()) {
 		  llvm::outs() << "\n Function is a variadic function...";
-		  Token* opRhs = TW.getToken(new spatial::Token(FunType));
+
+                /* Following code for variadic functions is commented as on 19.5.22*/
+		/*  Token* opRhs = TW.getToken(new spatial::Token(FunType));
 		  Ob.RHS.push_back(std::make_pair(opRhs, 1));
 		  Ob.setCall();
 		  callFlag = true;
-		
+		  std::vector<Value*> caller, callee;
+		  for (Value *ArgOperand : CI->args()) 
+			caller.push_back(ArgOperand);
+		  
+		//  for (Value *ArgOperand : CI->getCalledFunction()->getArgOperand(0)) 
+		//	callee.push_back(ArgOperand);
+		for (auto arg = CI->getCalledFunction()->arg_begin(); arg != CI->getCalledFunction()->arg_end(); ++arg) {
+			Value* V = dyn_cast<Value>(arg);
+			llvm::outs() << "\n ARGUMENT: "<<V->getName();
+			llvm::outs() << "\n ARGUMENT_1: "<<*arg;
+// 			Value *ArgVal = CI->getCalledFunction()->getArgOperand(arg->getArgNo());		
+//			llvm::outs() << "\n ARGUMENT_2: "<<ArgVal->getName();
+	
+		}
 		  if (!ArgStore.empty())
-			ArgStore.clear();
+			ArgStore.clear();*/
 		
-                  fetchLR newObjFetchLR, tempfetchLR;
+/*                  fetchLR newObjFetchLR, tempfetchLR;
 		  auto i = 0;
 		  for (Value *ArgOperand : CI->args()) {
-		    // llvm::outs() << "\n Args operand : "<<ArgOperand->getName();
+		  //  llvm::outs() << "\n Args operand : "<<ArgOperand->getName();
 
-		    // if (ArgOperand->getType()->isPointerTy()) {
-			// llvm::outs() << "\n Call Inst Arg is of pointer type.";
-			// llvm::errs() << "\n This instruction giving error:- " << *I;
-			// tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledFunction()->getArg(i),ArgOperand);
-			// ArgStore.push_back(tempfetchLR);
-		    // 	flagArgs = true;
-            //          }//end if
-		    //  i++;	
+		    if (ArgOperand->getType()->isPointerTy()) {
+			llvm::outs() << "\n Call Inst Arg is of pointer type.";
+			tempfetchLR = newObjFetchLR.getArgStore(CI->getCalledFunction()->getArg(i),ArgOperand);
+			ArgStore.push_back(tempfetchLR);
+		    	flagArgs = true;
+                     }//end if
+		     i++;	
                   }//end for
-				
+*/				
 		/*	for(Function::arg_iterator argi=FunType->arg_begin(),arge=FunType->arg_end(); argi!=arge;argi++ )
             			llvm::outs()<< "\n Argument Variadic fun: "<<argi->getName();*/
 		}//end else if
@@ -985,6 +1017,7 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 			     llvm::outs() << "\n LHS of the call instrutcion is a pointer.";
 			     #endif
 			     Token* lhsTemp = vecCall[0]; 
+			     
 			     std::vector<Token*> vecRhsTokens = mapReturnArg(FunType);
 
 			     if (!ReturnArgStore.empty())
@@ -993,7 +1026,6 @@ fetchLR fetchLR::metaDataPrintfIns(Instruction* I) {
 			     if (vecRhsTokens.size() >= 1) {
 				for (int i = 0; i < vecRhsTokens.size(); i++) { 
 					Token* rhsTemp = vecRhsTokens[i]; 
-					
 					if (lhsTemp->getTy() == rhsTemp->getTy()) {
 						#if defined(TRACE) || defined(PRINT) 
 						llvm::outs() << "\n Types match";
@@ -1233,10 +1265,10 @@ void Transform::simplifyIR(Function* F, BasicBlock* B) {
 		llvm::outs() << "\n Instr is a Call."; 
 		ins->print(llvm::outs());			
 		#endif
-		llvm::outs() << "\n REACHED HERE";
+		
 		if (!ArgStore.empty())
 		   ArgStore.clear();
-		llvm::outs() << "\n REACHED HERE 1";
+		
 		insPrintf = objFetchLR.metaDataPrintfIns(ins);
 				
 		if (callFlag) {
@@ -1428,7 +1460,11 @@ void Transform::printGlobalInstrList() {
 	if (Obj.getArgFieldRhs() and rhsVal.first->isValPointerType()) 
 	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"->"<<rhsVal.first->getFieldIndex() << ", "<<rhsVal.second <<">"; 
 	else if (Obj.getArgFieldRhs() and !rhsVal.first->isValPointerType()) 
-	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"."<<rhsVal.first->getFieldIndex() << ", "<<rhsVal.second <<">";   
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"."<<rhsVal.first->getFieldIndex() << ", "<<rhsVal.second <<">";  
+        else if (rhsVal.first->getIsRetGEP() and rhsVal.first->isValPointerType()) 
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"->"<<rhsVal.first->getFieldIndex() << ", "<<rhsVal.second <<">"; 
+	else if (rhsVal.first->getIsRetGEP() and !rhsVal.first->isValPointerType()) 
+	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"."<<rhsVal.first->getFieldIndex() << ", "<<rhsVal.second <<">";    
         else if (Obj.getFieldRhs() and rhsVal.first->isValPointerType()) 
 	   llvm::outs() <<" Rhs: <"<< rhsVal.first->getName() <<"->"<<objStruct.getStructFieldIndxRhs(i.first) << ", "<<rhsVal.second <<">"; 
         else if (Obj.getFieldRhs() and !rhsVal.first->isValPointerType()) 
