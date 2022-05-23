@@ -59,8 +59,6 @@ Worklist.h
 ../include/Worklist.h
 TransformIR.h
 ../include/TransformIR.h
-bprinter/table_printer.h
-../include/bprinter/table_printer.h
 
 ../include/Context.h
 iostream

@@ -454,6 +454,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 			#ifdef PRINT
 				llvm::outs() << "\n GEP operand is a Bitcast";
 			#endif
+			llvm::errs() << "Errored: " << *I << "\n";
 			std::string gopIndx = TK->getIndex(GOP); //store GEP operator index
 			Token* DestTy = new Token(BO->getDestTy());
                 	Token* BCVar = IM->getTokenWrapper()->getToken(BO->getOperand(0));
@@ -1372,6 +1373,7 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	     #ifdef PRINT
 	     llvm::outs() << "\n Instruction is not skipped.";
 	     #endif
+		//  llvm::errs() << "Errored: P" << *ins << "\n"; 
 	     fetchLR tempInstOb = objFetchLR.metaDataSetter(ins);
 	     
 	     if (insFlag) {

@@ -29,8 +29,6 @@
 #include "Worklist.h"
 #include "TransformIR.h"
 
-#include "bprinter/table_printer.h"
-
 using namespace llvm;
 using namespace std;
 using namespace std::chrono;
@@ -69,11 +67,11 @@ void process_mem_usage(float &vm_usage, float &resident_set) {
     resident_set = static_cast<float>(rss * page_size_kb);
 }
 
-void printMemory(float memory) {
-    cout << fixed;
-    cout << setprecision(6);
-    cout << memory / 1024.0;
-    cout << " MB\n";
+void printMemory(float memory, std::ofstream& out) {
+    out << fixed;
+    out << setprecision(6);
+    out << memory / 1024.0;
+    out << " MB\n";
 }
 
 class HashFunction {
@@ -125,6 +123,11 @@ private:
     float total_memory{}, vm{}, rss{};
     std::chrono::seconds AnalysisTime, SLIMTime, SplittingBBTime;
 
+    std::unordered_map<llvm::Function *,std::chrono::seconds> FunctionTime;
+    std::unordered_map<llvm::Function *,std::chrono::seconds> FinalFunctionTime;
+    std::unordered_map<llvm::Function *, std::chrono::_V2::system_clock::time_point> TempFunctionTime;
+    std::stack<std::chrono::seconds> TimeStack;
+
     void printLine(int);
 
 protected:
@@ -133,8 +136,8 @@ protected:
     Worklist<pair<int,BasicBlock *>,HashFunction> backward_worklist, forward_worklist;
 
     // mapping from (context label,call site) to target context label
-    unordered_map<pair<int, llvm::Instruction *>, int, HashFunction> context_transition_graph; //graph
-    unordered_map<pair<int, fetchLR *>, int, HashFunction> SLIM_context_transition_graph; //graph
+    unordered_map<pair<int, llvm::Instruction *>, int, HashFunction> context_transition_graph;
+    unordered_map<pair<int, fetchLR *>, int, HashFunction> SLIM_context_transition_graph;
 public:
     explicit Analysis(bool,bool);
 
@@ -169,8 +172,6 @@ public:
     B NormalFlowFunctionBackward(pair<int, BasicBlock *>);
 
     int check_if_context_already_exists(llvm::Function *, const pair<F, B> &, const pair<F, B> &);
-
-    void printWorklistMaps();
 
     bool isAnIgnorableDebugInstruction(llvm::Instruction *);
     bool isAnIgnorableDebugInstruction(fetchLR *);
@@ -293,24 +294,39 @@ public:
 //========================================================================================
 template<class F, class B>
 void Analysis<F,B>::printStats() {
-    std::cout << "\n=================-------------------Statistics of Analysis-------------------=================";
-    std::cout << "\n Total number of Contexts: " << this->getNumberOfContexts();
-    std::cout << "\n Total time taken in Splitting Basic Blocks: " << this->SplittingBBTime.count() << " seconds";
-    std::cout << "\n Total time taken in SLIM Modelling: " << this->SLIMTime.count() << " seconds";
-    std::cout << "\n Total time taken in Analysis: " << this->AnalysisTime.count() << " seconds";
-    std::cout << "\n Total memory taken by Analysis: ";
-    printMemory(this->total_memory);
-    std::cout << "\n------------------------------------------------------------------";
+    std::ofstream fout("Statistics.txt"); 
+    std::unordered_map<llvm::Function *,int> CountContext;
+    fout << "\n=================-------------------Statistics of Analysis-------------------=================";
+    fout << "\n Total number of Contexts: " << this->getNumberOfContexts();
+    fout << "\n Total time taken in Splitting Basic Blocks: " << this->SplittingBBTime.count() << " seconds";
+    fout << "\n Total time taken in SLIM Modelling: " << this->SLIMTime.count() << " seconds";
+    fout << "\n Total time taken in Analysis: " << this->AnalysisTime.count() << " seconds";
+    fout << "\n Total memory taken by Analysis: ";
+    printMemory(this->total_memory, fout);
+    fout << "\n------------------------List of all Contexts------------------------------------------";
     for(auto& label : ProcedureContext) {
-        std::cout << "\n---------------------------------------";
+        fout << "\n---------------------------------------";
         Context<F,B> *context = this->context_label_to_context_object_map[label];
         F temp1 = context->getInflowValue().first;
         B temp2 = context->getInflowValue().second;
-        std::cout << "\n Context Label: " << label;
-        std::cout << "\n Function Name: " << context->getFunction()->getName().str();
-        std::cout << "\n Forward size: " << this->getSize(temp1);
-        std::cout << "\n Backward size: " << this->getSize(temp2);
-        std::cout << "\n---------------------------------------";
+        fout << "\n Context Label: " << label;
+        fout << "\n Function Name: " << context->getFunction()->getName().str();
+        fout << "\n Forward size: " << this->getSize(temp1);
+        fout << "\n Backward size: " << this->getSize(temp2);
+        fout << "\n---------------------------------------";
+        CountContext[context->getFunction()]++;
+    }
+    // for(auto& p : FinalFunctionTime) {
+    //     std::cout << "\n---------------------------------------";
+    //     std::cout << "\n Function Name: " << p.first->getName().str();
+    //     std::cout << "\n Time taken: " << this->FunctionTime[p.first].count();
+    // }
+    fout << "\n--------------------------Number of context generated for each function----------------------------------------";
+    for(auto& p : CountContext) {
+        fout << "\n---------------------------------------";
+        fout << "\n Function Name: " << p.first->getName().str();
+        fout << "\n Number of contexts: " << p.second;
+        fout << "\n---------------------------------------";
     }
 } 
 
@@ -841,20 +857,18 @@ void Analysis<F,B>::doAnalysis(Module &M) {
     int i = 0;
     for (Function &function: M) {
         if (function.getName() == "main") {
-            F forward_inflow_bi;//=getBoundaryInformationForward();
-            B backward_inflow_bi;//=getBoundaryInformationBackward();
+            F forward_inflow_bi;
+            B backward_inflow_bi;
             F forward_outflow_bi;
             B backward_outflow_bi;
             Function *fptr = &function;
             if (std::is_same<F, NoAnalysisType>::value) {
-                // forward_bi=NoAnalyisInThisDirection;   
-            } else {
+                backward_inflow_bi = getBoundaryInformationBackward();   
+            } else if(std::is_same<B, NoAnalysisType>::value) {
                 forward_inflow_bi = getBoundaryInformationForward();
-            }
-            if (std::is_same<B, NoAnalysisType>::value) {
-                // forward_bi=NoAnalyisInThisDirection;   
-            } else {
+            } else{
                 backward_inflow_bi = getBoundaryInformationBackward();
+                forward_inflow_bi = getBoundaryInformationForward();
             }
             setCurrentAnalysisDirection(0);
             INIT_CONTEXT(fptr, {forward_inflow_bi, backward_inflow_bi}, {forward_outflow_bi, backward_outflow_bi});
@@ -878,7 +892,7 @@ void Analysis<F,B>::doAnalysis(Module &M) {
         direction = "bidirectional";
         int fi=1,bi=1;
         int iteration = 1;
-        while (forward_worklist.size()>0 || backward_worklist.size()>0)
+        while (not forward_worklist.empty() || not backward_worklist.empty())
         {
             // current_analysis_direction=2;
             setCurrentAnalysisDirection(2);
@@ -1182,6 +1196,7 @@ void Analysis<F,B>::doAnalysisForward() {
             }
         } else {
             //In value of this node is same as INFLOW value
+            this->TempFunctionTime[f] = high_resolution_clock::now();
             setForwardIn(current_pair.first, current_pair.second,
                          getForwardInflowForThisContext(current_context_label));
         }
@@ -1599,6 +1614,7 @@ void Analysis<F,B>::doAnalysisForward() {
 
         if (bb == &function.back())//step 27
         {
+            llvm::Function *ParentFunction = NULL;
 		    llvm::outs() << "\n BB is the last node....";
             //last node
             //step 28
@@ -1612,6 +1628,7 @@ void Analysis<F,B>::doAnalysisForward() {
                  {
                     //step 30
                     BasicBlock *bb = getBBfromFetchLR(*context_inst_pairs.first.second);
+                    ParentFunction = bb->getParent();
                     pair<int, BasicBlock *> context_bb_pair = make_pair(context_inst_pairs.first.first, bb);
                     llvm::outs() << "\n Inserting into forward worklist......";
                     forward_worklist.workInsert(context_bb_pair);
@@ -1635,6 +1652,12 @@ void Analysis<F,B>::doAnalysisForward() {
                 }
             }
             }
+            auto start = this->TempFunctionTime[f];
+            auto stop = high_resolution_clock::now();
+            this->FunctionTime[f] = duration_cast<seconds>(stop - start) - this->FunctionTime[f];
+            this->FunctionTime[ParentFunction] +=  this->FunctionTime[f];
+            this->FinalFunctionTime[f] = max(this->FinalFunctionTime[f],this->FunctionTime[f]);
+            this->TempFunctionTime.erase(f);
         }
         process_mem_usage(this->vm, this->rss);
         this->total_memory = max(this->total_memory, this->vm);
@@ -1792,11 +1815,6 @@ int Analysis<F,B>::check_if_context_already_exists(llvm::Function *function, con
                 << "\n";
     }
     return 0;
-}
-
-template<class F, class B>
-void Analysis<F,B>::printWorklistMaps() {
-
 }
 
 template<class F, class B>

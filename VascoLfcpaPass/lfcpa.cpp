@@ -1056,8 +1056,8 @@ F IPLFCPA::computeOutFromIn(fetchLR &I) {
 	 std::set<std::pair<Token*, std::string>> rhsSet; 
 	 Token* rhsValue = rhsVal.first;
 	 int rhsInTmp = rhsIndir;
-	 std::string tempIndx; 
-	llvm::outs()<< "\n Rhs Value: "<<rhsValue->getName()<< " indir= "<<rhsInTmp;
+	 std::string tempIndx;
+	// llvm::outs()<< "\n Rhs Value: "<<rhsValue->getName()<< " indir= "<<rhsInTmp;
 
 	 /* First get points-to pairs from Rhs */
  	 /* case 1: x=&u */
