@@ -454,7 +454,6 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 			#ifdef PRINT
 				llvm::outs() << "\n GEP operand is a Bitcast";
 			#endif
-			llvm::errs() << "Errored: " << *I << "\n";
 			std::string gopIndx = TK->getIndex(GOP); //store GEP operator index
 			Token* DestTy = new Token(BO->getDestTy());
                 	Token* BCVar = IM->getTokenWrapper()->getToken(BO->getOperand(0));
@@ -648,7 +647,7 @@ fetchLR fetchLR::metaDataSetter(Instruction* I) {
 		     }//end if instr
 		     else {
 				#if defined(TRACE) || defined(PRINT) 
-					llvm::outs() << "\n Normal PHI Instruction. ";
+					//llvm::outs() << "\n Normal PHI Instruction. ";
 		                #endif
 
 				if (opRhs->isGlobalVar())
@@ -776,7 +775,7 @@ fetchLR fetchLR::getArgStore(Value* LHS, Value* RHS) {
  llvm::outs() << "\n Inside getArgStore....";
  #endif
  fetchLR Ob;
-if (!isa<Instruction>(RHS)){
+if (!isa<Instruction>(RHS)){ 
    if (isa<GEPOperator>(RHS)) {
     llvm::outs() << "\n GEP OPerator found in call instr.........."<<RHS->getName();
     Ob.setArgFieldRhs(); 
@@ -786,6 +785,12 @@ if (!isa<Instruction>(RHS)){
     Ob.RHS.push_back(std::make_pair(RHSTok, 0));
     //llvm::outs() << "\n GEP OPerator Rhs: "<<RHSTok->getName()<< " index: "<<RHSTok->getFieldIndex();
  }
+ else {
+  llvm::outs() << "\n Not  GEP arguments in call instr..........";
+  spatial::Token* RHSTok = TW.getToken(new Token(RHS));
+  Ob.RHS.push_back(std::make_pair(RHSTok, 1));
+ }
+
 }
 else {
   llvm::outs() << "\n Normal arguments in call instr..........";
@@ -1373,7 +1378,6 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	     #ifdef PRINT
 	     llvm::outs() << "\n Instruction is not skipped.";
 	     #endif
-		//  llvm::errs() << "Errored: P" << *ins << "\n"; 
 	     fetchLR tempInstOb = objFetchLR.metaDataSetter(ins);
 	     
 	     if (insFlag) {
