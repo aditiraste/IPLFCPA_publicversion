@@ -852,6 +852,7 @@ std::vector<Token*> fetchLR::mapReturnArg(Function *F) {
 		    llvm::outs() << "\n Normal operand in Return Ins ";
 		    spatial::Token* RHSTok = TW.getToken(new Token(RetVal)); 
   		    RHSTok->setIsGlobal();
+		    RHSTok->setTy(RetVal->getType());
 		    vecRetToken.push_back(RHSTok);     
 		 }
             }
