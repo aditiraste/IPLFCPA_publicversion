@@ -1869,7 +1869,7 @@ public:
 
 	llvm::outs() << "\n Executing VASCO........";
 	lfcpaObj.doAnalysis(M);
-	lfcpaObj.printGlobalInstrList();
+	// lfcpaObj.printGlobalInstrList();
 	//#ifdef RELV_INS
 		lfcpaObj.printmapModeledIns();
 	//	#endif

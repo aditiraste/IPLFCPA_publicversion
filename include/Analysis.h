@@ -851,7 +851,6 @@ void Analysis<F,B>::doAnalysis(Module &M) {
         }
         auto stop = high_resolution_clock::now();
         this->SLIMTime = duration_cast<seconds>(stop - start);
-	    printGlobalInstrList();
     }
     start = high_resolution_clock::now();
     int i = 0;
