@@ -1114,9 +1114,11 @@ BasicBlock* Transform::getBBfromFetchLR(fetchLR Ob) {
 	for (auto g : globalInstrIndexList) {
 		long int indx = g.first;
 		fetchLR objLR = g.second;
-		if (objLR == Ob) 
-			INDEX = indx;		
-	}
+		if (objLR == Ob){
+			INDEX = indx;
+			break;
+		}		
+		}
 
         for (auto map : funcBBInsMap) {
 		std::pair<Function*, BasicBlock*> FB = map.first;
@@ -1387,7 +1389,8 @@ void Transform::setLhsRhsMap(Function* F, BasicBlock* B) {
 	else if (!IM->isInstSkip(ins)) { 	// If Instruction is not skipped
 	     #ifdef PRINT
 	     llvm::outs() << "\n Instruction is not skipped.";
-	     #endif
+         #endif
+//        llvm::errs() << "\nError instruction: " << *ins;
 	     fetchLR tempInstOb = objFetchLR.metaDataSetter(ins);
 	     
 	     if (insFlag) {
