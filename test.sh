@@ -39,7 +39,7 @@ cmake ..
 make
 popd
 clang-12 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -fno-discard-value-names -c call_test4.c -o test.ll
-./build/VascoLfcpaPass/VascoLfcpaPass ./SPEC/libquantum.ll
+./build/VascoLfcpaPass/VascoLfcpaPass ./SPEC/lbm.ll
 #clang++-11 -S -emit-llvm -O0 -Xclang -disable-O0-optnone -c All_Testcases/7.cpp -o test.ll
 #opt-11 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*TransformIR*  -lfcpa test.ll -o test.ll #> /dev/null
 #opt-11 -S -instnamer -mem2reg -load /usr/local/lib/libSpatial.so -load  _build/*/*TransformIR*  -lfcpa /home/aditi/rebenchmarktesting/Aditi/gcc.ll -o test.ll
