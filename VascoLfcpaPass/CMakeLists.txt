@@ -1,21 +1,17 @@
-add_library(VascoLfcpaPass MODULE
-    # List your source files here.
-   # TransformIR.cpp
-     lfcpa.cpp
-)
+set(LLVM_LINK_COMPONENTS core support irreader passes transformutils)
+add_executable(VascoLfcpaPass lfcpa.cpp)
+# add_library(VascoLfcpaPass MODULE
+#     # List your source files here.
+#    # TransformIR.cpp
+#      lfcpa.cpp
+# )
 
 # LLVM is (typically) built with no C++ RTTI. We need to match that;
 # otherwise, we'll get linker errors about missing RTTI data.
 set_target_properties(VascoLfcpaPass PROPERTIES
-    COMPILE_FLAGS "-fno-rtti -g"
+    COMPILE_FLAGS "-fno-rtti -g -O2 -std=c++14"
 )
 
-# target_link_libraries(VascoLfcpaPass bprinter)
+llvm_config (VascoLfcpaPass ${LLVM_LINK_COMPONENTS})
 
-# Get proper shared-library behavior (where symbols are not necessarily
-# resolved when the shared library is linked) on OS X.
-if(APPLE)
-	set_target_properties(VascoLfcpaPass PROPERTIES
-        LINK_FLAGS "-undefined dynamic_lookup"
-    )
-endif(APPLE)
+target_link_libraries(VascoLfcpaPass PRIVATE "/usr/local/lib/libSpatial.so")

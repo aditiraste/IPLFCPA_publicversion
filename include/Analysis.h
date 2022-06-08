@@ -294,7 +294,10 @@ public:
 //========================================================================================
 template<class F, class B>
 void Analysis<F,B>::printStats() {
-    std::ofstream fout("Statistics.txt"); 
+    llvm::Module *M = this->getCurrentModule();
+    string fileName = M->getName().str();
+    fileName += ".txt";
+    std::ofstream fout(fileName); 
     std::unordered_map<llvm::Function *,int> CountContext;
     fout << "\n=================-------------------Statistics of Analysis-------------------=================";
     fout << "\n Total number of Contexts: " << this->getNumberOfContexts();
@@ -316,11 +319,6 @@ void Analysis<F,B>::printStats() {
         fout << "\n---------------------------------------";
         CountContext[context->getFunction()]++;
     }
-    // for(auto& p : FinalFunctionTime) {
-    //     std::cout << "\n---------------------------------------";
-    //     std::cout << "\n Function Name: " << p.first->getName().str();
-    //     std::cout << "\n Time taken: " << this->FunctionTime[p.first].count();
-    // }
     fout << "\n--------------------------Number of context generated for each function----------------------------------------";
     for(auto& p : CountContext) {
         fout << "\n---------------------------------------";
@@ -1599,7 +1597,7 @@ void Analysis<F,B>::doAnalysisForward() {
             }
 
         }
-	llvm::outs() << "\n Check if PIN has changed";
+	    llvm::outs() << "\n Check if PIN has changed";
         bool changed1 = false;
         if (not EqualDataFlowValuesForward(previous_value_at_in_of_this_node, getIn(current_pair.first,
                                                                                    current_pair.second).first)) {
@@ -1660,6 +1658,10 @@ void Analysis<F,B>::doAnalysisForward() {
         }
         process_mem_usage(this->vm, this->rss);
         this->total_memory = max(this->total_memory, this->vm);
+        // llvm::errs() << "\n-----------------------";
+        // llvm::errs() << "\nForward Worklist size for function: " << function.getName() << " = " << forward_worklist.size();
+        // F temp = getOut(current_pair.first,current_pair.second).first;
+        // llvm::errs() << "\nForward size: " << getSize(temp);
     }
 }
 
@@ -2308,6 +2310,10 @@ void Analysis<F,B>::doAnalysisBackward() {
         }
         process_mem_usage(this->vm, this->rss);
         this->total_memory = max(this->total_memory, this->vm);
+        // llvm::errs() << "\n-----------------------";
+        // llvm::errs() << "\nBackward Worklist size for function: " << function.getName() << " = " << backward_worklist.size();
+        // B temp = getOut(current_pair.first,current_pair.second).second;
+        // llvm::errs() << "\nBackward size: " << getSize(temp);
     }
 }
 

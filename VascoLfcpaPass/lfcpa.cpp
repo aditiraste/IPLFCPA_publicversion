@@ -24,6 +24,12 @@ Current Status:
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/IR/InstrTypes.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IRReader/IRReader.h"
+#include "llvm/Support/SourceMgr.h"
+#include "llvm/Transforms/Utils/UnifyFunctionExitNodes.h"
 //#include "TransformIR.cpp"
 #include <string.h>
 #include "Analysis.h"
@@ -82,8 +88,7 @@ public:
 };
 
 
-IPLFCPA::IPLFCPA() : Analysis<F, B>(true, "Log.txt",true){ };
-IPLFCPA lfcpaObj;
+IPLFCPA::IPLFCPA() : Analysis<F, B>(false, "Log.txt",true){ };
 bool vFlag = true;
 bool flgBitcast = true;
 std::set<int> insBitcastSet;
@@ -1848,6 +1853,26 @@ B IPLFCPA::getInitialisationValueBackward() {
     return B_TOP;
 }
 
+int main(int argc, char **argv) {
+	if (argc < 1) {
+        return 1;
+    }
+    LLVMContext Context;
+    SMDiagnostic Error;
+    std::unique_ptr<Module> M = parseIRFile(argv[1], Error, Context);
+    legacy::FunctionPassManager FPM(M.get());
+    Pass *UEN = createUnifyFunctionExitNodesPass();
+    FPM.add(UEN);
+    for (Function &F : M.get()->functions()) {
+        FPM.run(F);
+    }
+    IPLFCPA lfcpaObj;
+	llvm::outs() << "\n Executing VASCO........";
+	lfcpaObj.doAnalysis(*M);
+	lfcpaObj.printStats();
+    return 0;
+}
+
 /*
 * CHange functionPass to ModulePass
 * Iterate over every function in the Module and call SLIM modeling functions to create the abstraction
@@ -1855,53 +1880,51 @@ B IPLFCPA::getInitialisationValueBackward() {
 * Global instr list should be printed. #GOAL
 */
 
-class transIR : public ModulePass {
-public:
-  static char ID;
-  transIR() : ModulePass(ID){}
-  virtual bool runOnModule(Module &M)   {   
+// class transIR : public ModulePass {
+// public:
+//   static char ID;
+//   transIR() : ModulePass(ID){}
+//   virtual bool runOnModule(Module &M)   {   
 	
-	//Module *M = F.getParent();
-	lfcpaObj.setCurrentModule(&M);
- //	llvm::outs() << "\n Splitting the BB..............."; 
-//	lfcpaObj.startSplitting();
+// 	//Module *M = F.getParent();
+// 	lfcpaObj.setCurrentModule(&M);
+//  //	llvm::outs() << "\n Splitting the BB..............."; 
+// //	lfcpaObj.startSplitting();
 
 
-	llvm::outs() << "\n Executing VASCO........";
-	lfcpaObj.doAnalysis(M);
-	// lfcpaObj.printGlobalInstrList();
-	//#ifdef RELV_INS
-		lfcpaObj.printmapModeledIns();
-	//	#endif
-	lfcpaObj.printStats();
-        return false;
-  }
-};
+// 	llvm::outs() << "\n Executing VASCO........";
+// 	lfcpaObj.doAnalysis(M);
+// 	// lfcpaObj.printGlobalInstrList();
+// 	//#ifdef RELV_INS
+// 	//	#endif
+//         return false;
+//   }
+// };
 
-/*class transIR : public FunctionPass {
-public:
-  static char ID;
-  transIR() : FunctionPass(ID){}
-  virtual bool runOnFunction(Function &F)   {   
+// /*class transIR : public FunctionPass {
+// public:
+//   static char ID;
+//   transIR() : FunctionPass(ID){}
+//   virtual bool runOnFunction(Function &F)   {   
 	
-	Module *M = F.getParent();
-	lfcpaObj.setCurrentModule(M);
- 	llvm::outs() << "\n Splitting the BB..............."; 
-	lfcpaObj.startSplitting();	
-         if (F.getName() == "main") { 
-	    llvm::outs()  << "\n Interprocedural LFCPA.....";
-	    lfcpaObj.test();	   		
-	}		
-return false;
-  }
-};*/
+// 	Module *M = F.getParent();
+// 	lfcpaObj.setCurrentModule(M);
+//  	llvm::outs() << "\n Splitting the BB..............."; 
+// 	lfcpaObj.startSplitting();	
+//          if (F.getName() == "main") { 
+// 	    llvm::outs()  << "\n Interprocedural LFCPA.....";
+// 	    lfcpaObj.test();	   		
+// 	}		
+// return false;
+//   }
+// };*/
 
-char transIR :: ID = 0;
-static RegisterPass<transIR> X(
-	"lfcpa",		// the option name
-	"lfcpa",	// option description
-	false,
-	false					
-);
+// char transIR :: ID = 0;
+// static RegisterPass<transIR> X(
+// 	"lfcpa",		// the option name
+// 	"lfcpa",	// option description
+// 	false,
+// 	false					
+// );
 
 
