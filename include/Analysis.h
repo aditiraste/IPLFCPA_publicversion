@@ -2336,6 +2336,7 @@ B Analysis<F,B>::NormalFlowFunctionBackward(pair<int, BasicBlock *> current_pair
                 printDataFlowValuesBackward(prev);
             }
             setBackwardComponentAtOutOfThisInstruction(&(inst), prev);//compute OUT from previous IN-value
+//            llvm::errs() << "\nError inst: " << *mapInstWithIndx[index] << "\n";
             B new_dfv = computeInFromOut(inst);
             setBackwardComponentAtInOfThisInstruction(&(inst), new_dfv);
             if (debug) {

@@ -9,7 +9,7 @@ add_executable(VascoLfcpaPass lfcpa.cpp)
 # LLVM is (typically) built with no C++ RTTI. We need to match that;
 # otherwise, we'll get linker errors about missing RTTI data.
 set_target_properties(VascoLfcpaPass PROPERTIES
-    COMPILE_FLAGS "-fno-rtti -g -O2 -std=c++14"
+    COMPILE_FLAGS "-fno-rtti -g -std=c++14 -O2"
 )
 
 llvm_config (VascoLfcpaPass ${LLVM_LINK_COMPONENTS})
