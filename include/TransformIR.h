@@ -1116,7 +1116,6 @@ BasicBlock* Transform::getBBfromFetchLR(fetchLR Ob) {
 		fetchLR objLR = g.second;
 		if (objLR == Ob){
 			INDEX = indx;
-			break;
 		}		
 		}
 
@@ -1184,16 +1183,20 @@ bool Transform::isBBInsLstEmpty(Function* F, BasicBlock* B)   {
     #if defined(TRACE) || defined(PRINT) 
     llvm::outs() << "\n Inside isBBInsLstEmpty....."; 
     #endif
-    for (auto itr : funcBBInsMap)	{ 
-	Function * function;
-	BasicBlock* basicBlock;
-	std::tie(function, basicBlock) = itr.first;
-	std::list<long int> insList = itr.second;
-	if (F == function and B == basicBlock) {
-		if (insList.empty())
-			return true;	
-	}//end if
-    }//end for
+	auto result = funcBBInsMap.find({F,B});
+    if(result != funcBBInsMap.end()) {
+        return result->second.empty();
+    }
+    // for (auto itr : funcBBInsMap)	{ 
+	// Function * function;
+	// BasicBlock* basicBlock;
+	// std::tie(function, basicBlock) = itr.first;
+	// std::list<long int> insList = itr.second;
+	// if (F == function and B == basicBlock) {
+	// 	if (insList.empty())
+	// 		return true;	
+	// }//end if
+    // }//end for
     return false;	
 }
 
@@ -1207,12 +1210,12 @@ long int Transform::getFirstIns(Function* F, BasicBlock* B)   {
         return result->second.front();
     }
 //    for (auto itr : funcBBInsMap)	{
-//	Function * function;
-//	BasicBlock* basicBlock;
-//	std::tie(function, basicBlock) = itr.first;
-//	std::list<long int> insList = itr.second;
-//	if (F == function and B == basicBlock)
-//		return insList.front();
+// 	Function * function;
+// 	BasicBlock* basicBlock;
+// 	std::tie(function, basicBlock) = itr.first;
+// 	std::list<long int> insList = itr.second;
+// 	if (F == function and B == basicBlock)
+// 		return insList.front();
 //    }
     return 0;   
 }
@@ -1227,13 +1230,13 @@ long int Transform::getLastIns(Function* F, BasicBlock* B)  {
         return result->second.back();
     }
 //  for (auto itr : funcBBInsMap)  {
-//	Function * function;
-//	BasicBlock* basicBlock;
-//	std::tie(function, basicBlock) = itr.first;
-//	std::list<long int> insList = itr.second;
-//	long int indexTmp;
-//	if (F == function and B == basicBlock)
-//		return insList.back();
+// 	Function * function;
+// 	BasicBlock* basicBlock;
+// 	std::tie(function, basicBlock) = itr.first;
+// 	std::list<long int> insList = itr.second;
+// 	long int indexTmp;
+// 	if (F == function and B == basicBlock)
+// 		return insList.back();
 //  }
   return 0; //if no instr in BB
 }
@@ -1241,14 +1244,14 @@ long int Transform::getLastIns(Function* F, BasicBlock* B)  {
 ///Returns the reversed instruction list 
 std::list<long int> Transform::getReverseList(std::list<long int> inList)  {
     inList.reverse();
-//	std::list<long int> revList;
-//	for (auto i : inList)
-//		revList.push_front(i);
-//       #ifdef PRINT
-//	llvm::outs()<<"\n Reverse List: ";
-//	for (auto r : revList)
-//		llvm::outs()<<r<<", ";
-//       #endif
+	// std::list<long int> revList;
+	// for (auto i : inList)
+	// 	revList.push_front(i);
+      #ifdef PRINT
+	llvm::outs()<<"\n Reverse List: ";
+	for (auto r : revList)
+		llvm::outs()<<r<<", ";
+      #endif
 	return inList;
 }
 

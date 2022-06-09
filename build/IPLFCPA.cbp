@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="IPLFCPA"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\llvm-12\;CMake Files\..\..\..\..\usr\lib\llvm-12\cmake\;CMake Files\..\..\..\..\usr\lib\llvm-12\lib\;CMake Files\..\..\..\..\usr\lib\llvm-12\lib\cmake\;CMake Files\..\..\..\..\usr\lib\llvm-12\lib\cmake\llvm\;CMake Files\VascoLfcpaPass\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="acc_gen">
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 acc_gen"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="omp_gen">
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 omp_gen"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="intrinsics_gen">
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 intrinsics_gen"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="VascoLfcpaPass">
+				<Option output="/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/VascoLfcpaPass" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/llvm-12/include"/>
+					<Add directory="/usr/local/include/spatial"/>
+					<Add directory="/mnt/d/MTP/IPLFCPA/./include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 VascoLfcpaPass"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="VascoLfcpaPass/fast">
+				<Option output="/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/VascoLfcpaPass" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/llvm-12/include"/>
+					<Add directory="/usr/local/include/spatial"/>
+					<Add directory="/mnt/d/MTP/IPLFCPA/./include"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 VascoLfcpaPass/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/mnt/d/MTP/IPLFCPA/build/VascoLfcpaPass/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/VascoLfcpaPass/lfcpa.cpp">
+			<Option target="VascoLfcpaPass"/>
+		</Unit>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/../../../../usr/lib/llvm-12/cmake/LLVMConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\llvm-12\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/../../../../usr/lib/llvm-12/cmake/LLVMConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\llvm-12\cmake\"/>
+		</Unit>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/../../../../usr/lib/llvm-12/lib/cmake/llvm/LLVM-Config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\llvm-12\lib\cmake\llvm\"/>
+		</Unit>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/../../../../usr/lib/llvm-12/lib/cmake/llvm/LLVMExports-relwithdebinfo.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\llvm-12\lib\cmake\llvm\"/>
+		</Unit>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/../../../../usr/lib/llvm-12/lib/cmake/llvm/LLVMExports.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib\llvm-12\lib\cmake\llvm\"/>
+		</Unit>
+		<Unit filename="/mnt/d/MTP/IPLFCPA/VascoLfcpaPass/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\VascoLfcpaPass\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

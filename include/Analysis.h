@@ -121,12 +121,12 @@ private:
     bool debug{};
     bool SLIM{};
     float total_memory{}, vm{}, rss{};
-    std::chrono::seconds AnalysisTime, SLIMTime, SplittingBBTime;
+    std::chrono::milliseconds AnalysisTime, SLIMTime, SplittingBBTime;
 
-    std::unordered_map<llvm::Function *,std::chrono::seconds> FunctionTime;
-    std::unordered_map<llvm::Function *,std::chrono::seconds> FinalFunctionTime;
+    std::unordered_map<llvm::Function *,std::chrono::milliseconds> FunctionTime;
+    std::unordered_map<llvm::Function *,std::chrono::milliseconds> FinalFunctionTime;
     std::unordered_map<llvm::Function *, std::chrono::_V2::system_clock::time_point> TempFunctionTime;
-    std::stack<std::chrono::seconds> TimeStack;
+    std::stack<std::chrono::milliseconds> TimeStack;
 
     void printLine(int);
 
@@ -301,9 +301,9 @@ void Analysis<F,B>::printStats() {
     std::unordered_map<llvm::Function *,int> CountContext;
     fout << "\n=================-------------------Statistics of Analysis-------------------=================";
     fout << "\n Total number of Contexts: " << this->getNumberOfContexts();
-    fout << "\n Total time taken in Splitting Basic Blocks: " << this->SplittingBBTime.count() << " seconds";
-    fout << "\n Total time taken in SLIM Modelling: " << this->SLIMTime.count() << " seconds";
-    fout << "\n Total time taken in Analysis: " << this->AnalysisTime.count() << " seconds";
+    fout << "\n Total time taken in Splitting Basic Blocks: " << this->SplittingBBTime.count() << " milliseconds";
+    fout << "\n Total time taken in SLIM Modelling: " << this->SLIMTime.count() << " milliseconds";
+    fout << "\n Total time taken in Analysis: " << this->AnalysisTime.count() << " milliseconds";
     fout << "\n Total memory taken by Analysis: ";
     printMemory(this->total_memory, fout);
     fout << "\n------------------------List of all Contexts------------------------------------------";
@@ -837,7 +837,7 @@ void Analysis<F,B>::doAnalysis(Module &M) {
     auto start = high_resolution_clock::now();
     startSplitting();
     auto stop = high_resolution_clock::now();
-    this->SplittingBBTime = duration_cast<seconds>(stop - start);
+    this->SplittingBBTime = duration_cast<milliseconds>(stop - start);
     if(SLIM) {
         auto start = high_resolution_clock::now();
         llvm::outs() << "\n Applying SLIM modeling..............#";
@@ -848,7 +848,7 @@ void Analysis<F,B>::doAnalysis(Module &M) {
             }
         }
         auto stop = high_resolution_clock::now();
-        this->SLIMTime = duration_cast<seconds>(stop - start);
+        this->SLIMTime = duration_cast<milliseconds>(stop - start);
     }
     start = high_resolution_clock::now();
     int i = 0;
@@ -907,7 +907,7 @@ void Analysis<F,B>::doAnalysis(Module &M) {
         }
     }
     stop = high_resolution_clock::now();
-    this->AnalysisTime = duration_cast<seconds>(stop - start);
+    this->AnalysisTime = duration_cast<milliseconds>(stop - start);
 }
 
 
@@ -1161,6 +1161,7 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
             setBackwardOut(current_context_label,&context_object->getFunction()->back(),getBackwardInflowForThisContext(current_context_label));
         }
     }
+    llvm::errs() << ProcedureContext.size() << "\n";
 }
 
 template<class F, class B>
@@ -1651,7 +1652,7 @@ void Analysis<F,B>::doAnalysisForward() {
             }
             auto start = this->TempFunctionTime[f];
             auto stop = high_resolution_clock::now();
-            this->FunctionTime[f] = duration_cast<seconds>(stop - start) - this->FunctionTime[f];
+            this->FunctionTime[f] = duration_cast<milliseconds>(stop - start) - this->FunctionTime[f];
             this->FunctionTime[ParentFunction] +=  this->FunctionTime[f];
             this->FinalFunctionTime[f] = max(this->FinalFunctionTime[f],this->FunctionTime[f]);
             this->TempFunctionTime.erase(f);
