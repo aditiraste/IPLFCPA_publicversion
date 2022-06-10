@@ -1117,16 +1117,16 @@ BasicBlock* Transform::getBBfromFetchLR(fetchLR Ob) {
 		if (objLR == Ob){
 			INDEX = indx;
 		}		
-		}
+	}
 
-        for (auto map : funcBBInsMap) {
-		std::pair<Function*, BasicBlock*> FB = map.first;
-		std::list<long int> LIST = map.second;
-		std::list<long int>::iterator itr;
-		itr = std::find(LIST.begin(), LIST.end(), INDEX);
-		if(itr != LIST.end())
-		   return FB.second;
-        }
+	for (auto map : funcBBInsMap) {
+	std::pair<Function*, BasicBlock*> FB = map.first;
+	std::list<long int> LIST = map.second;
+	std::list<long int>::iterator itr;
+	itr = std::find(LIST.begin(), LIST.end(), INDEX);
+	if(itr != LIST.end())
+		return FB.second;
+	}
 }
  
 //Returns the corresponding instruction for the global index

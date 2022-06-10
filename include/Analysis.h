@@ -1161,7 +1161,7 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
             setBackwardOut(current_context_label,&context_object->getFunction()->back(),getBackwardInflowForThisContext(current_context_label));
         }
     }
-    llvm::errs() << ProcedureContext.size() << "\n";
+    llvm::errs() << SLIM_context_transition_graph.size() << "\n";
 }
 
 template<class F, class B>
@@ -1623,18 +1623,19 @@ void Analysis<F,B>::doAnalysisForward() {
             if(SLIM) { llvm::outs() << "\n Inside SLIM loop ";
                 for(auto context_inst_pairs : SLIM_context_transition_graph) {
                     if (context_inst_pairs.second == current_context_label)//matching the called function
-                 {
-                    //step 30
-                    BasicBlock *bb = getBBfromFetchLR(*context_inst_pairs.first.second);
-                    ParentFunction = bb->getParent();
-                    pair<int, BasicBlock *> context_bb_pair = make_pair(context_inst_pairs.first.first, bb);
-                    llvm::outs() << "\n Inserting into forward worklist......";
-                    forward_worklist.workInsert(context_bb_pair);
-                    if (direction == "bidirectional") { llvm::outs() << "\n Inserting into backwards worklist...";
-                        backward_worklist.workInsert(context_bb_pair);   
+                    {
+                        //step 30
+                        BasicBlock *bb = getBBfromFetchLR(*context_inst_pairs.first.second);
+                        ParentFunction = bb->getParent();
+                        pair<int, BasicBlock *> context_bb_pair = make_pair(context_inst_pairs.first.first, bb);
+                        llvm::outs() << "\n Inserting into forward worklist......";
+                        forward_worklist.workInsert(context_bb_pair);
+                        if (direction == "bidirectional") { llvm::outs() << "\n Inserting into backwards worklist...";
+                            backward_worklist.workInsert(context_bb_pair);   
+                        }
+                        break;
                     }
                 }
-                } 
             } else {
                 for (auto context_inst_pairs : context_transition_graph)//step 29
             {
@@ -2279,19 +2280,19 @@ void Analysis<F,B>::doAnalysisBackward() {
             if(SLIM) { llvm::outs() << "\n SLIM LOOP ";
                 for(auto context_inst_pairs : SLIM_context_transition_graph) {
                     if (context_inst_pairs.second == current_context_label)//matching the called function
-                {
-                    //step 30
-
-                    BasicBlock *bb = getBBfromFetchLR(*context_inst_pairs.first.second);
-                    pair<int, BasicBlock *> context_bb_pair = make_pair(context_inst_pairs.first.first, bb);
-                    if (direction == "bidirectional") { 
-			llvm::outs() << "\n Inserting into the forward worklist";
-                        forward_worklist.workInsert(context_bb_pair);  
+                    {
+                        //step 30
+                        BasicBlock *bb = getBBfromFetchLR(*context_inst_pairs.first.second);
+                        pair<int, BasicBlock *> context_bb_pair = make_pair(context_inst_pairs.first.first, bb);
+                        if (direction == "bidirectional") { 
+                            llvm::outs() << "\n Inserting into the forward worklist";
+                            forward_worklist.workInsert(context_bb_pair);  
+                        }
+                        llvm::outs() << "\n Inserting into the backward worklist";
+                        backward_worklist.workInsert(context_bb_pair);
+                        break;
                     }
-		    llvm::outs() << "\n Inserting into the backward worklist";
-                    backward_worklist.workInsert(context_bb_pair);
                 }
-                } 
             } else {
                 for (auto context_inst_pairs : context_transition_graph)//step 29
             {
