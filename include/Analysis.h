@@ -1161,7 +1161,6 @@ void Analysis<F,B>::INIT_CONTEXT(llvm::Function *function, const std::pair<F, B>
             setBackwardOut(current_context_label,&context_object->getFunction()->back(),getBackwardInflowForThisContext(current_context_label));
         }
     }
-    llvm::errs() << SLIM_context_transition_graph.size() << "\n";
 }
 
 template<class F, class B>
